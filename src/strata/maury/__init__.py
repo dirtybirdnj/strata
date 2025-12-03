@@ -32,5 +32,6 @@ Classes:
 """
 
 from strata.maury.recipe import Recipe
+from strata.maury.pipeline import Pipeline
 
-__all__ = ["Recipe"]
+__all__ = ["Recipe", "Pipeline"]

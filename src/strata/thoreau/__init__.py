@@ -5,23 +5,87 @@ strata.thoreau: Data acquisition from authoritative sources.
 and a half, and could tell accurately when the stone left the bottom,
 by having to pull so much harder before the water got underneath to help me."
     — Henry David Thoreau, Walden
-
-I have walked to the Census Bureau, so to speak, and returned with their
-TIGER files—those careful delineations of every county, town, and water body
-in the nation. It is remarkable how many will speculate about boundaries
-without taking the trouble to fetch the authoritative source.
-
-The work of acquisition is simple but requires patience. One must know where
-to look—the Census for American boundaries, CanVec for Canadian waters,
-Quebec's open data for their municipalities. Each source has its own character,
-its own way of organizing what it knows.
-
-Functions:
-    fetch() - Acquire data from a source URI
-    fetch_census() - Acquire US Census TIGER data
-    fetch_canvec() - Acquire Canadian CanVec data
-    fetch_quebec() - Acquire Quebec Open Data
-    validate_source() - Verify the integrity of acquired data
 """
 
-# TODO: Implement data acquisition functions
+from .census import fetch_census, parse_census_uri, estimate_census_size
+from .cache import get_cache_dir, is_cached, get_cached_path
+
+__all__ = [
+    "fetch",
+    "estimate_size",
+    "fetch_census",
+    "parse_census_uri",
+    "estimate_census_size",
+    "get_cache_dir",
+    "is_cached",
+    "get_cached_path",
+]
+
+
+def fetch(uri: str, force: bool = False) -> str:
+    """
+    Fetch data from a source URI and return the local path.
+
+    Args:
+        uri: Source URI (e.g., "census:tiger/2023/vt/cousub")
+        force: Re-download even if cached
+
+    Returns:
+        Path to local data file (shapefile or geojson)
+
+    Raises:
+        ValueError: If URI scheme is not recognized
+        FileNotFoundError: If local file doesn't exist
+    """
+    from pathlib import Path
+    from rich.console import Console
+    console = Console()
+
+    if uri.startswith("census:"):
+        return fetch_census(uri, force=force)
+    elif uri.startswith("canvec:"):
+        raise NotImplementedError("CanVec fetching not yet implemented")
+    elif uri.startswith("quebec:"):
+        raise NotImplementedError("Quebec data fetching not yet implemented")
+    elif uri.startswith("file:"):
+        # Local file - validate and return the path
+        local_path = uri[5:]  # Strip "file:" prefix
+
+        # Handle relative paths
+        path = Path(local_path)
+        if not path.is_absolute():
+            # Try relative to cwd
+            path = Path.cwd() / local_path
+
+        if not path.exists():
+            raise FileNotFoundError(f"Local file not found: {path}")
+
+        console.print(f"  [green]✓[/] {uri} [dim](local)[/]")
+        return str(path)
+    else:
+        raise ValueError(f"Unknown source URI scheme: {uri}")
+
+
+def estimate_size(uri: str) -> dict:
+    """
+    Estimate download size for a URI without downloading.
+
+    Args:
+        uri: Source URI (e.g., "census:tiger/2023/vt/cousub")
+
+    Returns:
+        Dict with estimated_size_mb, cached, cache_path, url
+    """
+    if uri.startswith("census:"):
+        return estimate_census_size(uri)
+    elif uri.startswith("canvec:"):
+        return {"uri": uri, "estimated_size_mb": 50.0, "cached": False, "note": "CanVec not yet implemented"}
+    elif uri.startswith("quebec:"):
+        return {"uri": uri, "estimated_size_mb": 20.0, "cached": False, "note": "Quebec not yet implemented"}
+    elif uri.startswith("file:"):
+        from pathlib import Path
+        path = Path(uri[5:])
+        size_mb = path.stat().st_size / 1024 / 1024 if path.exists() else 0
+        return {"uri": uri, "estimated_size_mb": size_mb, "cached": True, "cache_path": str(path)}
+    else:
+        return {"uri": uri, "estimated_size_mb": 0, "cached": False, "error": "Unknown scheme"}

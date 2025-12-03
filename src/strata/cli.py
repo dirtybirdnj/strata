@@ -32,6 +32,48 @@ def new(name: str | None, template: str | None, output: str | None):
 
 @main.command()
 @click.argument("recipe", type=click.Path(exists=True))
+@click.option("--dry-run", is_flag=True, help="Show what would be downloaded")
+@click.option("--force", is_flag=True, help="Re-download even if cached")
+def prepare(recipe: str, dry_run: bool, force: bool):
+    """Download and cache all sources for a recipe."""
+    from strata.maury import Recipe, Pipeline
+
+    console.print(f"\n[bold]Preparing:[/] {recipe}\n")
+
+    # Load recipe
+    try:
+        r = Recipe.from_file(recipe)
+    except Exception as e:
+        console.print(f"[red]Error loading recipe:[/] {e}")
+        raise SystemExit(1)
+
+    pipeline = Pipeline(r)
+
+    if dry_run:
+        # Show what would be downloaded
+        estimate = pipeline.estimate()
+
+        console.print("[bold]Sources:[/]")
+        for src in estimate["sources"]:
+            status = "[green]cached[/]" if src.get("cached") else f"[cyan]~{src.get('estimated_size_mb', 0):.1f} MB[/]"
+            console.print(f"  {src['name']}: {status}")
+
+        console.print(f"\n[bold]Summary:[/]")
+        console.print(f"  Cached: {estimate['cached_count']}")
+        console.print(f"  To download: {estimate['download_count']}")
+        console.print(f"  Estimated size: ~{estimate['total_size_mb']:.1f} MB")
+    else:
+        # Actually download
+        try:
+            paths = pipeline.prepare(force=force)
+            console.print(f"\n[green]✓[/] Prepared {len(paths)} sources")
+        except Exception as e:
+            console.print(f"\n[red]Error:[/] {e}")
+            raise SystemExit(1)
+
+
+@main.command()
+@click.argument("recipe", type=click.Path(exists=True))
 @click.option("--format", "-f", help="Only build specific format (svg, geojson, pmtiles)")
 @click.option("--quality", "-q", help="Only build specific quality level")
 @click.option("--layer", "-l", multiple=True, help="Only build specific layer(s)")
@@ -50,9 +92,48 @@ def build(
     verbose: bool,
 ):
     """Build outputs from a recipe file."""
-    # TODO: Implement build pipeline
-    console.print(f"[bold]Building from:[/] {recipe}")
-    console.print("[yellow]Build command not yet implemented[/]")
+    from strata.maury import Recipe, Pipeline
+
+    console.print(f"\n[bold]Building:[/] {recipe}\n")
+
+    # Load recipe
+    try:
+        r = Recipe.from_file(recipe)
+    except Exception as e:
+        console.print(f"[red]Error loading recipe:[/] {e}")
+        raise SystemExit(1)
+
+    # Validate references
+    errors = r.validate_references()
+    if errors:
+        console.print("[red]Recipe validation errors:[/]")
+        for err in errors:
+            console.print(f"  - {err}")
+        raise SystemExit(1)
+
+    if dry_run:
+        console.print("[bold]Recipe summary:[/]")
+        console.print(f"  Name: {r.name}")
+        console.print(f"  Sources: {len(r.sources)}")
+        console.print(f"  Layers: {len(r.layers)}")
+        console.print(f"  Output formats: {[f.type for f in r.output.formats]}")
+        return
+
+    # Run build pipeline
+    pipeline = Pipeline(r)
+    try:
+        files = pipeline.build(output, force=no_cache)
+
+        console.print(f"\n[green]✓[/] Build complete!")
+        console.print(f"[bold]Output:[/] {output}/{r.name}/")
+        console.print(f"  Created {len(files)} files")
+
+    except Exception as e:
+        console.print(f"\n[red]Build failed:[/] {e}")
+        if verbose:
+            import traceback
+            console.print(traceback.format_exc())
+        raise SystemExit(1)
 
 
 @main.command()

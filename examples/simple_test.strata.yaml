@@ -1,0 +1,70 @@
+# Simple test recipe - uses only per-state TIGER files
+name: simple_test
+description: Basic test with VT and NH towns
+version: 1
+
+sources:
+  vt_towns:
+    uri: census:tiger/2023/vt/cousub
+    description: Vermont towns
+
+  nh_towns:
+    uri: census:tiger/2023/nh/cousub
+    description: New Hampshire towns
+
+  vt_roads:
+    uri: census:tiger/2023/vt/prisecroads
+    description: Vermont primary and secondary roads
+
+  nh_roads:
+    uri: census:tiger/2023/nh/prisecroads
+    description: New Hampshire primary and secondary roads
+
+layers:
+  - name: vermont
+    source: vt_towns
+    operations:
+      - type: simplify
+        tolerance: 0.001
+    style:
+      stroke: "#1b5e20"  # Dark green (stroke)
+      stroke_width: 0.75
+      fill: "#66bb6a"    # Light green (fill)
+    order: 1
+
+  - name: new_hampshire
+    source: nh_towns
+    operations:
+      - type: simplify
+        tolerance: 0.001
+    style:
+      stroke: "#f57f17"  # Dark amber (stroke)
+      stroke_width: 0.5
+      fill: "#ffca28"    # Light amber/gold (fill)
+    order: 2
+
+  - name: highways
+    source: [vt_roads, nh_roads]
+    operations:
+      - type: simplify
+        tolerance: 0.0005
+    style:
+      stroke: "#212121"  # Black for highways
+      stroke_width: 1.0
+      fill: none
+    order: 3
+
+output:
+  bounds: auto
+  projection: epsg:4326
+
+  formats:
+    - type: svg
+      quality:
+        - name: medium
+          simplify: 0.001
+      options:
+        per_layer: true
+        combined: true
+        page_size: [12, 18]
+        margin: 0.5

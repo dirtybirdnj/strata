@@ -29,30 +29,22 @@ sources:
     filter:
       min_area_km2: 0.5
 
-  # Quebec municipalities
-  quebec_muni:
-    uri: quebec:municipalities
-    description: Quebec municipal boundaries
-
 layers:
   # Layer 1: Regional background (gray neighboring areas)
   - name: regional_background
-    source: [ny_towns, quebec_muni]
+    source: ny_towns
     style:
       stroke: "#8d6e63"
       stroke_width: 0.5
       fill: none
     order: 1
 
-  # Layer 2: Major water body with island cutouts
+  # Layer 2: Major water body
   - name: major_water
     source: lake_champlain
     operations:
-      - type: identify_islands
-        min_area_km2: 0.1
-        output: champlain_islands
-      - type: subtract
-        target: champlain_islands
+      - type: simplify
+        tolerance: 0.0005
     style:
       stroke: "#0288d1"
       stroke_width: 1.0
