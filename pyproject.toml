@@ -1,0 +1,99 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "strata"
+version = "0.1.0"
+description = "CLI tool for creating plotter-ready vector maps from authoritative GIS sources"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    { name = "dirtybirdnj" }
+]
+keywords = [
+    "gis",
+    "cartography",
+    "maps",
+    "svg",
+    "pen-plotter",
+    "geospatial",
+    "vector",
+    "cli",
+    "tui",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: GIS",
+    "Topic :: Multimedia :: Graphics",
+]
+
+dependencies = [
+    # CLI & TUI
+    "click>=8.0",
+    "textual>=0.40",
+    "rich>=13.0",
+
+    # Config & Validation
+    "pydantic>=2.0",
+    "pyyaml>=6.0",
+
+    # Geospatial
+    "shapely>=2.0",
+    "pyproj>=3.0",
+    "fiona>=1.9",
+    "geopandas>=0.14",
+
+    # HTTP & Caching
+    "httpx>=0.25",
+    "platformdirs>=4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.1",
+    "mypy>=1.0",
+]
+tiles = [
+    # For PMTiles output (requires tippecanoe binary)
+    "pmtiles>=3.0",
+]
+
+[project.scripts]
+strata = "strata.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/dirtybirdnj/strata"
+Documentation = "https://github.com/dirtybirdnj/strata#readme"
+Repository = "https://github.com/dirtybirdnj/strata"
+Issues = "https://github.com/dirtybirdnj/strata/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/strata"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --cov=strata"

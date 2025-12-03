@@ -1,0 +1,112 @@
+# Example Strata Recipe: Lake Champlain Region
+# This recipe creates a plotter-ready map of Lake Champlain and surrounding towns
+
+name: champlain_region
+description: Lake Champlain and surrounding towns, optimized for pen plotting
+version: 1
+
+sources:
+  # Vermont towns
+  vt_towns:
+    uri: census:tiger/2023/vt/cousub
+    description: Vermont county subdivisions (towns/cities)
+
+  # New York towns (filtered to Champlain-adjacent counties)
+  ny_towns:
+    uri: census:tiger/2023/ny/cousub
+    filter:
+      counties: [Clinton, Essex, Franklin, Warren, Washington]
+
+  # Lake Champlain
+  lake_champlain:
+    uri: census:tiger/2023/vt/areawater
+    filter:
+      HYDROID: "110469638395"
+
+  # Vermont lakes (for water cutouts)
+  vt_lakes:
+    uri: census:tiger/2023/vt/areawater
+    filter:
+      min_area_km2: 0.5
+
+  # Quebec municipalities
+  quebec_muni:
+    uri: quebec:municipalities
+    description: Quebec municipal boundaries
+
+layers:
+  # Layer 1: Regional background (gray neighboring areas)
+  - name: regional_background
+    source: [ny_towns, quebec_muni]
+    style:
+      stroke: "#8d6e63"
+      stroke_width: 0.5
+      fill: none
+    order: 1
+
+  # Layer 2: Major water body with island cutouts
+  - name: major_water
+    source: lake_champlain
+    operations:
+      - type: identify_islands
+        min_area_km2: 0.1
+        output: champlain_islands
+      - type: subtract
+        target: champlain_islands
+    style:
+      stroke: "#0288d1"
+      stroke_width: 1.0
+      fill: none
+    order: 2
+
+  # Layer 3: Town boundaries with water cutouts
+  - name: towns
+    source: vt_towns
+    operations:
+      - type: subtract
+        target: [lake_champlain, vt_lakes]
+      - type: simplify
+        tolerance: 0.0001
+        preserve_topology: true
+    style:
+      stroke: "#7b1fa2"
+      stroke_width: 0.75
+      fill: none
+    order: 3
+
+  # Layer 4: Small lakes (visible through town cutouts)
+  - name: small_water
+    source: vt_lakes
+    operations:
+      - type: exclude
+        target: lake_champlain
+    style:
+      stroke: "#1976d2"
+      stroke_width: 0.5
+      fill: none
+    order: 4
+
+output:
+  bounds: auto
+  projection: epsg:32145  # Vermont State Plane
+
+  formats:
+    # SVG for pen plotters
+    - type: svg
+      quality:
+        - name: fine
+          simplify: 0.0001
+        - name: medium
+          simplify: 0.001
+      options:
+        per_layer: true
+        combined: true
+        optimize_for: plotter
+        page_size: [11, 17]
+        margin: 0.5
+
+    # GeoJSON for web viewing
+    - type: geojson
+      options:
+        per_layer: true
+        precision: 6
