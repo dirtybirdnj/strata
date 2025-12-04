@@ -27,18 +27,59 @@ CANVEC_URLS = {
 }
 
 # National Road Network (NRN) URLs by province
+# Statistics Canada NRN: https://www150.statcan.gc.ca/n1/pub/92-500-g/92-500-g2019001-eng.htm
 NRN_URLS = {
-    "qc": "https://geo.statcan.gc.ca/nrn_rrn/qc/nrn_rrn_qc_SHAPE.zip",
-    "on": "https://geo.statcan.gc.ca/nrn_rrn/on/nrn_rrn_on_SHAPE.zip",
-    "nb": "https://geo.statcan.gc.ca/nrn_rrn/nb/nrn_rrn_nb_SHAPE.zip",
+    # Eastern provinces
+    "nl": "https://geo.statcan.gc.ca/nrn_rrn/nl/nrn_rrn_nl_SHAPE.zip",  # Newfoundland & Labrador
+    "pe": "https://geo.statcan.gc.ca/nrn_rrn/pe/nrn_rrn_pe_SHAPE.zip",  # Prince Edward Island
+    "ns": "https://geo.statcan.gc.ca/nrn_rrn/ns/nrn_rrn_ns_SHAPE.zip",  # Nova Scotia
+    "nb": "https://geo.statcan.gc.ca/nrn_rrn/nb/nrn_rrn_nb_SHAPE.zip",  # New Brunswick
+    "qc": "https://geo.statcan.gc.ca/nrn_rrn/qc/nrn_rrn_qc_SHAPE.zip",  # Quebec
+    "on": "https://geo.statcan.gc.ca/nrn_rrn/on/nrn_rrn_on_SHAPE.zip",  # Ontario
+    # Western provinces
+    "mb": "https://geo.statcan.gc.ca/nrn_rrn/mb/nrn_rrn_mb_SHAPE.zip",  # Manitoba
+    "sk": "https://geo.statcan.gc.ca/nrn_rrn/sk/nrn_rrn_sk_SHAPE.zip",  # Saskatchewan
+    "ab": "https://geo.statcan.gc.ca/nrn_rrn/ab/nrn_rrn_ab_SHAPE.zip",  # Alberta
+    "bc": "https://geo.statcan.gc.ca/nrn_rrn/bc/nrn_rrn_bc_SHAPE.zip",  # British Columbia
+    # Territories
+    "yt": "https://geo.statcan.gc.ca/nrn_rrn/yt/nrn_rrn_yt_SHAPE.zip",  # Yukon
+    "nt": "https://geo.statcan.gc.ca/nrn_rrn/nt/nrn_rrn_nt_SHAPE.zip",  # Northwest Territories
+    "nu": "https://geo.statcan.gc.ca/nrn_rrn/nu/nrn_rrn_nu_SHAPE.zip",  # Nunavut
+}
+
+# Province/territory names
+PROVINCE_NAMES = {
+    "nl": "Newfoundland and Labrador",
+    "pe": "Prince Edward Island",
+    "ns": "Nova Scotia",
+    "nb": "New Brunswick",
+    "qc": "Quebec",
+    "on": "Ontario",
+    "mb": "Manitoba",
+    "sk": "Saskatchewan",
+    "ab": "Alberta",
+    "bc": "British Columbia",
+    "yt": "Yukon",
+    "nt": "Northwest Territories",
+    "nu": "Nunavut",
 }
 
 # Size estimates in MB
 SIZE_ESTIMATES = {
     "canvec:hydro": 150.0,
+    "nrn:nl": 25.0,
+    "nrn:pe": 5.0,
+    "nrn:ns": 35.0,
+    "nrn:nb": 50.0,
     "nrn:qc": 200.0,
     "nrn:on": 350.0,
-    "nrn:nb": 50.0,
+    "nrn:mb": 80.0,
+    "nrn:sk": 100.0,
+    "nrn:ab": 150.0,
+    "nrn:bc": 200.0,
+    "nrn:yt": 10.0,
+    "nrn:nt": 15.0,
+    "nrn:nu": 5.0,
 }
 
 

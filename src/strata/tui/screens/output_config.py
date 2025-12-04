@@ -177,13 +177,26 @@ class OutputConfigScreen(Screen):
         """Build the recipe dictionary from wizard data."""
         data = self.app.recipe_data
 
-        # Build sources section
+        # Build sources section and create URI -> source name mapping
         sources = {}
+        uri_to_name = {}
         for uri, info in data.get("sources", {}).items():
             # Generate a clean source name from URI
-            parts = uri.split("/")
-            if len(parts) >= 2:
-                name = f"{parts[-2]}_{parts[-1]}"
+            # census:tiger/2023/vt/cousub -> vt_cousub
+            # quebec:municipalities -> quebec_municipalities
+            # canada:canvec/hydro -> canvec_hydro
+            parts = uri.split(":")
+            if len(parts) == 2:
+                scheme = parts[0]
+                path_parts = parts[1].split("/")
+                if scheme == "census" and len(path_parts) >= 4:
+                    # census:tiger/2023/vt/cousub -> vt_cousub
+                    name = f"{path_parts[2]}_{path_parts[3]}"
+                elif len(path_parts) >= 2:
+                    # quebec:municipalities -> quebec_municipalities, canada:nrn/qc -> nrn_qc
+                    name = "_".join(path_parts[-2:]) if len(path_parts) > 1 else f"{scheme}_{path_parts[0]}"
+                else:
+                    name = f"{scheme}_{path_parts[0]}"
             else:
                 name = uri.replace(":", "_").replace("/", "_")
 
@@ -191,13 +204,18 @@ class OutputConfigScreen(Screen):
                 "uri": uri,
                 "description": info.get("description", info.get("name", "")),
             }
+            uri_to_name[uri] = name
 
         # Build layers section
         layers = []
         for layer in data.get("layers", []):
+            # Map the source URI to the source name we created
+            source_uri = layer.get("source", "")
+            source_name = uri_to_name.get(source_uri, layer["name"])
+
             layer_config = {
                 "name": layer["name"],
-                "source": layer["name"],  # Match source name
+                "source": source_name,
                 "operations": layer.get("operations", [{"type": "simplify", "tolerance": 0.0003}]),
                 "style": layer.get("style", {}),
                 "order": layer["order"],

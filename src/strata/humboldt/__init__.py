@@ -6,7 +6,7 @@ thought, is a unity in diversity of phenomena."
     — Alexander von Humboldt, Cosmos
 """
 
-from .geometry import subtract, clip, merge, simplify, buffer, extract_islands, remove_holes, dissolve_by, clean_geometry
+from .geometry import subtract, clip, merge, simplify, buffer, extract_islands, remove_holes, dissolve_by, clean_geometry, merge_touching
 from .projection import transform_crs
 
 __all__ = [
@@ -19,6 +19,7 @@ __all__ = [
     "remove_holes",
     "dissolve_by",
     "clean_geometry",
+    "merge_touching",
     "transform_crs",
     "process_layer",
 ]
@@ -107,5 +108,10 @@ def process_layer(
             # Fix topology issues and optionally remove slivers
             buffer_dist = op.get("buffer_distance", 0.0)
             result = clean_geometry(result, buffer_distance=buffer_dist)
+
+        elif op_type == "merge_touching":
+            # Merge features that touch or overlap (for cross-border features)
+            buffer_dist = op.get("buffer_distance", 0.0001)
+            result = merge_touching(result, buffer_distance=buffer_dist)
 
     return result

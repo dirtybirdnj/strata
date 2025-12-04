@@ -137,6 +137,37 @@ QUEBEC_LAYERS = {
     },
 }
 
+# Canada-wide data layers (CanVec and NRN)
+CANADA_LAYERS = {
+    "canvec_hydro": {
+        "name": "CanVec Hydro (1M)",
+        "description": "Lakes and rivers from Natural Resources Canada CanVec 1:1,000,000",
+        "geometry": "polygon",
+        "uri": "canada:canvec/hydro",
+        "size_mb": 150,
+    },
+}
+
+# National Road Network by province/territory
+NRN_PROVINCES = {
+    # Eastern
+    "nl": {"name": "Newfoundland & Labrador", "size_mb": 25},
+    "pe": {"name": "Prince Edward Island", "size_mb": 5},
+    "ns": {"name": "Nova Scotia", "size_mb": 35},
+    "nb": {"name": "New Brunswick", "size_mb": 50},
+    "qc": {"name": "Quebec", "size_mb": 200},
+    "on": {"name": "Ontario", "size_mb": 350},
+    # Western
+    "mb": {"name": "Manitoba", "size_mb": 80},
+    "sk": {"name": "Saskatchewan", "size_mb": 100},
+    "ab": {"name": "Alberta", "size_mb": 150},
+    "bc": {"name": "British Columbia", "size_mb": 200},
+    # Territories
+    "yt": {"name": "Yukon", "size_mb": 10},
+    "nt": {"name": "Northwest Territories", "size_mb": 15},
+    "nu": {"name": "Nunavut", "size_mb": 5},
+}
+
 
 @dataclass
 class CatalogEntry:
@@ -195,11 +226,47 @@ def build_quebec_catalog() -> list[CatalogEntry]:
     return entries
 
 
+def build_canada_catalog() -> list[CatalogEntry]:
+    """Build catalog entries for Canada-wide data sources."""
+    entries = []
+
+    # CanVec hydro
+    for layer_code, layer_info in CANADA_LAYERS.items():
+        entries.append(
+            CatalogEntry(
+                uri=layer_info["uri"],
+                name=layer_info["name"],
+                description=layer_info["description"],
+                geometry=layer_info["geometry"],
+                source_type="canada",
+                region="Canada",
+                estimated_size_mb=layer_info.get("size_mb"),
+            )
+        )
+
+    # NRN roads by province
+    for prov_code, prov_info in NRN_PROVINCES.items():
+        entries.append(
+            CatalogEntry(
+                uri=f"canada:nrn/{prov_code}",
+                name=f"NRN Roads - {prov_info['name']}",
+                description=f"National Road Network for {prov_info['name']} (highways, arterials)",
+                geometry="line",
+                source_type="canada",
+                region=prov_info["name"],
+                estimated_size_mb=prov_info.get("size_mb"),
+            )
+        )
+
+    return entries
+
+
 def get_full_catalog() -> list[CatalogEntry]:
     """Get the complete data source catalog."""
     entries = []
     entries.extend(build_census_catalog())
     entries.extend(build_quebec_catalog())
+    entries.extend(build_canada_catalog())
     return entries
 
 
@@ -226,4 +293,17 @@ def get_layers_for_source(source_type: str) -> list[tuple[str, str, str]]:
             (code, info["name"], info["description"])
             for code, info in QUEBEC_LAYERS.items()
         ]
+    elif source_type == "canada":
+        layers = [
+            (code, info["name"], info["description"])
+            for code, info in CANADA_LAYERS.items()
+        ]
+        # Add NRN provinces
+        for prov_code, prov_info in NRN_PROVINCES.items():
+            layers.append((
+                f"nrn/{prov_code}",
+                f"NRN Roads - {prov_info['name']}",
+                f"National Road Network for {prov_info['name']}",
+            ))
+        return layers
     return []

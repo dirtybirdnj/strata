@@ -229,6 +229,86 @@ def dissolve_by(
     return dissolved
 
 
+def merge_touching(
+    gdf: gpd.GeoDataFrame,
+    buffer_distance: float = 0.0001,
+) -> gpd.GeoDataFrame:
+    """
+    Merge features whose geometries touch or overlap.
+
+    This is essential for cross-border features like Lake Memphremagog
+    where the US and Canadian portions need to be merged into a single feature.
+
+    Uses a union-find/spatial grouping approach:
+    1. Apply tiny buffer to handle near-touching geometries
+    2. Find connected components (features that touch/overlap)
+    3. Merge each connected component into a single feature
+
+    Args:
+        gdf: GeoDataFrame with polygon geometries
+        buffer_distance: Small buffer to apply for near-touching features
+                        (default 0.0001 degrees ≈ 10m)
+
+    Returns:
+        GeoDataFrame with touching features merged
+    """
+    from shapely.ops import unary_union
+
+    if len(gdf) <= 1:
+        return gdf
+
+    # Apply small buffer to handle near-touching
+    buffered = gdf.geometry.buffer(buffer_distance)
+
+    # Build spatial index and find touching groups
+    # Union-find approach: group features that intersect
+    groups = list(range(len(gdf)))  # Initially each feature is its own group
+
+    def find(x):
+        if groups[x] != x:
+            groups[x] = find(groups[x])
+        return groups[x]
+
+    def union(x, y):
+        px, py = find(x), find(y)
+        if px != py:
+            groups[px] = py
+
+    # Check all pairs for intersection (use spatial index for efficiency)
+    sindex = buffered.sindex
+    for i, geom in enumerate(buffered):
+        candidates = list(sindex.intersection(geom.bounds))
+        for j in candidates:
+            if i < j and buffered.iloc[i].intersects(buffered.iloc[j]):
+                union(i, j)
+
+    # Group features by their root
+    from collections import defaultdict
+    group_members = defaultdict(list)
+    for i in range(len(gdf)):
+        group_members[find(i)].append(i)
+
+    # Merge each group
+    merged_features = []
+    for members in group_members.values():
+        if len(members) == 1:
+            # Single feature, keep as-is
+            row = gdf.iloc[members[0]].to_dict()
+            merged_features.append(row)
+        else:
+            # Multiple features - merge geometries
+            geometries = [gdf.iloc[i].geometry for i in members]
+            merged_geom = unary_union(geometries)
+
+            # Use attributes from the largest feature
+            largest_idx = max(members, key=lambda i: gdf.iloc[i].geometry.area)
+            row = gdf.iloc[largest_idx].to_dict()
+            row["geometry"] = merged_geom
+            merged_features.append(row)
+
+    return gpd.GeoDataFrame(merged_features, crs=gdf.crs)
+
+
 def clean_geometry(
     gdf: gpd.GeoDataFrame,
     buffer_distance: float = 0.0,

@@ -1,11 +1,12 @@
 # Lake Champlain Regional Map with Quebec
 # Extends north to show Quebec municipalities along the US-Canada border
-# Demonstrates tri-national data integration: VT, NY, and Quebec
+# Demonstrates cross-border data integration: VT, NY, and Quebec
+# Includes Lake Memphremagog with merge_touching for cross-border lake merging
 #
 # Optimized for pen plotter output
 
 name: lake_champlain_quebec_12x24
-description: Lake Champlain region including Quebec municipalities
+description: Lake Champlain region including Quebec municipalities and cross-border lakes
 version: 1
 
 sources:
@@ -24,7 +25,7 @@ sources:
     uri: quebec:municipalities
     description: Quebec municipal boundaries
 
-  # Lake Champlain
+  # Lake Champlain (VT + NY)
   lake_champlain_vt:
     uri: census:tiger/2023/vt/areawater
     description: Lake Champlain (VT portion)
@@ -36,6 +37,11 @@ sources:
     description: Lake Champlain (NY portion)
     filter:
       FULLNAME_contains: Champlain
+
+  # Quebec hydro (for cross-border lakes like Memphremagog)
+  quebec_hydro:
+    uri: canada:canvec/hydro
+    description: Quebec lakes from CanVec (includes Memphremagog north portion)
 
   # Water bodies for cutouts
   vt_water:
@@ -126,7 +132,25 @@ layers:
       fill: "#bbdefb"
     order: 4
 
-  # Layer 5: US routes
+  # Layer 4b: Lake Memphremagog (cross-border: VT + Quebec)
+  # Uses merge_touching to combine the US and Canadian portions
+  - name: lake_memphremagog
+    source: [vt_water, quebec_hydro]
+    filter:
+      min_area_km2: 5  # Filter to major lakes only
+    operations:
+      - type: merge_touching  # Merge cross-border lake portions
+        buffer_distance: 0.001  # ~100m buffer for matching
+      - type: clean
+      - type: simplify
+        tolerance: 0.0002
+    style:
+      stroke: "#0d47a1"
+      stroke_width: 0.5
+      fill: "#90caf9"
+    order: 5
+
+  # Layer 6: US routes
   - name: us_routes
     source: [vt_us_routes, ny_us_routes]
     operations:
@@ -136,9 +160,9 @@ layers:
       stroke: "#1976d2"
       stroke_width: 0.5
       fill: none
-    order: 5
+    order: 6
 
-  # Layer 6: Interstates
+  # Layer 7: Interstates
   - name: interstates
     source: [vt_interstates, ny_interstates]
     operations:
@@ -148,11 +172,11 @@ layers:
       stroke: "#d32f2f"
       stroke_width: 0.7
       fill: none
-    order: 6
+    order: 7
 
 output:
-  # Extended bounds to include Quebec (45.2 -> 45.5 north)
-  bounds: [-73.84, 43.50, -72.40, 45.50]
+  # Extended bounds: north for Quebec, east for Lake Memphremagog
+  bounds: [-73.84, 43.50, -72.00, 45.50]
   projection: epsg:4326
 
   formats:

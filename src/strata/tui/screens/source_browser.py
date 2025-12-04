@@ -21,6 +21,8 @@ from ..catalog import (
     US_STATES,
     TIGER_LAYERS,
     QUEBEC_LAYERS,
+    CANADA_LAYERS,
+    NRN_PROVINCES,
     get_states_list,
 )
 
@@ -188,6 +190,34 @@ class SourceBrowserScreen(Screen):
             quebec_node.add_leaf(
                 f"{layer_info['name']}",
                 data={"uri": uri, "info": layer_info, "state": "Quebec"},
+            )
+
+        # Canada-wide data (CanVec, NRN)
+        canada_node = tree.root.add("Canada (National)", expand=False)
+
+        # CanVec hydro
+        canvec_node = canada_node.add("CanVec (Natural Resources Canada)", expand=False)
+        for layer_code, layer_info in CANADA_LAYERS.items():
+            canvec_node.add_leaf(
+                f"{layer_info['name']}",
+                data={"uri": layer_info["uri"], "info": layer_info, "state": "Canada"},
+            )
+
+        # NRN roads by province
+        nrn_node = canada_node.add("NRN Roads (Statistics Canada)", expand=False)
+        for prov_code, prov_info in NRN_PROVINCES.items():
+            uri = f"canada:nrn/{prov_code}"
+            nrn_node.add_leaf(
+                f"{prov_info['name']} Roads",
+                data={
+                    "uri": uri,
+                    "info": {
+                        "name": f"NRN Roads - {prov_info['name']}",
+                        "description": f"National Road Network for {prov_info['name']}",
+                        "geometry": "line",
+                    },
+                    "state": prov_info["name"],
+                },
             )
 
         # Custom sources section
