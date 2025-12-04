@@ -207,11 +207,14 @@ output:
 | vt-geodata Feature | Strata Implementation |
 |--------------------|----------------------|
 | VT towns with water cutouts | `subtract` operation |
-| NY/NH/MA towns with water cutouts | `subtract` operation |
+| NY/NH/MA/ME towns with water cutouts | `subtract` operation (ME has no cutouts) |
 | Lake Champlain (multi-county merge) | `dissolve` by HYDROID |
 | Lake Memphremagog (cross-border) | `merge_touching` operation |
-| Quebec municipalities | `quebec:municipalities` source |
+| Quebec municipalities with water cutouts | `subtract` quebec_hydro ✅ |
 | Quebec MRC backgrounds | `quebec:mrc` source |
+| ME (Maine) backgrounds and towns | ✅ Added to master recipe |
+| VT state boundary (thick green) | ✅ Order 100, stroke 2.5 |
+| Linear water (rivers) all states | ✅ VT/NY/NH/MA/ME rivers |
 | Interstate filtering | `filter: {RTTYP: "I"}` |
 | US highway filtering | `filter: {RTTYP: "U"}` |
 | State route filtering | `filter: {RTTYP: "S"}` |
@@ -224,15 +227,9 @@ output:
 
 | vt-geodata Feature | Status | Notes |
 |--------------------|--------|-------|
-| Quebec municipality water cutouts | ❌ Missing | Need to subtract CanVec hydro |
-| Linear water (rivers) | 🟡 Partial | Sources exist, not in examples |
-| Richelieu corridor | ❌ Missing | Need OSM or NHN data |
+| Richelieu corridor | ❌ Missing | Requires NHN data source handler |
+| Missisquoi Bay Quebec waters | ❌ Missing | Cross-border hydro filtering |
 | County-based color maps | 🟡 Partial | `vary_fill` exists but limited |
-| VT state boundary (thick) | 🟡 Easy | Just add layer with thick stroke |
-| ME towns | ❌ Missing | Not in any example yet |
-| Missisquoi Bay Quebec waters | ❌ Missing | Cross-border hydro |
-| VT rivers (all counties) | ❌ Missing | Need linearwater + dissolve |
-| VT lakes (all counties) | ❌ Missing | Need areawater union |
 
 ### vt-geodata Layers to Replicate
 
@@ -249,52 +246,39 @@ From `generate_plotter_svgs.py`, the complete layer stack is:
 
 ## Work Items by Priority
 
-### High Priority (vt-geodata Parity)
+### High Priority (vt-geodata Parity) - MOSTLY DONE ✅
 
-1. **Add ME support to examples**
-   - Add `census:tiger/2023/me/cousub` and `me/county`
-   - ME doesn't need water cutouts (sparsely populated)
+1. ~~**Add ME support to examples**~~ ✅ DONE
+2. ~~**Quebec municipality water cutouts**~~ ✅ DONE
+3. ~~**Linear water (rivers)**~~ ✅ DONE (VT, NY, NH, MA, ME)
+4. ~~**VT state boundary layer**~~ ✅ DONE (order 100, thick green)
 
-2. **Quebec municipality water cutouts**
-   - Subtract CanVec hydro from municipalities
-   - Match vt-geodata behavior
+5. **Richelieu corridor** ❌ REMAINING
+   - Requires adding NHN (National Hydro Network) data source
+   - vt-geodata uses `nhn_richelieu.zip` from GeoGratis
+   - Would need new handler in `thoreau/canada.py`
 
-3. **Linear water (rivers)**
-   - Add `linearwater` sources for VT, NY, NH, MA
-   - Dissolve fragmented river segments
-
-4. **VT state boundary layer**
-   - Add thick green boundary as top layer
-
-5. **Richelieu corridor**
-   - Source options: OSM, NHN, or custom
-   - Connects Lake Champlain to St. Lawrence
+6. **Missisquoi Bay Quebec waters** 🟡 OPTIONAL
+   - Cross-border water filtering
+   - Could use bounding box on CanVec hydro
 
 ### Medium Priority (Polish)
 
-6. **County-based color maps**
+7. **County-based color maps**
    - Implement `vary_fill: by_county` or similar
    - Match vt-geodata VT_COUNTY_COLORS
 
-7. **Improve TUI wizard**
+8. **Improve TUI wizard**
    - Add bounds preview map
    - Better layer configuration UI
 
-8. **Add missing CLI commands**
+9. **Add missing CLI commands**
    - `strata sources list/search/info`
    - `strata fetch`
 
 ### Lower Priority (Nice to Have)
 
-9. **Historical TUI integration**
-   - Add quotes to welcome screen
-   - Smith quote about strata
-
-10. **Interactive timeline**
-    - Visualize all 5 figures' lives
-    - Could be HTML or TUI
-
-11. **More example recipes**
+10. **More example recipes**
     - Other regions (Pacific NW, New England, etc.)
     - International examples
 
