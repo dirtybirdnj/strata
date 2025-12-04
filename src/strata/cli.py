@@ -149,11 +149,169 @@ def fetch(recipe: str, source: tuple[str, ...], force: bool):
 
 @main.command()
 @click.argument("recipe", type=click.Path(exists=True))
-def preview(recipe: str):
-    """Quick preview of a recipe's bounds and layers."""
-    # TODO: Implement preview
-    console.print(f"[bold]Preview:[/] {recipe}")
-    console.print("[yellow]Preview command not yet implemented[/]")
+@click.option("--bounds", "-b", help="Override bounds: 'minx,miny,maxx,maxy'")
+@click.option("--open", "open_svg", is_flag=True, help="Open a quick SVG preview")
+@click.option("--output", "-o", type=click.Path(), help="Save preview SVG to path")
+def preview(recipe: str, bounds: str | None, open_svg: bool, output: str | None):
+    """Preview what data falls within the recipe bounds.
+
+    Shows feature counts per source/layer within the bounding box.
+    Use --open to generate and view a quick SVG preview.
+
+    Examples:
+        strata preview recipe.yaml
+        strata preview recipe.yaml --bounds="-73.5,42.7,-71.5,45.0"
+        strata preview recipe.yaml --open
+    """
+    from strata.maury import Recipe, Pipeline
+    import geopandas as gpd
+    from shapely.geometry import box
+
+    console.print(f"\n[bold]Preview:[/] {recipe}\n")
+
+    # Load recipe
+    try:
+        r = Recipe.from_file(recipe)
+    except Exception as e:
+        console.print(f"[red]Error loading recipe:[/] {e}")
+        raise SystemExit(1)
+
+    # Determine bounds
+    if bounds:
+        # Parse CLI bounds
+        try:
+            bbox = [float(x.strip()) for x in bounds.split(",")]
+            if len(bbox) != 4:
+                raise ValueError("Need exactly 4 values")
+        except ValueError as e:
+            console.print(f"[red]Invalid bounds format:[/] {e}")
+            console.print("Expected: minx,miny,maxx,maxy (e.g., -73.5,42.7,-71.5,45.0)")
+            raise SystemExit(1)
+    elif isinstance(r.output.bounds, list) and len(r.output.bounds) == 4:
+        bbox = r.output.bounds
+    else:
+        console.print("[yellow]No bounds specified in recipe or CLI.[/]")
+        console.print("Use --bounds or set output.bounds in recipe.")
+        console.print("\nShowing recipe summary instead:\n")
+        console.print(f"  [bold]Sources:[/] {len(r.sources)}")
+        for name in r.sources:
+            console.print(f"    - {name}")
+        console.print(f"  [bold]Layers:[/] {len(r.layers)}")
+        for layer in r.layers:
+            console.print(f"    - {layer.name}")
+        return
+
+    console.print(f"[bold]Bounds:[/] [{bbox[0]:.3f}, {bbox[1]:.3f}, {bbox[2]:.3f}, {bbox[3]:.3f}]")
+    console.print(f"        (west, south, east, north)\n")
+
+    # Prepare sources
+    pipeline = Pipeline(r)
+    try:
+        paths = pipeline.prepare(force=False)
+    except Exception as e:
+        console.print(f"[red]Error preparing sources:[/] {e}")
+        raise SystemExit(1)
+
+    # Load and analyze each source
+    clip_box = box(*bbox)
+
+    console.print("[bold]Sources within bounds:[/]")
+    source_stats = {}
+
+    for name, path in paths.items():
+        try:
+            gdf = gpd.read_file(path)
+            total = len(gdf)
+
+            # Count features intersecting bounds
+            intersecting = gdf[gdf.geometry.intersects(clip_box)]
+            inside_count = len(intersecting)
+
+            # Clip and count what remains
+            clipped = gdf.clip(clip_box)
+            clipped = clipped[~clipped.geometry.is_empty]
+            clipped_count = len(clipped)
+
+            source_stats[name] = {
+                "total": total,
+                "intersecting": inside_count,
+                "clipped": clipped_count,
+                "gdf": clipped,
+            }
+
+            pct = (inside_count / total * 100) if total > 0 else 0
+            console.print(f"  {name}: {inside_count}/{total} features ({pct:.0f}%) → {clipped_count} after clip")
+
+        except Exception as e:
+            console.print(f"  [red]{name}: Error - {e}[/]")
+
+    # Generate preview SVG if requested
+    if open_svg or output:
+        from pathlib import Path
+        from strata.kelley import SVGExporter
+        import tempfile
+
+        console.print("\n[bold]Generating preview...[/]")
+
+        # Create exporter
+        exporter = SVGExporter(width=11, height=8.5, units="in", margin=0.5)
+
+        # Separate polygon sources from line sources
+        # Polygons (towns) get fills, lines (roads) just get strokes
+        polygon_colors = ["#81c784", "#64b5f6", "#ffca28", "#ef9a9a", "#ce93d8", "#80cbc4"]
+        line_color = "#424242"
+
+        layers_dict = {}
+        polygon_idx = 0
+
+        # First pass: add polygon layers (towns)
+        for name, stats in source_stats.items():
+            if stats["clipped"] > 0:
+                gdf = stats["gdf"]
+                # Check if this is polygon data (towns) vs line data (roads)
+                geom_types = gdf.geometry.geom_type.unique()
+                is_polygon = any(t in ["Polygon", "MultiPolygon"] for t in geom_types)
+
+                if is_polygon:
+                    color = polygon_colors[polygon_idx % len(polygon_colors)]
+                    polygon_idx += 1
+                    layers_dict[name] = (gdf, {
+                        "stroke": "#37474f",
+                        "stroke_width": 0.4,
+                        "fill": color,
+                    })
+
+        # Second pass: add line layers (roads) on top
+        for name, stats in source_stats.items():
+            if stats["clipped"] > 0:
+                gdf = stats["gdf"]
+                geom_types = gdf.geometry.geom_type.unique()
+                is_line = any(t in ["LineString", "MultiLineString"] for t in geom_types)
+
+                if is_line:
+                    layers_dict[name] = (gdf, {
+                        "stroke": line_color,
+                        "stroke_width": 0.3,
+                        "fill": "none",
+                        "vary_fill": False,
+                    })
+
+        if not layers_dict:
+            console.print("[yellow]No features within bounds to preview.[/]")
+            return
+
+        # Determine output path
+        if output:
+            svg_path = Path(output)
+        else:
+            svg_path = Path(tempfile.gettempdir()) / "strata_preview.svg"
+
+        exporter.export_multi_layer(layers_dict, svg_path, bounds=tuple(bbox))
+        console.print(f"[green]✓[/] Preview saved to: {svg_path}")
+
+        if open_svg:
+            import subprocess
+            subprocess.run(["open", str(svg_path)])
 
 
 @main.command()

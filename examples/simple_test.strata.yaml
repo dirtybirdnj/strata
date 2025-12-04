@@ -1,6 +1,6 @@
 # Simple test recipe - uses only per-state TIGER files
 name: simple_test
-description: Basic test with VT and NH towns
+description: Basic test with VT, NH, and NY towns
 version: 1
 
 sources:
@@ -12,6 +12,10 @@ sources:
     uri: census:tiger/2023/nh/cousub
     description: New Hampshire towns
 
+  ny_towns:
+    uri: census:tiger/2023/ny/cousub
+    description: New York towns
+
   vt_roads:
     uri: census:tiger/2023/vt/prisecroads
     description: Vermont primary and secondary roads
@@ -20,7 +24,22 @@ sources:
     uri: census:tiger/2023/nh/prisecroads
     description: New Hampshire primary and secondary roads
 
+  ny_roads:
+    uri: census:tiger/2023/ny/prisecroads
+    description: New York primary and secondary roads
+
 layers:
+  - name: new_york
+    source: ny_towns
+    operations:
+      - type: simplify
+        tolerance: 0.001
+    style:
+      stroke: "#1565c0"  # Dark blue (stroke)
+      stroke_width: 0.5
+      fill: "#64b5f6"    # Light blue (fill)
+    order: 1
+
   - name: vermont
     source: vt_towns
     operations:
@@ -30,7 +49,7 @@ layers:
       stroke: "#1b5e20"  # Dark green (stroke)
       stroke_width: 0.75
       fill: "#66bb6a"    # Light green (fill)
-    order: 1
+    order: 2
 
   - name: new_hampshire
     source: nh_towns
@@ -41,10 +60,10 @@ layers:
       stroke: "#f57f17"  # Dark amber (stroke)
       stroke_width: 0.5
       fill: "#ffca28"    # Light amber/gold (fill)
-    order: 2
+    order: 3
 
   - name: highways
-    source: [vt_roads, nh_roads]
+    source: [vt_roads, nh_roads, ny_roads]
     operations:
       - type: simplify
         tolerance: 0.0005
@@ -52,10 +71,12 @@ layers:
       stroke: "#212121"  # Black for highways
       stroke_width: 1.0
       fill: none
-    order: 3
+    order: 4
 
 output:
-  bounds: auto
+  # Bounding box: [minx, miny, maxx, maxy] in lon/lat
+  # This covers Vermont plus ~30 miles into neighboring states
+  bounds: [-73.7, 42.6, -71.4, 45.2]
   projection: epsg:4326
 
   formats:

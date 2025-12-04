@@ -189,6 +189,32 @@ class Pipeline:
             self.layers[name] = gdf
             console.print(f"  [green]✓[/] {name}: {len(gdf)} features")
 
+        # Clip all layers to output bounds if specified
+        self._clip_to_bounds()
+
+    def _clip_to_bounds(self) -> None:
+        """Clip all layers to the output bounds if explicitly specified."""
+        bounds_config = self.recipe.output.bounds
+
+        # Only clip if bounds are explicitly specified (not "auto")
+        if bounds_config == "auto" or bounds_config is None:
+            return
+
+        if isinstance(bounds_config, list) and len(bounds_config) == 4:
+            from shapely.geometry import box
+            clip_box = box(*bounds_config)
+
+            console.print(f"\n[bold]Clipping to bounds:[/] {bounds_config}")
+
+            for name, gdf in self.layers.items():
+                original_count = len(gdf)
+                # Clip geometries to the bounding box
+                clipped = gdf.clip(clip_box)
+                # Remove empty geometries
+                clipped = clipped[~clipped.geometry.is_empty]
+                self.layers[name] = clipped
+                console.print(f"  {name}: {original_count} → {len(clipped)} features")
+
     def export(self, output_dir: str | Path) -> list[Path]:
         """
         Export processed layers to output formats.
