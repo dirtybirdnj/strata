@@ -94,9 +94,20 @@ class Pipeline:
         """
         console.print("\n[bold]Loading sources:[/]")
 
+        # Get bounds for early spatial filtering if specified
+        bounds_config = self.recipe.output.bounds
+        bbox = None
+        if isinstance(bounds_config, list) and len(bounds_config) == 4:
+            bbox = tuple(bounds_config)
+
         for name, path in paths.items():
             console.print(f"  Loading {name}...")
-            gdf = gpd.read_file(path)
+
+            # Use bbox parameter to filter on load (reduces memory for large datasets)
+            if bbox:
+                gdf = gpd.read_file(path, bbox=bbox)
+            else:
+                gdf = gpd.read_file(path)
 
             # Apply filters if specified
             source_config = self.recipe.sources.get(name)
