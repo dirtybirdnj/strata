@@ -19,8 +19,16 @@ Public domain and freely licensed images related to Strata's historical narrativ
 | File | Subject | Source | License |
 |------|---------|--------|---------|
 | `smith_1815_map.jpg` | William Smith's 1815 Geological Map of England | [NASA Earth Observatory](https://www.earthobservatory.nasa.gov/images/8733/william-smiths-geological-map-of-england) | Public Domain (original 1815) |
+| `smith_1815_map_nhm.pdf` | William Smith's 1815 Map (High-res PDF, 6.8MB) | [Natural History Museum](https://www.nhm.ac.uk/discover/first-geological-map-of-britain.html) | Public Domain (original 1815) |
 | `humboldt_chimborazo.jpg` | Chimborazo cross-section ("Le Chimborazo, vu depuis le plateau de Tapia") | [Internet Archive / David Rumsey Collection](https://archive.org/details/dr_xxv-le-chimborazo-vu-depuis-le-plateau-de-tapia-200-10555028) | CC BY-SA 3.0 |
 | `hull_house_maps_1895.pdf` | Hull House Maps and Papers (1895) - Complete book with nationality and wage maps | [Internet Archive](https://archive.org/details/hullhousemapspap00unse) | Public Domain (published 1895) |
+
+### Historical Publications
+
+| File | Subject | Source | License |
+|------|---------|--------|---------|
+| `smith_strata_identified_fossils_1816.pdf` | "Strata Identified by Organized Fossils" (1816-1819, 23.2MB) - 18 hand-colored fossil plates | [Internet Archive / Smithsonian](https://archive.org/details/Strataidentifie00Smit) | Public Domain |
+| `smith_memoirs_phillips_1844.pdf` | "Memoirs of William Smith" by John Phillips (1844, 22.1MB) - Primary biography | [Internet Archive](https://archive.org/details/memoirsofwilliam00philrich) | Public Domain |
 
 ## Module Associations
 
@@ -60,7 +68,10 @@ For more detailed biographical information about each figure, see the `DEEP_DIVE
 
 ### William Smith
 - Portrait: https://www.usgs.gov/media/images/william-smith
-- 1815 Map: https://www.earthobservatory.nasa.gov/images/8733/william-smiths-geological-map-of-england
+- 1815 Map (NASA): https://www.earthobservatory.nasa.gov/images/8733/william-smiths-geological-map-of-england
+- 1815 Map (NHM PDF): https://www.nhm.ac.uk/discover/first-geological-map-of-britain.html
+- Strata Identified by Organized Fossils: https://archive.org/details/Strataidentifie00Smit
+- Memoirs of William Smith (Phillips 1844): https://archive.org/details/memoirsofwilliam00philrich
 
 ### Henry David Thoreau
 - 1856 Daguerreotype: https://commons.wikimedia.org/wiki/File:Henry_David_Thoreau.jpg
