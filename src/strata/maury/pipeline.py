@@ -122,13 +122,29 @@ class Pipeline:
         gdf: gpd.GeoDataFrame,
         filter_config: dict[str, Any],
     ) -> gpd.GeoDataFrame:
-        """Apply filter configuration to a GeoDataFrame."""
+        """
+        Apply filter configuration to a GeoDataFrame.
+
+        Supported filter types:
+        - min_area_km2: Minimum area in square kilometers
+        - max_area_km2: Maximum area in square kilometers
+        - {column}: Direct column match (exact match or list of values)
+        - {column}_contains: Substring match (case-insensitive)
+        - {column}_in: List of values to match
+
+        Examples:
+            filter:
+              HYDROID: "110469638395"           # Exact match
+              MTFCC: ["S1100", "S1200"]         # Match any in list
+              FULLNAME_contains: "Champlain"   # Substring match
+              RTTYP: "I"                        # Interstate roads only
+        """
         result = gdf
+        original_count = len(result)
 
         for key, value in filter_config.items():
             if key == "min_area_km2":
                 # Filter by minimum area
-                # Convert to equal area projection for accurate area calc
                 temp = result.to_crs("epsg:6933")  # Equal area projection
                 area_km2 = temp.geometry.area / 1e6
                 result = result[area_km2 >= value]
@@ -137,6 +153,21 @@ class Pipeline:
                 temp = result.to_crs("epsg:6933")
                 area_km2 = temp.geometry.area / 1e6
                 result = result[area_km2 <= value]
+
+            elif key.endswith("_contains"):
+                # Substring match (case-insensitive)
+                column = key[:-9]  # Remove "_contains" suffix
+                if column in result.columns:
+                    result = result[
+                        result[column].str.contains(value, case=False, na=False)
+                    ]
+
+            elif key.endswith("_in"):
+                # Explicit list match
+                column = key[:-3]  # Remove "_in" suffix
+                if column in result.columns:
+                    values = value if isinstance(value, list) else [value]
+                    result = result[result[column].isin(values)]
 
             elif key == "counties":
                 # Filter by county names (for TIGER data)
@@ -148,11 +179,17 @@ class Pipeline:
                     pass
 
             elif key in result.columns:
-                # Direct column filter
+                # Direct column filter (exact match or list)
                 if isinstance(value, list):
                     result = result[result[key].isin(value)]
                 else:
                     result = result[result[key] == value]
+
+        # Log filtering result if significant reduction
+        if len(result) < original_count:
+            console.print(
+                f"    [dim]Filtered: {original_count} → {len(result)} features[/]"
+            )
 
         return result
 

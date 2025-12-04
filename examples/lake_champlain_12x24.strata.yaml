@@ -6,6 +6,7 @@
 # - Lake Champlain with all islands visible
 # - Vermont and New York towns along the shoreline
 # - Water cutouts showing lake shoreline detail
+# - Interstate and US highway network with road classification
 # - Taller aspect ratio (1:2) for the north-south lake orientation
 # - Optimized for pen plotter output
 
@@ -24,25 +25,67 @@ sources:
     uri: census:tiger/2023/ny/cousub
     description: New York county subdivisions (Clinton, Essex, Franklin, Warren, Washington)
 
-  # Vermont water bodies
+  # Lake Champlain only (filtered by name)
+  lake_champlain_vt:
+    uri: census:tiger/2023/vt/areawater
+    description: Lake Champlain (VT portion)
+    filter:
+      FULLNAME_contains: Champlain
+
+  lake_champlain_ny:
+    uri: census:tiger/2023/ny/areawater
+    description: Lake Champlain (NY portion)
+    filter:
+      FULLNAME_contains: Champlain
+
+  # All Vermont water bodies (for town cutouts)
   vt_water:
     uri: census:tiger/2023/vt/areawater
-    description: Vermont lakes, ponds, reservoirs (includes Lake Champlain VT portion)
+    description: Vermont lakes, ponds, reservoirs
 
-  # New York water bodies
+  # All New York water bodies (for town cutouts)
   ny_water:
     uri: census:tiger/2023/ny/areawater
-    description: New York water bodies (includes Lake Champlain NY portion)
+    description: New York water bodies
 
-  # Vermont roads
-  vt_roads:
+  # Interstate roads (RTTYP = I)
+  vt_interstates:
     uri: census:tiger/2023/vt/prisecroads
-    description: Vermont primary and secondary roads
+    description: Vermont interstate highways
+    filter:
+      RTTYP: "I"
 
-  # New York roads
-  ny_roads:
+  ny_interstates:
     uri: census:tiger/2023/ny/prisecroads
-    description: New York primary and secondary roads
+    description: New York interstate highways
+    filter:
+      RTTYP: "I"
+
+  # US highways (RTTYP = U)
+  vt_us_routes:
+    uri: census:tiger/2023/vt/prisecroads
+    description: Vermont US routes
+    filter:
+      RTTYP: "U"
+
+  ny_us_routes:
+    uri: census:tiger/2023/ny/prisecroads
+    description: New York US routes
+    filter:
+      RTTYP: "U"
+
+  # State routes (RTTYP = S)
+  vt_state_routes:
+    uri: census:tiger/2023/vt/prisecroads
+    description: Vermont state routes
+    filter:
+      RTTYP: "S"
+
+  ny_state_routes:
+    uri: census:tiger/2023/ny/prisecroads
+    description: New York state routes
+    filter:
+      RTTYP: "S"
 
 layers:
   # Layer 1: New York towns with water cutouts (western shore)
@@ -74,41 +117,53 @@ layers:
       fill: none
     order: 2
 
-  # Layer 3: Lake Champlain and water features (VT portion)
-  - name: vt_water
-    source: vt_water
+  # Layer 3: Lake Champlain (filtered - just the lake, not all water)
+  - name: lake_champlain
+    source: [lake_champlain_vt, lake_champlain_ny]
     operations:
       - type: simplify
         tolerance: 0.0002
     style:
-      stroke: "#1565c0"
-      stroke_width: 0.5
+      stroke: "#0d47a1"
+      stroke_width: 0.6
       fill: none
     order: 3
 
-  # Layer 4: Lake Champlain and water features (NY portion)
-  - name: ny_water
-    source: ny_water
+  # Layer 4: State routes (lowest road hierarchy, gray)
+  - name: state_routes
+    source: [vt_state_routes, ny_state_routes]
     operations:
       - type: simplify
         tolerance: 0.0002
     style:
-      stroke: "#1565c0"
-      stroke_width: 0.5
+      stroke: "#9e9e9e"
+      stroke_width: 0.3
       fill: none
     order: 4
 
-  # Layer 5: Roads overlay
-  - name: roads
-    source: [vt_roads, ny_roads]
+  # Layer 5: US highways (medium hierarchy, blue)
+  - name: us_routes
+    source: [vt_us_routes, ny_us_routes]
     operations:
       - type: simplify
         tolerance: 0.0002
     style:
-      stroke: "#616161"
-      stroke_width: 0.35
+      stroke: "#1976d2"
+      stroke_width: 0.5
       fill: none
     order: 5
+
+  # Layer 6: Interstate highways (highest hierarchy, red)
+  - name: interstates
+    source: [vt_interstates, ny_interstates]
+    operations:
+      - type: simplify
+        tolerance: 0.0002
+    style:
+      stroke: "#d32f2f"
+      stroke_width: 0.7
+      fill: none
+    order: 6
 
 output:
   # Lake Champlain focused bounds (taller aspect ratio for N-S orientation)

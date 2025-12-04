@@ -11,6 +11,52 @@ Strata can now produce Vermont regional maps with:
 - ✅ Primary and secondary roads from TIGER/Line prisecroads
 - ✅ Multiple output quality levels
 - ✅ Per-layer and combined SVG output
+- ✅ **NEW** Attribute-based filtering (HYDROID, FULLNAME, etc.)
+- ✅ **NEW** Road classification filtering (RTTYP, MTFCC)
+
+## Implemented Features
+
+### Attribute-Based Filtering
+
+Strata now supports flexible attribute filtering in source definitions:
+
+```yaml
+sources:
+  # Exact match
+  lake_champlain:
+    uri: census:tiger/2023/vt/areawater
+    filter:
+      HYDROID: "110469638395"
+
+  # Substring match (case-insensitive)
+  champlain_water:
+    uri: census:tiger/2023/vt/areawater
+    filter:
+      FULLNAME_contains: "Champlain"
+
+  # List match
+  major_roads:
+    uri: census:tiger/2023/vt/prisecroads
+    filter:
+      MTFCC: ["S1100", "S1200"]
+
+  # Road type filtering
+  interstates:
+    uri: census:tiger/2023/vt/prisecroads
+    filter:
+      RTTYP: "I"  # I=Interstate, U=US Route, S=State Route
+```
+
+### Road Classification (RTTYP values)
+
+| Code | Description | Example |
+|------|-------------|---------|
+| I | Interstate | I-89, I-91 |
+| U | US Route | US-2, US-7 |
+| S | State Route | VT-100, VT-15 |
+| M | Common name | Main St, Lake Rd |
+| O | Other | Old Rte 101 |
+| C | County | County Rd 5 |
 
 ## Feature Gaps
 
@@ -37,28 +83,7 @@ sources:
 
 ---
 
-### 2. Attribute-Based Filtering (HYDROID)
-
-**vt-geodata**: Filters Lake Champlain by specific HYDROID values to get just the lake, not all water features.
-
-**Strata**: Has basic column filtering but not exposed in recipe format.
-
-**Implementation needed**:
-- Extend filter syntax to support attribute matching
-- Add `equals`, `in`, `contains` filter operators
-
-**Example recipe syntax**:
-```yaml
-sources:
-  lake_champlain:
-    uri: census:tiger/2023/vt/areawater
-    filter:
-      HYDROID: "110469638395"  # Lake Champlain specific ID
-```
-
----
-
-### 3. County-Based Color Maps
+### 2. County-Based Color Maps
 
 **vt-geodata**: Colors Vermont towns by county using a predefined color palette.
 
@@ -190,26 +215,20 @@ sources:
 
 ## Priority Ranking
 
-| Feature | Priority | Complexity | Impact |
+| Feature | Priority | Complexity | Status |
 |---------|----------|------------|--------|
-| HYDROID filtering | High | Low | Enables Lake Champlain isolation |
-| Road classification | High | Low | Better road hierarchy display |
-| Color maps | Medium | Medium | County coloring for VT towns |
-| Quebec source | Medium | High | Complete regional context |
-| Island detection | Medium | Medium | Better lake rendering |
-| Linear water | Low | None | Already supported |
-| Geometry merge by attr | Low | Low | Cleaner multi-state features |
-| Interactive bounds | Low | High | Improved workflow |
-
-## Quick Wins (Low Effort, High Impact)
-
-1. **HYDROID filtering** - Add simple attribute filter to recipe schema
-2. **Road classification** - Add MTFCC filter examples
-3. **Linear water example** - Just document existing capability
+| HYDROID filtering | High | Low | ✅ **Implemented** |
+| Road classification | High | Low | ✅ **Implemented** |
+| Color maps | Medium | Medium | ❌ Not started |
+| Quebec source | Medium | High | ❌ Not started |
+| Island detection | Medium | Medium | ❌ Not started |
+| Linear water | Low | None | ✅ Already supported |
+| Geometry merge by attr | Low | Low | ❌ Not started |
+| Interactive bounds | Low | High | ❌ Not started |
 
 ## Recommended Implementation Order
 
-1. Attribute filtering (HYDROID, MTFCC) - enables precise feature selection
+1. ~~Attribute filtering (HYDROID, MTFCC)~~ ✅ **Done**
 2. Color maps - visual parity with vt-geodata
 3. Island detection - accurate lake rendering
 4. Quebec source - complete regional map coverage
