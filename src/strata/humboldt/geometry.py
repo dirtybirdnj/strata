@@ -203,6 +203,66 @@ def extract_islands(
     return gpd.GeoDataFrame(islands, crs=gdf.crs)
 
 
+def dissolve_by(
+    gdf: gpd.GeoDataFrame,
+    column: str,
+) -> gpd.GeoDataFrame:
+    """
+    Dissolve (merge) geometries that share the same attribute value.
+
+    This is essential for water bodies that span multiple counties/tiles -
+    merging by HYDROID creates a single unified polygon for each water body.
+
+    Args:
+        gdf: GeoDataFrame to dissolve
+        column: Column name to group by (e.g., "HYDROID", "FULLNAME")
+
+    Returns:
+        GeoDataFrame with dissolved geometries
+    """
+    if column not in gdf.columns:
+        # If column doesn't exist, return as-is
+        return gdf
+
+    # Dissolve by the column, keeping the first value of other columns
+    dissolved = gdf.dissolve(by=column, as_index=False)
+    return dissolved
+
+
+def clean_geometry(
+    gdf: gpd.GeoDataFrame,
+    buffer_distance: float = 0.0,
+) -> gpd.GeoDataFrame:
+    """
+    Clean geometries by fixing common issues.
+
+    Applies buffer(0) trick to fix self-intersections and invalid geometries.
+    Optionally applies a small negative then positive buffer to remove
+    small artifacts and slivers.
+
+    Args:
+        gdf: GeoDataFrame to clean
+        buffer_distance: If > 0, apply erosion/dilation to remove slivers
+
+    Returns:
+        Cleaned GeoDataFrame
+    """
+    result = gdf.copy()
+
+    # buffer(0) fixes most topology issues (self-intersections, etc.)
+    result["geometry"] = result.geometry.buffer(0)
+
+    # Optional erosion/dilation to clean slivers
+    if buffer_distance > 0:
+        result["geometry"] = result.geometry.buffer(-buffer_distance).buffer(buffer_distance)
+
+    # Remove empty/invalid geometries
+    result = result[~result.geometry.is_empty]
+    result = result[result.geometry.is_valid]
+
+    return result
+
+
 def remove_holes(
     gdf: gpd.GeoDataFrame,
     min_hole_area: float = 0.0,

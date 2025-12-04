@@ -6,7 +6,7 @@ thought, is a unity in diversity of phenomena."
     — Alexander von Humboldt, Cosmos
 """
 
-from .geometry import subtract, clip, merge, simplify, buffer, extract_islands, remove_holes
+from .geometry import subtract, clip, merge, simplify, buffer, extract_islands, remove_holes, dissolve_by, clean_geometry
 from .projection import transform_crs
 
 __all__ = [
@@ -17,6 +17,8 @@ __all__ = [
     "buffer",
     "extract_islands",
     "remove_holes",
+    "dissolve_by",
+    "clean_geometry",
     "transform_crs",
     "process_layer",
 ]
@@ -94,5 +96,16 @@ def process_layer(
             # Remove holes from polygons (fill islands)
             min_hole_area = op.get("min_hole_area", 0.0)
             result = remove_holes(result, min_hole_area=min_hole_area)
+
+        elif op_type == "dissolve":
+            # Merge geometries by attribute value (e.g., HYDROID)
+            column = op.get("by")
+            if column:
+                result = dissolve_by(result, column)
+
+        elif op_type == "clean":
+            # Fix topology issues and optionally remove slivers
+            buffer_dist = op.get("buffer_distance", 0.0)
+            result = clean_geometry(result, buffer_distance=buffer_dist)
 
     return result

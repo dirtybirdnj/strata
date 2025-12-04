@@ -137,6 +137,8 @@ layers:
   - name: lake_champlain
     source: [lake_champlain_vt, lake_champlain_ny]
     operations:
+      - type: merge  # Merge all Champlain polygons into one (they have different HYDROIDs per county)
+      - type: clean  # Fix topology issues from county boundary artifacts
       - type: remove_holes  # Remove islands from lake polygon for clean fill
       - type: simplify
         tolerance: 0.0002
