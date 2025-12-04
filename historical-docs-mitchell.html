@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maria Mitchell - Strata Historical Figure</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&display=swap');
+
+        :root {
+            --parchment: #f4e4bc;
+            --parchment-dark: #e8d4a8;
+            --ink: #2c1810;
+            --ink-light: #4a3728;
+            --gold: #8b7355;
+            --red: #8b2500;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Crimson Text', Georgia, serif;
+            background: var(--parchment);
+            color: var(--ink);
+            line-height: 1.7;
+            font-size: 18px;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
+
+        header {
+            background: linear-gradient(180deg, var(--parchment-dark) 0%, var(--parchment) 100%);
+            padding: 3rem 0;
+            text-align: center;
+            border-bottom: 3px double var(--gold);
+        }
+
+        .back-link {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            color: var(--gold);
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .back-link:hover { color: var(--red); }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: var(--ink);
+            margin-bottom: 0.5rem;
+        }
+
+        .dates {
+            font-family: 'IM Fell English', serif;
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--ink-light);
+        }
+
+        .module-badge {
+            display: inline-block;
+            background: var(--red);
+            color: var(--parchment);
+            padding: 0.3rem 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        section { padding: 3rem 0; border-bottom: 1px solid var(--gold); }
+
+        h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: var(--ink);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            letter-spacing: 0.1em;
+        }
+
+        h2::before, h2::after { content: '—'; margin: 0 0.5rem; color: var(--gold); }
+
+        h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: var(--red);
+            margin: 1.5rem 0 1rem;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 0.5rem;
+        }
+
+        p { margin-bottom: 1rem; text-align: justify; }
+
+        blockquote {
+            background: linear-gradient(90deg, var(--parchment-dark), transparent);
+            border-left: 3px solid var(--gold);
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            color: var(--ink-light);
+        }
+
+        blockquote cite {
+            display: block;
+            text-align: right;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            color: var(--gold);
+        }
+
+        table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td { padding: 0.75rem 1rem; text-align: left; border: 1px solid var(--gold); }
+        th { background: var(--parchment-dark); font-family: 'Cinzel', serif; font-size: 0.9rem; }
+
+        pre {
+            background: #fffef8;
+            border: 1px solid var(--gold);
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            background: var(--parchment-dark);
+            padding: 0.1rem 0.3rem;
+            font-size: 0.9em;
+        }
+
+        pre code { background: none; padding: 0; }
+
+        .ornament { text-align: center; font-size: 1.5rem; color: var(--gold); margin: 2rem 0; }
+
+        .timeline-item {
+            margin: 1.5rem 0;
+            padding-left: 1.5rem;
+            border-left: 2px solid var(--gold);
+        }
+
+        .timeline-year {
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            color: var(--red);
+        }
+
+        footer {
+            background: var(--parchment-dark);
+            padding: 2rem 0;
+            text-align: center;
+            border-top: 3px double var(--gold);
+        }
+
+        footer p {
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            color: var(--ink-light);
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; }
+            .container { padding: 0 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="historical-docs.html" class="back-link">&larr; Return to Main Documentation</a>
+            <h1>Maria Mitchell</h1>
+            <p class="dates">1 August 1818 — 28 June 1889</p>
+            <p style="font-family: 'IM Fell English', serif; font-style: italic; margin-top: 0.5rem;">
+                America's First Professional Female Astronomer • Vassar College Professor
+            </p>
+            <span class="module-badge">strata.tui</span>
+        </div>
+    </header>
+
+    <section>
+        <div class="container">
+            <h2>The Observer's Principle</h2>
+
+            <blockquote>
+                "Do not look at stars as bright spots only. Try to take in the vastness of the universe."
+                <cite>— Maria Mitchell</cite>
+            </blockquote>
+
+            <p>When I discovered my comet in 1847, it was not by chance. Night after night, I swept the sky systematically, comparing every fuzzy object against my star charts. Discovery rewards the patient and methodical observer. The same principle guides our interactive wizard: step by step, screen by screen, we help the newcomer build their first map.</p>
+
+            <p>Just as I guided my students at Vassar to the telescope eyepiece—adjusting the instrument, pointing out features, confirming their observations—the TUI guides the cartographer through recipe creation: <strong>systematic guidance reveals what random looking misses</strong>.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Timeline</h2>
+
+            <div class="timeline-item">
+                <span class="timeline-year">1818</span> — Born in Nantucket, Massachusetts, into a Quaker family
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1836</span> — Appointed librarian of Nantucket Atheneum (age 18)
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1847</span> — Discovered Comet C/1847 T1 ("Miss Mitchell's Comet")
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1848</span> — Received gold medal from King of Denmark; first woman elected to American Academy of Arts and Sciences
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1857</span> — Met Alexander von Humboldt in Berlin
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1865</span> — Appointed Professor of Astronomy at Vassar College—first in US
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1878</span> — Led all-female solar eclipse expedition to Denver, Colorado
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1889</span> — Died in Lynn, Massachusetts; buried in Nantucket
+            </div>
+
+            <div class="ornament">▤ ▥ ▦</div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Key Locations</h2>
+
+            <table>
+                <thead>
+                    <tr><th>Location</th><th>Latitude</th><th>Longitude</th><th>Significance</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Nantucket, Massachusetts</td><td>41.2835</td><td>-70.0995</td><td>Birth, comet discovery, burial</td></tr>
+                    <tr><td>Pacific National Bank roof</td><td>41.2836</td><td>-70.0989</td><td>Telescope observation site</td></tr>
+                    <tr><td>Vassar College, Poughkeepsie</td><td>41.6867</td><td>-73.8945</td><td>Professor and Observatory</td></tr>
+                    <tr><td>Denver, Colorado</td><td>39.7392</td><td>-104.9903</td><td>1878 solar eclipse expedition</td></tr>
+                    <tr><td>Lynn, Massachusetts</td><td>42.4668</td><td>-70.9495</td><td>Final years and death</td></tr>
+                    <tr><td>Berlin, Prussia</td><td>52.5200</td><td>13.4050</td><td>Met Humboldt (1857)</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Test Bounds for Strata</h3>
+            <pre><code># Nantucket Island (Birth, Discovery, Burial)
+bounds: [-70.20, 41.22, -69.95, 41.32]
+
+# Vassar College/Poughkeepsie Area
+bounds: [-73.95, 41.65, -73.80, 41.75]
+
+# Lynn/North Shore Massachusetts
+bounds: [-71.05, 42.40, -70.85, 42.55]
+
+# Denver Region (Eclipse Expedition)
+bounds: [-105.10, 39.65, -104.85, 39.85]</code></pre>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Connection to Strata</h2>
+
+            <p>Mitchell embodies the <strong>guided discovery</strong> philosophy of <code>strata.tui</code>: <strong>systematic observation reveals what random looking misses</strong>.</p>
+
+            <p>Just as Mitchell guided her students to the telescope eyepiece—helping them understand what they were seeing, adjusting the instrument, pointing out features, confirming their observations—the TUI module guides users through recipe creation:</p>
+
+            <ul style="margin: 1rem 0 1rem 2rem;">
+                <li><strong>Source Browser</strong>: Like sweeping the sky, systematically explore available data sources</li>
+                <li><strong>Bounds Selection</strong>: Frame your observation area (like pointing the telescope)</li>
+                <li><strong>Layer Configuration</strong>: Build up observations incrementally</li>
+                <li><strong>Style Settings</strong>: Adjust the view for clarity</li>
+                <li><strong>Output Options</strong>: Record what you've discovered</li>
+            </ul>
+
+            <p>Mitchell's genius was recognizing that <strong>the instrument alone isn't enough</strong>—users need guidance to see what's there.</p>
+
+            <div class="ornament">▤ ▥ ▦ ▧ ▨</div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Historical Connection: Mitchell and Humboldt</h2>
+
+            <p>In 1857, Maria Mitchell visited Alexander von Humboldt in Berlin. He was 88 years old, working on the final volumes of <em>Cosmos</em>; she was 39, touring European observatories after her comet discovery.</p>
+
+            <p>Humboldt received her warmly. They discussed science, observation, and the interconnection of phenomena. This meeting links two figures now honored in Strata:</p>
+
+            <ul style="margin: 1rem 0 1rem 2rem;">
+                <li><strong>Humboldt</strong> (<code>strata.humboldt</code>): Processing and transformation—finding unity in diversity</li>
+                <li><strong>Mitchell</strong> (<code>strata.tui</code>): Guided observation—helping users see what's there</li>
+            </ul>
+
+            <p>Both believed that systematic observation, properly guided, reveals patterns invisible to casual inspection.</p>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p><em>"Question everything."</em></p>
+            <p style="margin-top: 1rem;"><a href="historical-docs.html" style="color: var(--gold);">Return to Main Documentation</a></p>
+        </div>
+    </footer>
+</body>
+</html>

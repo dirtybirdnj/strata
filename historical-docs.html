@@ -451,6 +451,7 @@
                 <li><a href="#humboldt">Humboldt</a></li>
                 <li><a href="#maury">Maury</a></li>
                 <li><a href="#kelley">Kelley</a></li>
+                <li><a href="#mitchell">Mitchell</a></li>
                 <li><a href="#operations">Operations</a></li>
                 <li><a href="#examples">Exemplars</a></li>
             </ul>
@@ -484,6 +485,7 @@
                 <li><strong>Alexander von Humboldt</strong>, who perceived unity in diversity, guides our geometric transformations</li>
                 <li><strong>Matthew Fontaine Maury</strong>, pathfinder of the seas, orchestrates the flow of our operations</li>
                 <li><strong>Florence Kelley</strong>, champion of the common citizen, ensures our visualizations serve those who will use them</li>
+                <li><strong>Maria Mitchell</strong>, America's first professional female astronomer, guides newcomers through the interactive wizard with the same patience she showed her students at the telescope</li>
             </ul>
 
             <p>The software that bears my name—<strong>Strata</strong>—embodies this philosophy. Come, let me show you how to build maps as the Earth itself is built: layer upon layer, each in its proper place.</p>
@@ -526,10 +528,16 @@
 │   └── pipeline.py     ← Build execution
 ├── kelley/             ← Visualization & Output (evidence for the citizen)
 │   └── svg.py          ← SVG rendering
-└── tui/                ← The Interactive Wizard
-    ├── app.py
-    ├── catalog.py
-    └── screens/</code></pre>
+└── mitchell/           ← The Interactive Wizard (guided observation)
+    ├── app.py          ← Textual-based TUI application
+    ├── catalog.py      ← Data source catalog & metadata
+    ├── debug.py        ← Recipe validation debugger
+    └── screens/        ← 5 interactive screens
+        ├── welcome.py
+        ├── source_browser.py
+        ├── bounds.py
+        ├── layer_config.py
+        └── output_config.py</code></pre>
 
             <h3>The Flow of Work</h3>
 
@@ -623,8 +631,41 @@
                     <tr><th>URI</th><th>Description</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td><code>canada:canvec/hydro</code></td><td>National hydrography (~150 MB)</td></tr>
-                    <tr><td><code>canada:nrn/{province}</code></td><td>Road network (all 13 provinces)</td></tr>
+                    <tr><td><code>canada:canvec/hydro</code></td><td>National hydrography at 1:1M scale (~150 MB)</td></tr>
+                    <tr><td><code>canada:nrn/{province}</code></td><td>National Road Network (13 province codes: ab, bc, mb, nb, nl, ns, nt, nu, on, pe, qc, sk, yt)</td></tr>
+                    <tr><td><code>canada:nhn/{workunit}</code></td><td>National Hydro Network waterbodies by watershed</td></tr>
+                    <tr><td><code>canada:nhn/{workunit}/rivers</code></td><td>NHN rivers and streams (linear features)</td></tr>
+                </tbody>
+            </table>
+
+            <h4>NHN Watershed Workunits</h4>
+            <p>The National Hydro Network divides Canada into watershed-based workunits. For cross-border mapping with Vermont and the Lake Champlain region:</p>
+
+            <table>
+                <thead>
+                    <tr><th>Workunit</th><th>Watershed</th><th>Coverage</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>02OJ000</code></td><td>Richelieu River</td><td>Lake Champlain to St. Lawrence</td></tr>
+                    <tr><td><code>02OHA00</code></td><td>Lake Champlain (West)</td><td>Quebec portion, western shore</td></tr>
+                    <tr><td><code>02OHB00</code></td><td>Lake Champlain (East)</td><td>Quebec portion, Missisquoi Bay</td></tr>
+                    <tr><td><code>02OG000</code></td><td>Yamaska River</td><td>Eastern Townships</td></tr>
+                    <tr><td><code>02OE000</code></td><td>St-François River</td><td>Quebec-Vermont border region</td></tr>
+                </tbody>
+            </table>
+
+            <h4>Quebec Open Data (Extended)</h4>
+            <p>Format: <code>quebec:{layer}</code></p>
+
+            <table>
+                <thead>
+                    <tr><th>Layer</th><th>Description</th><th>Count</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>municipalities</code></td><td>Municipal boundaries</td><td>~2,263</td></tr>
+                    <tr><td><code>mrc</code></td><td>Regional county municipalities</td><td>138</td></tr>
+                    <tr><td><code>regions</code></td><td>Administrative regions</td><td>17</td></tr>
+                    <tr><td><code>metropolitan</code></td><td>Metropolitan communities (Montreal, Quebec)</td><td>2</td></tr>
                 </tbody>
             </table>
 
@@ -787,26 +828,143 @@ output:
         </div>
     </section>
 
+    <!-- Mitchell Section -->
+    <section id="mitchell">
+        <div class="container">
+            <h2>The Observer's Guide</h2>
+
+            <div class="figure-card">
+                <div class="figure-name">Maria Mitchell</div>
+                <div class="figure-dates">1818 – 1889</div>
+                <div class="figure-title">America's First Professional Female Astronomer • Vassar College Professor</div>
+                <div class="figure-role">strata.tui — Interactive Terminal Wizard</div>
+
+                <blockquote>
+                    "Do not look at stars as bright spots only. Try to take in the vastness of the universe."
+                    <cite>— Maria Mitchell</cite>
+                </blockquote>
+
+                <p>When I discovered my comet in 1847, it was not by chance. Night after night, I swept the sky systematically, comparing every fuzzy object against my star charts. Discovery rewards the patient and methodical observer. The same principle guides our interactive wizard: step by step, screen by screen, we help the newcomer build their first map.</p>
+            </div>
+
+            <h3>The Principle of Guided Observation</h3>
+
+            <p>Just as I guided my students at Vassar to the telescope eyepiece—adjusting the instrument, pointing out features, confirming their observations—the Terminal User Interface guides the cartographer through recipe creation:</p>
+
+            <div class="strata-diagram">
+                <div class="layer">Output Configuration <span class="layer-order">← formats & filenames</span></div>
+                <div class="layer">Layer Styling <span class="layer-order">← colors & strokes</span></div>
+                <div class="layer">Layer Operations <span class="layer-order">← subtract, simplify, merge</span></div>
+                <div class="layer">Bounds Selection <span class="layer-order">← frame your observation</span></div>
+                <div class="layer">Source Browser <span class="layer-order">← survey the available data</span></div>
+            </div>
+
+            <h3>The Five Screens</h3>
+
+            <h4>1. Welcome</h4>
+            <p>An introduction to the wizard, explaining what maps can be built and how to proceed.</p>
+
+            <h4>2. Source Browser</h4>
+            <p>Like sweeping the night sky, systematically explore available data sources. The catalog includes all Census TIGER layers for every US state and territory, Quebec administrative boundaries, and Canadian federal data.</p>
+
+            <h4>3. Bounds Selection</h4>
+            <p>Frame your observation area. Define the geographic extent of your map—the window through which you will view the data.</p>
+
+            <h4>4. Layer Configuration</h4>
+            <p>For each layer, select operations and styling. This is where the cartographic work happens: subtracting water from town boundaries, simplifying complex geometries, choosing colors that serve comprehension.</p>
+
+            <h4>5. Output Configuration</h4>
+            <p>Choose your output formats—SVG for plotters, GeoJSON for web maps, PMTiles for vector tiles. The wizard generates a complete recipe file ready for <code>strata build</code>.</p>
+
+            <h3>Launching the Wizard</h3>
+
+            <pre><code># Start fresh
+strata new
+
+# Start from an existing recipe as template
+strata new --from examples/vermont_plotter.strata.yaml
+
+# Preview data within bounds before building
+strata preview recipe.yaml --open</code></pre>
+
+            <blockquote>
+                "Question everything."
+                <cite>— Maria Mitchell</cite>
+            </blockquote>
+
+            <div class="ornament">▤ ▥ ▦</div>
+        </div>
+    </section>
+
     <!-- Operations Reference -->
     <section id="operations">
         <div class="container">
             <h2>Complete Index of Operations</h2>
 
+            <h3>Geometry Operations</h3>
             <table>
                 <thead>
                     <tr><th>Operation</th><th>Purpose</th><th>Parameters</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td><code>simplify</code></td><td>Reduce complexity</td><td><code>tolerance</code></td></tr>
-                    <tr><td><code>subtract</code></td><td>Cut away features</td><td><code>target</code></td></tr>
-                    <tr><td><code>merge</code></td><td>Unite all features</td><td>—</td></tr>
-                    <tr><td><code>merge_touching</code></td><td>Unite touching features</td><td><code>buffer_distance</code></td></tr>
-                    <tr><td><code>dissolve</code></td><td>Merge by attribute</td><td><code>by</code></td></tr>
-                    <tr><td><code>clip</code></td><td>Restrict to boundary</td><td><code>target</code></td></tr>
-                    <tr><td><code>buffer</code></td><td>Expand/shrink</td><td><code>distance</code></td></tr>
-                    <tr><td><code>clean</code></td><td>Fix topology</td><td><code>buffer_distance</code></td></tr>
-                    <tr><td><code>remove_holes</code></td><td>Fill voids</td><td><code>min_hole_area</code></td></tr>
-                    <tr><td><code>extract_islands</code></td><td>Get holes as features</td><td><code>min_area</code></td></tr>
+                    <tr><td><code>simplify</code></td><td>Reduce vertex complexity for plotter optimization</td><td><code>tolerance</code>, <code>preserve_topology</code></td></tr>
+                    <tr><td><code>subtract</code></td><td>Cut away features (water cutouts from boundaries)</td><td><code>target</code></td></tr>
+                    <tr><td><code>exclude</code></td><td>Remove features that intersect target</td><td><code>target</code></td></tr>
+                    <tr><td><code>merge</code></td><td>Unite all features into single geometry</td><td>—</td></tr>
+                    <tr><td><code>merge_touching</code></td><td>Unite connected features (cross-border lakes)</td><td><code>buffer_distance</code></td></tr>
+                    <tr><td><code>dissolve</code></td><td>Merge features sharing attribute value</td><td><code>by</code></td></tr>
+                    <tr><td><code>clip</code></td><td>Restrict to bounding geometry</td><td><code>target</code></td></tr>
+                    <tr><td><code>buffer</code></td><td>Expand (positive) or shrink (negative) geometry</td><td><code>distance</code></td></tr>
+                    <tr><td><code>clean</code></td><td>Fix topology errors, remove slivers</td><td><code>buffer_distance</code></td></tr>
+                    <tr><td><code>remove_holes</code></td><td>Fill interior voids below threshold</td><td><code>min_hole_area</code></td></tr>
+                    <tr><td><code>extract_islands</code></td><td>Extract holes as separate features</td><td><code>min_area</code></td></tr>
+                </tbody>
+            </table>
+
+            <h3>Styling Options</h3>
+            <table>
+                <thead>
+                    <tr><th>Property</th><th>Purpose</th><th>Example</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>stroke</code></td><td>Line/border color</td><td><code>"#424242"</code></td></tr>
+                    <tr><td><code>stroke_width</code></td><td>Line thickness</td><td><code>0.5</code></td></tr>
+                    <tr><td><code>fill</code></td><td>Fill color</td><td><code>"#f5f5f5"</code></td></tr>
+                    <tr><td><code>fill_by</code></td><td>Color by attribute column</td><td><code>"COUNTYFP"</code></td></tr>
+                    <tr><td><code>color_map</code></td><td>Attribute-to-color mapping</td><td><code>{"001": "#ff0000"}</code></td></tr>
+                    <tr><td><code>vary_fill</code></td><td>Slight color variation per feature</td><td><code>true</code></td></tr>
+                    <tr><td><code>dash_array</code></td><td>Dashed line pattern</td><td><code>"5,3"</code></td></tr>
+                    <tr><td><code>opacity</code></td><td>Transparency (0-1)</td><td><code>0.8</code></td></tr>
+                    <tr><td><code>marker</code></td><td>Point feature shape</td><td><code>"circle"</code>, <code>"square"</code>, <code>"diamond"</code></td></tr>
+                    <tr><td><code>marker_size</code></td><td>Point feature size</td><td><code>5</code></td></tr>
+                </tbody>
+            </table>
+
+            <h3>Filter Options</h3>
+            <table>
+                <thead>
+                    <tr><th>Filter</th><th>Purpose</th><th>Example</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>min_area_km2</code></td><td>Exclude features smaller than threshold</td><td><code>0.5</code></td></tr>
+                </tbody>
+            </table>
+
+            <h3>Commands</h3>
+            <table>
+                <thead>
+                    <tr><th>Command</th><th>Purpose</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>strata new</code></td><td>Launch interactive TUI wizard</td></tr>
+                    <tr><td><code>strata new --from recipe.yaml</code></td><td>Start wizard with template recipe</td></tr>
+                    <tr><td><code>strata prepare recipe.yaml</code></td><td>Download all sources to cache</td></tr>
+                    <tr><td><code>strata build recipe.yaml -o output/</code></td><td>Execute full pipeline</td></tr>
+                    <tr><td><code>strata validate recipe.yaml</code></td><td>Check recipe for errors</td></tr>
+                    <tr><td><code>strata validate recipe.yaml --fix</code></td><td>Interactive TUI debugger for errors</td></tr>
+                    <tr><td><code>strata preview recipe.yaml</code></td><td>Show feature counts within bounds</td></tr>
+                    <tr><td><code>strata preview recipe.yaml --open</code></td><td>Generate and open quick SVG preview</td></tr>
+                    <tr><td><code>strata cache path</code></td><td>Show cache directory location</td></tr>
                 </tbody>
             </table>
 

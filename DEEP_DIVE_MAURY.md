@@ -315,3 +315,38 @@ Maury's genius was recognizing that systematic aggregation of many observations 
 - [Library of Congress: Matthew Fontaine Maury Papers](https://www.loc.gov/collections/matthew-fontaine-maury-papers/articles-and-essays/timeline/)
 - [Tennessee Encyclopedia: Matthew Fontaine Maury](https://tennesseeencyclopedia.net/entries/matthew-fontaine-maury/)
 - [Famous Scientists: Matthew Maury](https://www.famousscientists.org/matthew-maury/)
+
+---
+
+## Geographic Coordinates (Seed Locations for Testing)
+
+These locations from Maury's life can serve as test regions for the Strata application:
+
+| Location | Latitude | Longitude | Notes |
+|----------|----------|-----------|-------|
+| Spotsylvania County, Virginia | 38.1993 | -77.5960 | Birthplace |
+| Franklin, Tennessee | 35.9251 | -86.8689 | Childhood and education |
+| Washington, D.C. (Naval Observatory) | 38.9213 | -77.0670 | Major discoveries (1842-1861) |
+| Richmond, Virginia | 37.5407 | -77.4360 | Confederate service |
+| Lexington, Virginia | 37.7840 | -79.4428 | VMI professor, death |
+| Brussels, Belgium | 50.8503 | 4.3517 | International Maritime Conference (1853) |
+| Hollywood Cemetery, Richmond | 37.5355 | -77.4571 | Burial site |
+
+### Suggested Test Bounds
+
+```yaml
+# Fredericksburg/Spotsylvania Region (Birth Area)
+bounds: [-77.70, 38.10, -77.35, 38.35]
+
+# Franklin, Tennessee (Childhood)
+bounds: [-86.95, 35.85, -86.75, 36.00]
+
+# Washington D.C. (Naval Observatory Years)
+bounds: [-77.15, 38.85, -76.90, 39.00]
+
+# Richmond, Virginia (Confederate Service)
+bounds: [-77.55, 37.45, -77.35, 37.60]
+
+# Lexington, Virginia (Final Years)
+bounds: [-79.55, 37.70, -79.35, 37.85]
+```

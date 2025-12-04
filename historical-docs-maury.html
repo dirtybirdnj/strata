@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matthew Fontaine Maury - Strata Historical Figure</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&display=swap');
+
+        :root {
+            --parchment: #f4e4bc;
+            --parchment-dark: #e8d4a8;
+            --ink: #2c1810;
+            --ink-light: #4a3728;
+            --gold: #8b7355;
+            --red: #8b2500;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Crimson Text', Georgia, serif;
+            background: var(--parchment);
+            color: var(--ink);
+            line-height: 1.7;
+            font-size: 18px;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
+
+        header {
+            background: linear-gradient(180deg, var(--parchment-dark) 0%, var(--parchment) 100%);
+            padding: 3rem 0;
+            text-align: center;
+            border-bottom: 3px double var(--gold);
+        }
+
+        .back-link {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            color: var(--gold);
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .back-link:hover { color: var(--red); }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: var(--ink);
+            margin-bottom: 0.5rem;
+        }
+
+        .dates {
+            font-family: 'IM Fell English', serif;
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--ink-light);
+        }
+
+        .module-badge {
+            display: inline-block;
+            background: var(--red);
+            color: var(--parchment);
+            padding: 0.3rem 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        section { padding: 3rem 0; border-bottom: 1px solid var(--gold); }
+
+        h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: var(--ink);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            letter-spacing: 0.1em;
+        }
+
+        h2::before, h2::after { content: '—'; margin: 0 0.5rem; color: var(--gold); }
+
+        h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: var(--red);
+            margin: 1.5rem 0 1rem;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 0.5rem;
+        }
+
+        p { margin-bottom: 1rem; text-align: justify; }
+
+        blockquote {
+            background: linear-gradient(90deg, var(--parchment-dark), transparent);
+            border-left: 3px solid var(--gold);
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            color: var(--ink-light);
+        }
+
+        blockquote cite {
+            display: block;
+            text-align: right;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            color: var(--gold);
+        }
+
+        table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td { padding: 0.75rem 1rem; text-align: left; border: 1px solid var(--gold); }
+        th { background: var(--parchment-dark); font-family: 'Cinzel', serif; font-size: 0.9rem; }
+
+        pre {
+            background: #fffef8;
+            border: 1px solid var(--gold);
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            background: var(--parchment-dark);
+            padding: 0.1rem 0.3rem;
+            font-size: 0.9em;
+        }
+
+        pre code { background: none; padding: 0; }
+
+        .ornament { text-align: center; font-size: 1.5rem; color: var(--gold); margin: 2rem 0; }
+
+        .timeline-item {
+            margin: 1.5rem 0;
+            padding-left: 1.5rem;
+            border-left: 2px solid var(--gold);
+        }
+
+        .timeline-year {
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            color: var(--red);
+        }
+
+        footer {
+            background: var(--parchment-dark);
+            padding: 2rem 0;
+            text-align: center;
+            border-top: 3px double var(--gold);
+        }
+
+        footer p {
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            color: var(--ink-light);
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; }
+            .container { padding: 0 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="historical-docs.html" class="back-link">&larr; Return to Main Documentation</a>
+            <h1>Matthew Fontaine Maury</h1>
+            <p class="dates">14 January 1806 — 1 February 1873</p>
+            <p style="font-family: 'IM Fell English', serif; font-style: italic; margin-top: 0.5rem;">
+                Pathfinder of the Seas • Father of Oceanography
+            </p>
+            <span class="module-badge">strata.maury</span>
+        </div>
+    </header>
+
+    <section>
+        <div class="container">
+            <h2>The Pathfinder's Principle</h2>
+
+            <blockquote>
+                "There is a river in the ocean. In the severest droughts it never fails, and in the mightiest floods it never overflows."
+                <cite>— Matthew Fontaine Maury, on the Gulf Stream</cite>
+            </blockquote>
+
+            <p>No single source tells the complete story. Only by aggregating observations from many sources can we produce charts worthy of the landscape they represent. I collected ship logs from captains across the world—thousands of individual observations—and transformed them into comprehensive wind and current charts that no single voyage could produce.</p>
+
+            <p>The <code>maury</code> module embodies this principle: <strong>coordinate many sources to reveal patterns invisible to individuals</strong>.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Timeline</h2>
+
+            <div class="timeline-item">
+                <span class="timeline-year">1806</span> — Born in Spotsylvania County, Virginia
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1826-1830</span> — First world circumnavigation aboard USS Vincennes
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1839</span> — Stagecoach accident; permanently disabled, unfit for sea duty
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1842</span> — Appointed Superintendent of Naval Observatory, Washington D.C.
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1847</span> — Published first Wind and Current Charts; reduced voyage times by 25-50%
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1853</span> — Organized Brussels Maritime Conference—first international scientific conference
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1855</span> — Published <em>Physical Geography of the Sea</em>—first oceanography textbook
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1873</span> — Died in Lexington, Virginia; buried at Hollywood Cemetery, Richmond
+            </div>
+
+            <div class="ornament">▤ ▥ ▦</div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Key Locations</h2>
+
+            <table>
+                <thead>
+                    <tr><th>Location</th><th>Latitude</th><th>Longitude</th><th>Significance</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Spotsylvania County, Virginia</td><td>38.1993</td><td>-77.5960</td><td>Birthplace</td></tr>
+                    <tr><td>Franklin, Tennessee</td><td>35.9251</td><td>-86.8689</td><td>Childhood and education</td></tr>
+                    <tr><td>Washington, D.C.</td><td>38.9213</td><td>-77.0670</td><td>Naval Observatory (1842-1861)</td></tr>
+                    <tr><td>Brussels, Belgium</td><td>50.8503</td><td>4.3517</td><td>International Maritime Conference</td></tr>
+                    <tr><td>Richmond, Virginia</td><td>37.5407</td><td>-77.4360</td><td>Confederate service; burial</td></tr>
+                    <tr><td>Lexington, Virginia</td><td>37.7840</td><td>-79.4428</td><td>VMI professor; death</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Test Bounds for Strata</h3>
+            <pre><code># Fredericksburg/Spotsylvania Region (Birth Area)
+bounds: [-77.70, 38.10, -77.35, 38.35]
+
+# Washington D.C. (Naval Observatory Years)
+bounds: [-77.15, 38.85, -76.90, 39.00]
+
+# Richmond, Virginia
+bounds: [-77.55, 37.45, -77.35, 37.60]
+
+# Lexington, Virginia (Final Years)
+bounds: [-79.55, 37.70, -79.35, 37.85]</code></pre>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Connection to Strata</h2>
+
+            <p>Maury embodies the <strong>pipeline orchestration</strong> philosophy of <code>strata.maury</code>: <strong>coordinate many sources to reveal patterns invisible to individuals</strong>.</p>
+
+            <p>Just as Maury collected ship logs from captains across the world—aggregating thousands of individual observations into comprehensive wind and current charts—the Maury module orchestrates the entire pipeline:</p>
+
+            <ul style="margin: 1rem 0 1rem 2rem;">
+                <li>Coordinates data from Census Bureau, Quebec, Canada</li>
+                <li>Manages layer composition and ordering</li>
+                <li>Ensures proper sequence of operations</li>
+                <li>Produces unified outputs from disparate sources</li>
+            </ul>
+
+            <p>Maury's genius was recognizing that systematic aggregation of many observations reveals patterns invisible in any single source.</p>
+
+            <div class="ornament">▤ ▥ ▦ ▧ ▨</div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p><em>"The winds and waves are not the wild things they were thought to be. They obey laws as firmly as the planets."</em></p>
+            <p style="margin-top: 1rem;"><a href="historical-docs.html" style="color: var(--gold);">Return to Main Documentation</a></p>
+        </div>
+    </footer>
+</body>
+</html>

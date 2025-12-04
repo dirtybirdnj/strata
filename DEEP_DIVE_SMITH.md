@@ -214,3 +214,34 @@ The package name "Strata" directly honors Smith's fundamental insight: understan
 - [Yorkshire Philosophical Society: William Smith](https://www.ypsyork.org/resources/yorkshire-scientists-and-innovators/william-smith/)
 - [Strata-Smith.com Biography](http://www.strata-smith.com/?page_id=279)
 - [Somerset Coalfield Life: William Smith](https://radstockmuseum.co.uk/william-smith-the-father-of-english-geology/)
+
+---
+
+## Geographic Coordinates (Seed Locations for Testing)
+
+These locations from Smith's life can serve as test regions for the Strata application:
+
+| Location | Latitude | Longitude | Notes |
+|----------|----------|-----------|-------|
+| Churchill, Oxfordshire | 51.9392 | -1.3843 | Birthplace |
+| Stow-on-the-Wold, Gloucestershire | 51.9296 | -1.7231 | Surveyor apprenticeship |
+| Bath, Somerset | 51.3811 | -2.3590 | Canal work, major discoveries |
+| Combe Hay, Somerset | 51.3289 | -2.4183 | Canal excavation site |
+| Dunkerton, Somerset | 51.3233 | -2.4133 | First dictated stratigraphic table |
+| London | 51.5074 | -0.1278 | Map publication |
+| Hackness, Yorkshire | 54.2750 | -0.5167 | Recovery years |
+| Scarborough, Yorkshire | 54.2795 | -0.4051 | Rotunda Museum |
+| Northampton | 52.2405 | -0.9027 | Death and burial |
+
+### Suggested Test Bounds
+
+```yaml
+# Somerset Canal Region (Smith's Discovery)
+bounds: [-2.50, 51.25, -2.25, 51.45]
+
+# Bath and Surrounding Area
+bounds: [-2.50, 51.30, -2.20, 51.50]
+
+# Yorkshire Coast (Later Years)
+bounds: [-0.60, 54.15, -0.25, 54.40]
+```

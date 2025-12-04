@@ -284,3 +284,35 @@ The surveyor's practical wisdom applies: don't speculate about boundaries when y
 - [Walden Woods Project: Brief Chronology](https://www.walden.org/what-we-do/library/thoreau/a-brief-chronology/)
 - [Poetry Foundation: Henry David Thoreau](https://www.poetryfoundation.org/poets/henry-david-thoreau)
 - [Concord Free Public Library: Thoreau Papers](https://concordlibrary.org/special-collections/Fin_Aids/HDT)
+
+---
+
+## Geographic Coordinates (Seed Locations for Testing)
+
+These locations from Thoreau's life can serve as test regions for the Strata application:
+
+| Location | Latitude | Longitude | Notes |
+|----------|----------|-----------|-------|
+| Concord, Massachusetts | 42.4604 | -71.3489 | Birth, life, and death |
+| Walden Pond | 42.4389 | -71.3342 | Famous cabin experiment |
+| Cambridge (Harvard) | 42.3736 | -71.1097 | College education |
+| Mount Katahdin, Maine | 45.9044 | -68.9213 | Wilderness summit |
+| Cape Cod (Provincetown) | 42.0529 | -70.1868 | Coastal explorations |
+| Montreal, Quebec | 45.5017 | -73.5673 | Canada travels |
+| Quebec City, Quebec | 46.8139 | -71.2080 | Canada travels |
+
+### Suggested Test Bounds
+
+```yaml
+# Concord & Walden Pond Area
+bounds: [-71.45, 42.38, -71.25, 42.52]
+
+# Mount Katahdin Region (Baxter State Park)
+bounds: [-69.10, 45.80, -68.75, 46.00]
+
+# Cape Cod (Outer Cape)
+bounds: [-70.25, 41.75, -69.90, 42.10]
+
+# Quebec City Region (Cross-border testing)
+bounds: [-71.40, 46.70, -71.00, 46.90]
+```

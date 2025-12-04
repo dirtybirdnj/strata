@@ -356,3 +356,36 @@ Kelley's insight was that properly visualized data reveals patterns invisible in
 - [Florence Kelley in Chicago 1891-1899 (Northwestern)](https://florencekelley.northwestern.edu/)
 - [Jane Addams Hull-House Museum: Who was Florence Kelley?](https://www.hullhousemuseum.org/hullhouse-blog/2022/2/24/florence-kelley)
 - [NYPL: Florence Kelley Papers](https://archives.nypl.org/mss/6303)
+
+---
+
+## Geographic Coordinates (Seed Locations for Testing)
+
+These locations from Kelley's life can serve as test regions for the Strata application:
+
+| Location | Latitude | Longitude | Notes |
+|----------|----------|-----------|-------|
+| Philadelphia, Pennsylvania | 39.9526 | -75.1652 | Birth and death |
+| Germantown, Philadelphia | 40.0334 | -75.1764 | Death location |
+| Ithaca, New York (Cornell) | 42.4440 | -76.5019 | University education |
+| Zurich, Switzerland | 47.3769 | 8.5417 | Graduate study, marriage |
+| Chicago, Hull House | 41.8719 | -87.6518 | Settlement house, maps and papers |
+| Chicago Nineteenth Ward | 41.8667 | -87.6667 | Hull House Maps survey area |
+| New York City (Henry Street) | 40.7159 | -73.9858 | National Consumers' League HQ |
+| Lower East Side, Manhattan | 40.7150 | -73.9843 | Henry Street Settlement |
+
+### Suggested Test Bounds
+
+```yaml
+# Philadelphia Region (Birth, Death)
+bounds: [-75.30, 39.85, -75.00, 40.10]
+
+# Chicago Hull House Area (Maps and Papers)
+bounds: [-87.75, 41.80, -87.55, 41.95]
+
+# Cornell/Ithaca Region
+bounds: [-76.60, 42.35, -76.40, 42.50]
+
+# Lower Manhattan (Henry Street)
+bounds: [-74.02, 40.70, -73.95, 40.75]
+```

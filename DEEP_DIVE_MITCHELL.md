@@ -378,3 +378,36 @@ Both believed that systematic observation, properly guided, reveals patterns inv
 - [American Physical Society: Maria Mitchell](https://www.aps.org/publications/apsnews/200808/physicshistory.cfm)
 - [Nantucket Historical Association: Maria Mitchell](https://nha.org/research/nantucket-history/history-topics/maria-mitchell/)
 - Renée Bergland, *Maria Mitchell and the Sexing of Science* (2008)
+
+---
+
+## Geographic Coordinates (Seed Locations for Testing)
+
+These locations from Mitchell's life can serve as test regions for the Strata application:
+
+| Location | Latitude | Longitude | Notes |
+|----------|----------|-----------|-------|
+| Nantucket, Massachusetts | 41.2835 | -70.0995 | Birth, comet discovery, burial |
+| Pacific National Bank roof, Nantucket | 41.2836 | -70.0989 | Telescope observation site |
+| Nantucket Atheneum | 41.2831 | -70.0992 | Librarian (1836-1856) |
+| Vassar College, Poughkeepsie, NY | 41.6867 | -73.8945 | Professor and Observatory |
+| Denver, Colorado | 39.7392 | -104.9903 | 1878 Solar Eclipse expedition |
+| Lynn, Massachusetts | 42.4668 | -70.9495 | Final years and death |
+| Berlin, Prussia | 52.5200 | 13.4050 | Met Alexander von Humboldt (1857) |
+| Prospect Hill Cemetery, Nantucket | 41.2703 | -70.1025 | Burial site |
+
+### Suggested Test Bounds
+
+```yaml
+# Nantucket Island (Birth, Discovery, Burial)
+bounds: [-70.20, 41.22, -69.95, 41.32]
+
+# Vassar College/Poughkeepsie Area
+bounds: [-73.95, 41.65, -73.80, 41.75]
+
+# Lynn/North Shore Massachusetts
+bounds: [-71.05, 42.40, -70.85, 42.55]
+
+# Denver Region (Eclipse Expedition)
+bounds: [-105.10, 39.65, -104.85, 39.85]
+```

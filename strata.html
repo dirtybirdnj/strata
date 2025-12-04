@@ -375,23 +375,23 @@ open output/hawaii_islands/svg/fine/combined.svg</code></pre>
     <section id="architecture">
         <div class="container">
             <h2>Architecture</h2>
-            <p>Strata is organized into four named modules, each handling a specific part of the pipeline:</p>
+            <p>Strata is organized into five named modules, each named after historical cartographers and scientists, handling a specific part of the pipeline:</p>
 
             <div class="architecture">
                 <div class="arch-layer">
-                    <h4>CLI & TUI Layer</h4>
-                    <p>User interface components</p>
+                    <h4>Mitchell - TUI Wizard</h4>
+                    <p>"Question everything" - Maria Mitchell's guided observation principle for interactive recipe creation</p>
                     <div class="arch-modules">
-                        <span class="arch-module">strata.cli</span>
-                        <span class="arch-module">strata.tui.app</span>
-                        <span class="arch-module">strata.tui.screens.*</span>
-                        <span class="arch-module">strata.tui.catalog</span>
+                        <span class="arch-module">tui.app</span>
+                        <span class="arch-module">tui.screens.*</span>
+                        <span class="arch-module">tui.catalog</span>
+                        <span class="arch-module">tui.debug</span>
                     </div>
                 </div>
 
                 <div class="arch-layer">
                     <h4>Thoreau - Data Fetching</h4>
-                    <p>"Simplify, simplify" - Downloads and caches geographic data from remote sources</p>
+                    <p>"Go to the source" - Downloads and caches geographic data from authoritative sources</p>
                     <div class="arch-modules">
                         <span class="arch-module">thoreau.census</span>
                         <span class="arch-module">thoreau.quebec</span>
@@ -402,7 +402,7 @@ open output/hawaii_islands/svg/fine/combined.svg</code></pre>
 
                 <div class="arch-layer">
                     <h4>Maury - Pipeline Orchestration</h4>
-                    <p>"The sea has its rivers" - Parses recipes and orchestrates the build process</p>
+                    <p>"Coordinate many sources" - Parses recipes and orchestrates the build process</p>
                     <div class="arch-modules">
                         <span class="arch-module">maury.recipe</span>
                         <span class="arch-module">maury.pipeline</span>
@@ -420,7 +420,7 @@ open output/hawaii_islands/svg/fine/combined.svg</code></pre>
 
                 <div class="arch-layer">
                     <h4>Kelley - Output Generation</h4>
-                    <p>Named for the Kelley Blue Book of cartography - Renders final outputs</p>
+                    <p>"Maps are evidence, not decoration" - Renders final outputs for comprehension</p>
                     <div class="arch-modules">
                         <span class="arch-module">kelley.svg</span>
                     </div>
@@ -491,6 +491,14 @@ open output/hawaii_islands/svg/fine/combined.svg</code></pre>
                         <td>Check a recipe for errors</td>
                     </tr>
                     <tr>
+                        <td><code>strata validate --fix</code></td>
+                        <td>Interactive TUI debugger for recipe errors</td>
+                    </tr>
+                    <tr>
+                        <td><code>strata preview</code></td>
+                        <td>Preview data within bounds (feature counts, quick SVG)</td>
+                    </tr>
+                    <tr>
                         <td><code>strata cache</code></td>
                         <td>Manage local data cache</td>
                     </tr>
@@ -500,6 +508,24 @@ open output/hawaii_islands/svg/fine/combined.svg</code></pre>
                     </tr>
                 </tbody>
             </table>
+
+            <h3>strata preview</h3>
+            <pre><code>strata preview [OPTIONS] RECIPE
+
+Options:
+  --open           Open quick SVG preview in default viewer
+  --output PATH    Save preview SVG to file
+  -v, --verbose    Show detailed feature information</code></pre>
+
+            <h4>Examples</h4>
+            <pre><code><span class="comment"># Show feature counts per source</span>
+strata preview examples/vermont_12x18.strata.yaml
+
+<span class="comment"># Generate and open quick preview</span>
+strata preview examples/lake_champlain.strata.yaml --open
+
+<span class="comment"># Save preview to file</span>
+strata preview recipe.yaml --output preview.svg</code></pre>
 
             <h3>strata build</h3>
             <pre><code>strata build [OPTIONS] RECIPE
@@ -715,13 +741,27 @@ Options:
                     <tr><th>Option</th><th>Type</th><th>Description</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td><code>stroke</code></td><td>Color</td><td>Line color (hex)</td></tr>
+                    <tr><td><code>stroke</code></td><td>Color</td><td>Line/border color (hex)</td></tr>
                     <tr><td><code>stroke_width</code></td><td>Number</td><td>Line width in points</td></tr>
                     <tr><td><code>fill</code></td><td>Color</td><td>Fill color (hex or "none")</td></tr>
                     <tr><td><code>fill_opacity</code></td><td>Number</td><td>Fill opacity (0-1)</td></tr>
-                    <tr><td><code>vary_fill</code></td><td>Boolean</td><td>Auto-vary fill colors per feature</td></tr>
+                    <tr><td><code>fill_by</code></td><td>String</td><td>Color by attribute column</td></tr>
+                    <tr><td><code>color_map</code></td><td>Object</td><td>Attribute-to-color mapping</td></tr>
+                    <tr><td><code>vary_fill</code></td><td>Boolean</td><td>Slight color variation per feature</td></tr>
+                    <tr><td><code>dash_array</code></td><td>String</td><td>Dashed line pattern (e.g., "5,3")</td></tr>
+                    <tr><td><code>marker</code></td><td>String</td><td>Point marker: circle, square, diamond, triangle, cross, x</td></tr>
+                    <tr><td><code>marker_size</code></td><td>Number</td><td>Point marker size</td></tr>
                 </tbody>
             </table>
+
+            <h4>Color by Attribute Example</h4>
+            <pre><code><span class="keyword">style:</span>
+  <span class="keyword">fill_by:</span> <span class="string">"COUNTYFP"</span>  <span class="comment"># Color by county FIPS code</span>
+  <span class="keyword">color_map:</span>
+    <span class="string">"001"</span>: <span class="string">"#e8f5e9"</span>
+    <span class="string">"003"</span>: <span class="string">"#c8e6c9"</span>
+    <span class="string">"005"</span>: <span class="string">"#a5d6a7"</span>
+  <span class="keyword">vary_fill:</span> <span class="keyword">true</span>  <span class="comment"># Subtle variation within each group</span></code></pre>
         </div>
     </section>
 
@@ -789,6 +829,22 @@ Options:
                     <tr><td><code>canada:canvec/hydro</code></td><td>National hydro (1:1M scale)</td><td>~150 MB</td></tr>
                 </tbody>
             </table>
+
+            <h4>NHN (National Hydro Network)</h4>
+            <p>High-resolution watershed-based hydrology data. Format: <code>canada:nhn/{workunit}</code></p>
+            <table>
+                <thead>
+                    <tr><th>Workunit</th><th>Description</th><th>Coverage</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>02OJ000</code></td><td>Richelieu River</td><td>Lake Champlain to St. Lawrence</td></tr>
+                    <tr><td><code>02OHA00</code></td><td>Lake Champlain (West)</td><td>Quebec portion, western shore</td></tr>
+                    <tr><td><code>02OHB00</code></td><td>Lake Champlain (East)</td><td>Quebec portion, Missisquoi Bay</td></tr>
+                    <tr><td><code>02OG000</code></td><td>Yamaska River</td><td>Eastern Townships</td></tr>
+                    <tr><td><code>02OE000</code></td><td>St-François River</td><td>Quebec-Vermont border region</td></tr>
+                </tbody>
+            </table>
+            <p><span class="badge badge-info">Tip</span> For rivers (linear features), append <code>/rivers</code>: <code>canada:nhn/02OJ000/rivers</code></p>
 
             <h4>NRN (National Road Network)</h4>
             <p>Available for all 13 provinces and territories:</p>

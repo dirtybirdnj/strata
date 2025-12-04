@@ -344,3 +344,35 @@ Humboldt's greatest insight was that isolated data points become meaningful only
 - [Smithsonian: Who Was Alexander von Humboldt?](https://www.smithsonianmag.com/smithsonian-institution/who-was-alexander-von-humboldt-180974473/)
 - [NEH: Humboldt in the New World](https://www.neh.gov/humanities/2012/novemberdecember/feature/humboldt-in-the-new-world)
 - Andrea Wulf, *The Invention of Nature: Alexander von Humboldt's New World* (2015)
+
+---
+
+## Geographic Coordinates (Seed Locations for Testing)
+
+These locations from Humboldt's expeditions can serve as test regions for the Strata application:
+
+| Location | Latitude | Longitude | Notes |
+|----------|----------|-----------|-------|
+| Berlin, Prussia | 52.5200 | 13.4050 | Birth and death |
+| Cumaná, Venezuela | 10.4631 | -64.1676 | First stepped on South American soil |
+| Caracas, Venezuela | 10.4806 | -66.9036 | Venezuelan exploration base |
+| Mount Chimborazo, Ecuador | -1.4686 | -78.8157 | World altitude record (1802) |
+| Quito, Ecuador | -0.1807 | -78.4678 | Andean expedition base |
+| Lima, Peru | -12.0464 | -77.0428 | Observed transit of Mercury |
+| Mexico City | 19.4326 | -99.1332 | New Spain survey |
+| Philadelphia | 39.9526 | -75.1652 | Met Thomas Jefferson |
+| Washington D.C. | 38.9072 | -77.0369 | Met President Jefferson |
+| Paris, France | 48.8566 | 2.3522 | 23 years of publication work |
+
+### Suggested Test Bounds
+
+```yaml
+# Philadelphia/Washington D.C. Region (US Visit)
+bounds: [-77.20, 38.80, -75.00, 40.10]
+
+# Caracas Region (Venezuelan Exploration)
+bounds: [-67.20, 10.30, -66.70, 10.60]
+
+# Quito/Chimborazo Region (Andean Expeditions)
+bounds: [-78.90, -1.60, -78.30, -0.10]
+```

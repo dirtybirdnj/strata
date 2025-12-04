@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Florence Kelley - Strata Historical Figure</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&display=swap');
+
+        :root {
+            --parchment: #f4e4bc;
+            --parchment-dark: #e8d4a8;
+            --ink: #2c1810;
+            --ink-light: #4a3728;
+            --gold: #8b7355;
+            --red: #8b2500;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Crimson Text', Georgia, serif;
+            background: var(--parchment);
+            color: var(--ink);
+            line-height: 1.7;
+            font-size: 18px;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
+
+        header {
+            background: linear-gradient(180deg, var(--parchment-dark) 0%, var(--parchment) 100%);
+            padding: 3rem 0;
+            text-align: center;
+            border-bottom: 3px double var(--gold);
+        }
+
+        .back-link {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            color: var(--gold);
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .back-link:hover { color: var(--red); }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: var(--ink);
+            margin-bottom: 0.5rem;
+        }
+
+        .dates {
+            font-family: 'IM Fell English', serif;
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--ink-light);
+        }
+
+        .module-badge {
+            display: inline-block;
+            background: var(--red);
+            color: var(--parchment);
+            padding: 0.3rem 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        section { padding: 3rem 0; border-bottom: 1px solid var(--gold); }
+
+        h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: var(--ink);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            letter-spacing: 0.1em;
+        }
+
+        h2::before, h2::after { content: '—'; margin: 0 0.5rem; color: var(--gold); }
+
+        h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: var(--red);
+            margin: 1.5rem 0 1rem;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 0.5rem;
+        }
+
+        p { margin-bottom: 1rem; text-align: justify; }
+
+        blockquote {
+            background: linear-gradient(90deg, var(--parchment-dark), transparent);
+            border-left: 3px solid var(--gold);
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            color: var(--ink-light);
+        }
+
+        blockquote cite {
+            display: block;
+            text-align: right;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            color: var(--gold);
+        }
+
+        table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td { padding: 0.75rem 1rem; text-align: left; border: 1px solid var(--gold); }
+        th { background: var(--parchment-dark); font-family: 'Cinzel', serif; font-size: 0.9rem; }
+
+        pre {
+            background: #fffef8;
+            border: 1px solid var(--gold);
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            background: var(--parchment-dark);
+            padding: 0.1rem 0.3rem;
+            font-size: 0.9em;
+        }
+
+        pre code { background: none; padding: 0; }
+
+        .ornament { text-align: center; font-size: 1.5rem; color: var(--gold); margin: 2rem 0; }
+
+        .timeline-item {
+            margin: 1.5rem 0;
+            padding-left: 1.5rem;
+            border-left: 2px solid var(--gold);
+        }
+
+        .timeline-year {
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            color: var(--red);
+        }
+
+        footer {
+            background: var(--parchment-dark);
+            padding: 2rem 0;
+            text-align: center;
+            border-top: 3px double var(--gold);
+        }
+
+        footer p {
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            color: var(--ink-light);
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; }
+            .container { padding: 0 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="historical-docs.html" class="back-link">&larr; Return to Main Documentation</a>
+            <h1>Florence Kelley</h1>
+            <p class="dates">12 September 1859 — 17 February 1932</p>
+            <p style="font-family: 'IM Fell English', serif; font-style: italic; margin-top: 0.5rem;">
+                Social Reformer • Pioneer of Social Mapping
+            </p>
+            <span class="module-badge">strata.kelley</span>
+        </div>
+    </header>
+
+    <section>
+        <div class="container">
+            <h2>The Reformer's Principle</h2>
+
+            <blockquote>
+                "So that the plain man who pays for the census gets what he pays for, statistical data in a form in which they are ready for him to understand."
+                <cite>— Florence Kelley</cite>
+            </blockquote>
+
+            <p>A map is not decoration. A map is evidence. Every color choice, every line weight must serve the goal of comprehension. When I directed the Hull House Maps and Papers in 1895, we surveyed every building in Chicago's Nineteenth Ward—recording wages, nationalities, employment. Then we made those patterns visible.</p>
+
+            <p>The <code>kelley</code> module embodies this principle: <strong>visualization serves comprehension</strong>.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Timeline</h2>
+
+            <div class="timeline-item">
+                <span class="timeline-year">1859</span> — Born in Philadelphia; father was Congressman "Pig Iron" Kelley
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1882</span> — Graduated from Cornell University
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1883-1886</span> — University of Zurich; translated Engels; married
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1891</span> — Arrived at Hull House, Chicago, with three children
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1893</span> — Appointed first female Chief Factory Inspector of Illinois
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1895</span> — Published <em>Hull House Maps and Papers</em>—first social mapping in America
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1899</span> — Became General Secretary of National Consumers' League
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1932</span> — Died in Germantown, Philadelphia
+            </div>
+
+            <div class="ornament">▤ ▥ ▦</div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Key Locations</h2>
+
+            <table>
+                <thead>
+                    <tr><th>Location</th><th>Latitude</th><th>Longitude</th><th>Significance</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Philadelphia, Pennsylvania</td><td>39.9526</td><td>-75.1652</td><td>Birth and death</td></tr>
+                    <tr><td>Ithaca, New York (Cornell)</td><td>42.4440</td><td>-76.5019</td><td>University education</td></tr>
+                    <tr><td>Zurich, Switzerland</td><td>47.3769</td><td>8.5417</td><td>Graduate study</td></tr>
+                    <tr><td>Chicago, Hull House</td><td>41.8719</td><td>-87.6518</td><td>Settlement house, maps and papers</td></tr>
+                    <tr><td>New York City (Henry Street)</td><td>40.7159</td><td>-73.9858</td><td>National Consumers' League HQ</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Test Bounds for Strata</h3>
+            <pre><code># Philadelphia Region (Birth, Death)
+bounds: [-75.30, 39.85, -75.00, 40.10]
+
+# Chicago Hull House Area (Maps and Papers)
+bounds: [-87.75, 41.80, -87.55, 41.95]
+
+# Cornell/Ithaca Region
+bounds: [-76.60, 42.35, -76.40, 42.50]
+
+# Lower Manhattan (Henry Street)
+bounds: [-74.02, 40.70, -73.95, 40.75]</code></pre>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Connection to Strata</h2>
+
+            <p>Kelley embodies the <strong>visualization</strong> philosophy of <code>strata.kelley</code>: <strong>maps are evidence, not decoration</strong>.</p>
+
+            <p>Just as Kelley transformed raw census data and door-to-door surveys into maps that revealed hidden patterns—the clustering of nationalities, the geography of poverty—the Kelley module transforms processed geographic data into meaningful visualizations:</p>
+
+            <ul style="margin: 1rem 0 1rem 2rem;">
+                <li>SVG generation that serves comprehension</li>
+                <li>Color schemes with purpose</li>
+                <li>Layer ordering for clarity</li>
+                <li>Output formats accessible to "the plain man"</li>
+            </ul>
+
+            <p>Kelley's insight was that properly visualized data reveals patterns invisible in tables and numbers. A map of wages tells a story that columns of figures cannot.</p>
+
+            <div class="ornament">▤ ▥ ▦ ▧ ▨</div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p><em>"Investigate, educate, legislate, enforce."</em></p>
+            <p style="margin-top: 1rem;"><a href="historical-docs.html" style="color: var(--gold);">Return to Main Documentation</a></p>
+        </div>
+    </footer>
+</body>
+</html>
