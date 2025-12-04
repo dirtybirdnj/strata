@@ -8,6 +8,7 @@ by having to pull so much harder before the water got underneath to help me."
 """
 
 from .census import fetch_census, parse_census_uri, estimate_census_size
+from .quebec import fetch_quebec, parse_quebec_uri, estimate_quebec_size
 from .cache import get_cache_dir, is_cached, get_cached_path, clear_cache
 
 __all__ = [
@@ -16,6 +17,9 @@ __all__ = [
     "fetch_census",
     "parse_census_uri",
     "estimate_census_size",
+    "fetch_quebec",
+    "parse_quebec_uri",
+    "estimate_quebec_size",
     "get_cache_dir",
     "is_cached",
     "get_cached_path",
@@ -47,7 +51,7 @@ def fetch(uri: str, force: bool = False) -> str:
     elif uri.startswith("canvec:"):
         raise NotImplementedError("CanVec fetching not yet implemented")
     elif uri.startswith("quebec:"):
-        raise NotImplementedError("Quebec data fetching not yet implemented")
+        return fetch_quebec(uri, force=force)
     elif uri.startswith("file:"):
         # Local file - validate and return the path
         local_path = uri[5:]  # Strip "file:" prefix
@@ -82,7 +86,7 @@ def estimate_size(uri: str) -> dict:
     elif uri.startswith("canvec:"):
         return {"uri": uri, "estimated_size_mb": 50.0, "cached": False, "note": "CanVec not yet implemented"}
     elif uri.startswith("quebec:"):
-        return {"uri": uri, "estimated_size_mb": 20.0, "cached": False, "note": "Quebec not yet implemented"}
+        return estimate_quebec_size(uri)
     elif uri.startswith("file:"):
         from pathlib import Path
         path = Path(uri[5:])

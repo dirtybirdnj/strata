@@ -88,26 +88,39 @@ Features:
 
 ## Feature Gaps
 
-### 1. Quebec Data Source
+### 1. Quebec Data Source ✅ **Implemented**
 
 **vt-geodata**: Uses custom Quebec municipality and MRC (regional county municipality) boundary data.
 
-**Strata**: No Quebec source handler.
+**Strata**: Quebec source handler implemented in `thoreau/quebec.py`.
 
-**Implementation needed**:
-- Add `quebec:municipalities` URI handler in `thoreau/`
-- Quebec data sources:
-  - Statistics Canada boundary files
-  - Quebec Open Data Portal (données ouvertes)
-  - Natural Resources Canada CanVec data
+**Data source**: Quebec Données ouvertes (donneesquebec.ca)
+- Administrative boundaries from MERN (Ministère de l'Énergie et des Ressources naturelles)
+- License: CC-BY 4.0
+- Updated regularly (last update: 2025-11-21)
+
+**Available layers**:
+- `quebec:municipalities` - 2,263 municipal boundaries
+- `quebec:mrc` - 138 Regional County Municipalities (MRC)
+- `quebec:regions` - 21 Administrative regions
+- `quebec:metropolitan` - Metropolitan communities
 
 **Example recipe syntax**:
 ```yaml
 sources:
   quebec_muni:
-    uri: quebec:municipalities/2023
+    uri: quebec:municipalities
     description: Quebec municipal boundaries
+
+  quebec_mrc:
+    uri: quebec:mrc
+    description: Quebec MRC boundaries
 ```
+
+**Key columns**:
+- Municipalities: `MUS_NM_MUN` (name), `MUS_NM_MRC` (MRC name), `MUS_NM_REG` (region)
+- MRC: `MRS_NM_MRC` (name), `MRS_NM_REG` (region)
+- Regions: `RES_NM_REG` (name)
 
 ---
 
@@ -249,9 +262,9 @@ sources:
 | Road classification | High | Low | ✅ **Implemented** |
 | Color maps | Medium | Medium | ✅ **Implemented** |
 | Linear water | Low | None | ✅ **Implemented** |
-| Quebec source | Medium | High | ❌ Not started |
-| Island detection | Medium | Medium | ❌ Not started |
-| Geometry merge by attr | Low | Low | ❌ Not started |
+| Island detection | Medium | Medium | ✅ **Implemented** |
+| Quebec source | Medium | High | ✅ **Implemented** |
+| Geometry merge/dissolve | Low | Low | ✅ **Implemented** |
 | Interactive bounds | Low | High | ❌ Not started |
 
 ## Recommended Implementation Order
@@ -259,5 +272,6 @@ sources:
 1. ~~Attribute filtering (HYDROID, MTFCC)~~ ✅ **Done**
 2. ~~Color maps~~ ✅ **Done**
 3. ~~Linear water (rivers)~~ ✅ **Done**
-4. Island detection - accurate lake rendering
-5. Quebec source - complete regional map coverage
+4. ~~Island detection~~ ✅ **Done** - extract_islands, remove_holes operations
+5. ~~Quebec source~~ ✅ **Done** - quebec:municipalities, quebec:mrc, quebec:regions
+6. Interactive bounds TUI - future enhancement
