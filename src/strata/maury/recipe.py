@@ -36,6 +36,9 @@ class StyleConfig(BaseModel):
     stroke: str = "#333333"
     stroke_width: float = 1.0
     fill: str | None = None
+    fill_by: str | None = None  # Column name to determine fill color
+    color_map: dict[str, str] | None = None  # Mapping of column values to colors
+    vary_fill: bool = True  # Whether to vary fill colors slightly per feature
     opacity: float = 1.0
     dash_array: list[float] | None = None
 

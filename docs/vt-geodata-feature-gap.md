@@ -8,11 +8,13 @@ Strata can now produce Vermont regional maps with:
 - ✅ Vermont 256 towns with water cutouts
 - ✅ Neighboring states (NY, NH, MA, ME) for regional context
 - ✅ Water bodies from TIGER/Line areawater
+- ✅ Rivers and streams from TIGER/Line linearwater
 - ✅ Primary and secondary roads from TIGER/Line prisecroads
 - ✅ Multiple output quality levels
 - ✅ Per-layer and combined SVG output
-- ✅ **NEW** Attribute-based filtering (HYDROID, FULLNAME, etc.)
-- ✅ **NEW** Road classification filtering (RTTYP, MTFCC)
+- ✅ Attribute-based filtering (HYDROID, FULLNAME, etc.)
+- ✅ Road classification filtering (RTTYP, MTFCC)
+- ✅ **NEW** County-based color maps (fill_by + color_map)
 
 ## Implemented Features
 
@@ -57,6 +59,32 @@ sources:
 | M | Common name | Main St, Lake Rd |
 | O | Other | Old Rte 101 |
 | C | County | County Rd 5 |
+
+### County-Based Color Maps
+
+Strata supports attribute-based fill coloring:
+
+```yaml
+layers:
+  - name: vt_towns
+    source: vt_towns
+    style:
+      stroke: "#424242"
+      stroke_width: 0.5
+      fill: "#e0e0e0"  # Fallback color
+      fill_by: COUNTYFP  # Column to use for color lookup
+      color_map:
+        "001": "#a5d6a7"  # Addison - light green
+        "003": "#90caf9"  # Bennington - light blue
+        "005": "#ffcc80"  # Caledonia - orange
+        "007": "#ce93d8"  # Chittenden - purple
+        # ... etc
+```
+
+Features:
+- `fill_by`: Specify which column determines fill color
+- `color_map`: Dict mapping column values to hex colors
+- `vary_fill`: Boolean (default true) to add slight color variation per feature
 
 ## Feature Gaps
 
@@ -219,16 +247,17 @@ sources:
 |---------|----------|------------|--------|
 | HYDROID filtering | High | Low | ✅ **Implemented** |
 | Road classification | High | Low | ✅ **Implemented** |
-| Color maps | Medium | Medium | ❌ Not started |
+| Color maps | Medium | Medium | ✅ **Implemented** |
+| Linear water | Low | None | ✅ **Implemented** |
 | Quebec source | Medium | High | ❌ Not started |
 | Island detection | Medium | Medium | ❌ Not started |
-| Linear water | Low | None | ✅ Already supported |
 | Geometry merge by attr | Low | Low | ❌ Not started |
 | Interactive bounds | Low | High | ❌ Not started |
 
 ## Recommended Implementation Order
 
 1. ~~Attribute filtering (HYDROID, MTFCC)~~ ✅ **Done**
-2. Color maps - visual parity with vt-geodata
-3. Island detection - accurate lake rendering
-4. Quebec source - complete regional map coverage
+2. ~~Color maps~~ ✅ **Done**
+3. ~~Linear water (rivers)~~ ✅ **Done**
+4. Island detection - accurate lake rendering
+5. Quebec source - complete regional map coverage

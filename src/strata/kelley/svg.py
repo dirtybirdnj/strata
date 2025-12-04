@@ -56,6 +56,70 @@ def vary_color(base_hex: str, index: int, variation: float = 0.15) -> str:
     return f"#{int(new_r * 255):02x}{int(new_g * 255):02x}{int(new_b * 255):02x}"
 
 
+# Vermont county FIPS to color mapping (matches vt-geodata palette)
+VT_COUNTY_COLORS = {
+    "001": "#a5d6a7",  # Addison - light green
+    "003": "#90caf9",  # Bennington - light blue
+    "005": "#ffcc80",  # Caledonia - orange
+    "007": "#ce93d8",  # Chittenden - purple
+    "009": "#80deea",  # Essex - cyan
+    "011": "#fff59d",  # Franklin - yellow
+    "013": "#ef9a9a",  # Grand Isle - red
+    "015": "#c5e1a5",  # Lamoille - lime
+    "017": "#b39ddb",  # Orange - deep purple
+    "019": "#ffab91",  # Orleans - deep orange
+    "021": "#81d4fa",  # Rutland - light blue
+    "023": "#a5d6a7",  # Washington - green
+    "025": "#ffe082",  # Windham - amber
+    "027": "#f48fb1",  # Windsor - pink
+}
+
+
+def get_feature_color(
+    row: Any,
+    style: dict,
+    index: int,
+) -> str:
+    """
+    Determine the fill color for a feature based on style configuration.
+
+    Args:
+        row: Feature row (named tuple from itertuples)
+        style: Style dict with fill, fill_by, color_map options
+        index: Feature index for vary_color fallback
+
+    Returns:
+        Hex color string or "none"
+    """
+    base_fill = style.get("fill", "none")
+    fill_by = style.get("fill_by")
+    color_map = style.get("color_map")
+    vary_fill = style.get("vary_fill", True)
+
+    # If no fill, return "none"
+    if not base_fill or base_fill.lower() == "none":
+        return "none"
+
+    # If fill_by is specified, look up the color from color_map
+    if fill_by and color_map:
+        # Get the attribute value
+        attr_value = getattr(row, fill_by, None)
+        if attr_value is not None:
+            # Convert to string for dict lookup
+            attr_str = str(attr_value)
+            if attr_str in color_map:
+                base_color = color_map[attr_str]
+                # Optionally vary the mapped color
+                if vary_fill:
+                    return vary_color(base_color, index, variation=0.08)
+                return base_color
+
+    # Fall back to base fill with optional variation
+    if vary_fill:
+        return vary_color(base_fill, index)
+    return base_fill
+
+
 class SVGExporter:
     """
     Export GeoDataFrames to SVG optimized for pen plotters.
@@ -277,6 +341,7 @@ class SVGExporter:
         stroke_width: float = 0.5,
         fill: str = "none",
         bounds: tuple | None = None,
+        style: dict | None = None,
     ) -> None:
         """
         Export a single layer to SVG.
@@ -288,9 +353,18 @@ class SVGExporter:
             stroke_width: Stroke width in points
             fill: Fill color or "none"
             bounds: Optional fixed bounds; if None, uses gdf bounds
+            style: Full style dict for color_map support
         """
         output_path = Path(output_path)
         output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Build style dict if not provided
+        if style is None:
+            style = {
+                "stroke": stroke,
+                "stroke_width": stroke_width,
+                "fill": fill,
+            }
 
         # Calculate transform
         if bounds is None:
@@ -310,11 +384,8 @@ class SVGExporter:
             geom = row.geometry
             paths = self._geometry_to_paths(geom, scale_x, scale_y, offset_x, offset_y)
 
-            # Vary fill color if it's not "none"
-            if fill and fill.lower() != "none":
-                feature_fill = vary_color(fill, idx)
-            else:
-                feature_fill = fill
+            # Get feature color using the new function
+            feature_fill = get_feature_color(row, style, idx)
 
             for path_data in paths:
                 svg_parts.append(
@@ -379,8 +450,6 @@ class SVGExporter:
         for layer_name, (gdf, style) in layers.items():
             stroke = style.get("stroke", "#000000")
             stroke_width = style.get("stroke_width", 0.5)
-            base_fill = style.get("fill", "none")
-            vary_fill = style.get("vary_fill", True)  # Default to varying fill colors
 
             group_id = layer_name.replace(" ", "_").replace("-", "_")
             svg_parts.append(f'  <g id="{group_id}">')
@@ -389,11 +458,8 @@ class SVGExporter:
                 geom = row.geometry
                 paths = self._geometry_to_paths(geom, scale_x, scale_y, offset_x, offset_y)
 
-                # Vary fill color if it's not "none"
-                if base_fill and base_fill.lower() != "none" and vary_fill:
-                    fill = vary_color(base_fill, idx)
-                else:
-                    fill = base_fill
+                # Get feature color using the new function (supports color_map)
+                fill = get_feature_color(row, style, idx)
 
                 for path_data in paths:
                     svg_parts.append(
@@ -481,6 +547,7 @@ def render_svg(
                 stroke_width=style.get("stroke_width", 0.5),
                 fill=style.get("fill", "none"),
                 bounds=bounds,
+                style=style,  # Pass full style for color_map support
             )
             created_files.append(filepath)
 

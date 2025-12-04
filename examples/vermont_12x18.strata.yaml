@@ -139,7 +139,7 @@ layers:
       fill: none
     order: 5
 
-  # Layer 6: Vermont towns with water cutouts
+  # Layer 6: Vermont towns with water cutouts, colored by county
   - name: vt_towns
     source: vt_towns
     operations:
@@ -151,7 +151,23 @@ layers:
     style:
       stroke: "#424242"
       stroke_width: 0.5
-      fill: none
+      fill: "#e0e0e0"  # Base fill (used if county not in color_map)
+      fill_by: COUNTYFP  # Color by county FIPS code
+      color_map:
+        "001": "#a5d6a7"  # Addison - light green
+        "003": "#90caf9"  # Bennington - light blue
+        "005": "#ffcc80"  # Caledonia - orange
+        "007": "#ce93d8"  # Chittenden - purple
+        "009": "#80deea"  # Essex - cyan
+        "011": "#fff59d"  # Franklin - yellow
+        "013": "#ef9a9a"  # Grand Isle - red
+        "015": "#c5e1a5"  # Lamoille - lime
+        "017": "#b39ddb"  # Orange - deep purple
+        "019": "#ffab91"  # Orleans - deep orange
+        "021": "#81d4fa"  # Rutland - light blue
+        "023": "#a5d6a7"  # Washington - green
+        "025": "#ffe082"  # Windham - amber
+        "027": "#f48fb1"  # Windsor - pink
     order: 6
 
   # Layer 7: Regional roads (all states combined, drawn on top)
