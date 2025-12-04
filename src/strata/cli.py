@@ -374,17 +374,105 @@ def cache():
 @cache.command("list")
 def cache_list():
     """List cached data."""
-    # TODO: Implement cache listing
-    console.print("[yellow]Cache list not yet implemented[/]")
+    from strata.thoreau import get_cache_dir
+    from pathlib import Path
+
+    cache_dir = get_cache_dir()
+
+    if not cache_dir.exists():
+        console.print("[dim]Cache is empty[/]")
+        return
+
+    # Find all cached datasets
+    total_size = 0
+    datasets = []
+
+    for scheme_dir in cache_dir.iterdir():
+        if not scheme_dir.is_dir():
+            continue
+
+        for item in scheme_dir.rglob("*.shp"):
+            # Get the parent directory (the dataset folder)
+            dataset_dir = item.parent
+            uri = f"{scheme_dir.name}:{dataset_dir.relative_to(scheme_dir)}"
+
+            # Calculate size of all files in this directory
+            size = sum(f.stat().st_size for f in dataset_dir.iterdir() if f.is_file())
+            total_size += size
+
+            datasets.append((uri, size))
+
+    if not datasets:
+        console.print("[dim]Cache is empty[/]")
+        return
+
+    console.print(f"\n[bold]Cached datasets:[/] ({len(datasets)} items)\n")
+    for uri, size in sorted(datasets):
+        size_mb = size / 1024 / 1024
+        console.print(f"  {uri} [dim]({size_mb:.1f} MB)[/]")
+
+    console.print(f"\n[bold]Total:[/] {total_size / 1024 / 1024:.1f} MB")
 
 
 @cache.command("clear")
 @click.argument("source", required=False)
 @click.option("--all", "clear_all", is_flag=True, help="Clear all cached data")
-def cache_clear(source: str | None, clear_all: bool):
-    """Clear cache."""
-    # TODO: Implement cache clearing
-    console.print("[yellow]Cache clear not yet implemented[/]")
+@click.option("--yes", "-y", is_flag=True, help="Skip confirmation prompt")
+def cache_clear(source: str | None, clear_all: bool, yes: bool):
+    """Clear cached data.
+
+    Clear a specific source or all cached data.
+
+    Examples:
+        strata cache clear --all          Clear all cached data
+        strata cache clear census:tiger   Clear all TIGER data
+    """
+    from strata.thoreau import get_cache_dir, clear_cache
+
+    cache_dir = get_cache_dir()
+
+    if not cache_dir.exists():
+        console.print("[dim]Cache is already empty[/]")
+        return
+
+    if clear_all:
+        # Calculate total size
+        total_size = sum(f.stat().st_size for f in cache_dir.rglob("*") if f.is_file())
+        size_mb = total_size / 1024 / 1024
+
+        if not yes:
+            console.print(f"[yellow]This will delete {size_mb:.1f} MB of cached data.[/]")
+            if not click.confirm("Continue?"):
+                console.print("[dim]Cancelled[/]")
+                return
+
+        clear_cache()
+        console.print(f"[green]✓[/] Cleared {size_mb:.1f} MB from cache")
+
+    elif source:
+        # Clear specific source
+        from strata.thoreau import get_cached_path
+        cache_path = get_cached_path(source)
+
+        if not cache_path.exists():
+            console.print(f"[yellow]Source not in cache:[/] {source}")
+            return
+
+        size = sum(f.stat().st_size for f in cache_path.rglob("*") if f.is_file())
+        size_mb = size / 1024 / 1024
+
+        if not yes:
+            console.print(f"[yellow]This will delete {size_mb:.1f} MB.[/]")
+            if not click.confirm("Continue?"):
+                console.print("[dim]Cancelled[/]")
+                return
+
+        clear_cache(source)
+        console.print(f"[green]✓[/] Cleared {source} ({size_mb:.1f} MB)")
+
+    else:
+        console.print("Specify --all to clear all cache, or provide a source URI.")
+        console.print("\nUse [bold]strata cache list[/] to see cached data.")
 
 
 @cache.command("path")

@@ -8,7 +8,7 @@ by having to pull so much harder before the water got underneath to help me."
 """
 
 from .census import fetch_census, parse_census_uri, estimate_census_size
-from .cache import get_cache_dir, is_cached, get_cached_path
+from .cache import get_cache_dir, is_cached, get_cached_path, clear_cache
 
 __all__ = [
     "fetch",
@@ -19,6 +19,7 @@ __all__ = [
     "get_cache_dir",
     "is_cached",
     "get_cached_path",
+    "clear_cache",
 ]
 
 
