@@ -45,7 +45,7 @@ strata/
 | `strata preview <recipe>` | ✅ Working | Preview data within bounds |
 | `strata cache list` | ✅ Working | Show cached datasets |
 | `strata cache clear` | ✅ Working | Clear cache |
-| `strata validate <recipe>` | 🟡 Partial | Basic validation only |
+| `strata validate <recipe>` | 🟡 Partial | Basic validation only (see improvement note below) |
 | `strata fetch <recipe>` | ❌ Not implemented | Download without processing |
 | `strata sources list` | ❌ Not implemented | List available sources |
 | `strata sources search` | ❌ Not implemented | Search for sources |
@@ -262,6 +262,20 @@ open output/vermont_plotter/svg/medium_detail/combined.svg
 # Check cache
 strata cache list
 ```
+
+---
+
+## Next Improvement: Recipe Validation
+
+**Priority:** High (quick win)
+
+The `strata validate` command should be enhanced to:
+1. Validate all source URIs are well-formed and reference known data sources
+2. Check that all layer `source` references point to defined sources
+3. Verify `filter` field names exist in the source schema
+4. Confirm `operations` reference valid target sources (e.g., `subtract` targets)
+
+This would catch typos early and provide clear error messages instead of cryptic failures mid-pipeline during `prepare` or `build`.
 
 ---
 
