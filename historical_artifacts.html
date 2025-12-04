@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strata Historical Artifacts Collection</title>
+    <style>
+        :root {
+            --parchment: #f4e4bc;
+            --parchment-dark: #e8d4a8;
+            --ink: #2c1810;
+            --ink-light: #5c4030;
+            --accent: #8b4513;
+            --border: #c9a86c;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, var(--parchment) 0%, var(--parchment-dark) 100%);
+            color: var(--ink);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 3rem 1rem;
+            border-bottom: 3px double var(--border);
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: normal;
+            letter-spacing: 0.1em;
+            margin: 0 0 0.5rem 0;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-style: italic;
+            font-size: 1.2rem;
+            color: var(--ink-light);
+        }
+
+        .intro {
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            text-align: center;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        .toc {
+            background: rgba(255,255,255,0.3);
+            border: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+            margin: 2rem auto;
+            max-width: 600px;
+        }
+
+        .toc h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            columns: 2;
+        }
+
+        .toc li {
+            padding: 0.3rem 0;
+        }
+
+        .toc a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        .person-section {
+            background: rgba(255,255,255,0.4);
+            border: 2px solid var(--border);
+            margin: 3rem 0;
+            padding: 2rem;
+        }
+
+        .person-header {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .portrait-container {
+            flex-shrink: 0;
+        }
+
+        .portrait {
+            max-width: 200px;
+            height: auto;
+            border: 4px solid var(--border);
+            box-shadow: 4px 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .person-info {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .person-info h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.8rem;
+            color: var(--accent);
+        }
+
+        .dates {
+            font-style: italic;
+            color: var(--ink-light);
+            margin-bottom: 1rem;
+        }
+
+        .module-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: var(--parchment);
+            padding: 0.3rem 0.8rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .role {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .bio {
+            line-height: 1.7;
+        }
+
+        .artifacts {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px dashed var(--border);
+        }
+
+        .artifacts h3 {
+            margin-top: 0;
+            color: var(--accent);
+        }
+
+        .artifact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .artifact-card {
+            background: rgba(255,255,255,0.5);
+            border: 1px solid var(--border);
+            padding: 1rem;
+        }
+
+        .artifact-card img {
+            width: 100%;
+            height: auto;
+            border: 1px solid var(--border);
+            margin-bottom: 1rem;
+        }
+
+        .artifact-card h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1rem;
+        }
+
+        .artifact-meta {
+            font-size: 0.85rem;
+            color: var(--ink-light);
+        }
+
+        .artifact-meta dt {
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+
+        .artifact-meta dd {
+            margin: 0;
+        }
+
+        .citation {
+            background: rgba(0,0,0,0.05);
+            padding: 1rem;
+            margin-top: 1.5rem;
+            border-left: 3px solid var(--accent);
+            font-size: 0.9rem;
+        }
+
+        .citation h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .citation a {
+            color: var(--accent);
+            word-break: break-all;
+        }
+
+        .license-tag {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--parchment);
+            padding: 0.2rem 0.5rem;
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .license-tag.cc0 { background: #4caf50; }
+        .license-tag.cc-by-sa { background: #ff9800; }
+        .license-tag.public-domain { background: #2196f3; }
+
+        .quote {
+            font-style: italic;
+            padding: 1rem 1.5rem;
+            border-left: 3px solid var(--accent);
+            margin: 1rem 0;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .quote-attribution {
+            text-align: right;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem 1rem;
+            border-top: 3px double var(--border);
+            margin-top: 3rem;
+        }
+
+        footer p {
+            margin: 0.5rem 0;
+            color: var(--ink-light);
+        }
+
+        .usage-notes {
+            background: rgba(255,255,255,0.4);
+            border: 2px solid var(--border);
+            padding: 2rem;
+            margin: 3rem 0;
+        }
+
+        .usage-notes h2 {
+            margin-top: 0;
+            color: var(--accent);
+        }
+
+        .usage-notes ul {
+            line-height: 1.8;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            background: rgba(139, 69, 19, 0.1);
+        }
+
+        @media (max-width: 600px) {
+            .person-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .toc ul {
+                columns: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Strata Historical Artifacts</h1>
+            <p class="subtitle">A Collection of Public Domain Imagery for Narrative Branding</p>
+        </header>
+
+        <div class="intro">
+            <p>
+                This collection documents the historical figures whose work and philosophy
+                inspired the design of Strata's modular architecture. Each person represents
+                a fundamental aspect of cartographic data processing, from data acquisition
+                to final visualization.
+            </p>
+        </div>
+
+        <nav class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#smith">William Smith</a></li>
+                <li><a href="#thoreau">Henry David Thoreau</a></li>
+                <li><a href="#humboldt">Alexander von Humboldt</a></li>
+                <li><a href="#maury">Matthew Fontaine Maury</a></li>
+                <li><a href="#kelley">Florence Kelley</a></li>
+                <li><a href="#usage">Usage Notes</a></li>
+            </ul>
+        </nav>
+
+        <!-- WILLIAM SMITH -->
+        <section id="smith" class="person-section">
+            <div class="person-header">
+                <div class="portrait-container">
+                    <img src="historical-assets/smith_portrait.jpg" alt="Portrait of William Smith" class="portrait">
+                </div>
+                <div class="person-info">
+                    <h2>William Smith</h2>
+                    <p class="dates">23 March 1769 &ndash; 28 August 1839</p>
+                    <span class="module-badge">strata (core package)</span>
+                    <p class="role">The Foundation: Layer Ordering and Superposition</p>
+                    <p class="bio">
+                        Known as the "Father of English Geology," Smith was a self-taught canal surveyor
+                        who discovered that rock strata could be identified by their fossil contents.
+                        His 1815 geological map of England and Wales was the first detailed geological
+                        map of any country. The package name "Strata" directly honors his fundamental
+                        insight: <strong>layer order matters</strong>.
+                    </p>
+                </div>
+            </div>
+
+            <div class="quote">
+                "The same strata were found always in the same order of superposition and
+                contained the same peculiar fossils."
+                <div class="quote-attribution">&mdash; William Smith</div>
+            </div>
+
+            <div class="artifacts">
+                <h3>Artifacts</h3>
+                <div class="artifact-grid">
+                    <div class="artifact-card">
+                        <img src="historical-assets/smith_portrait.jpg" alt="William Smith Portrait">
+                        <h4>Portrait of William Smith</h4>
+                        <dl class="artifact-meta">
+                            <dt>File</dt>
+                            <dd><code>smith_portrait.jpg</code></dd>
+                            <dt>Artist</dt>
+                            <dd>Abner Lowe (1920s)</dd>
+                            <dt>Source</dt>
+                            <dd>USGS Museum Collection</dd>
+                            <dt>Object ID</dt>
+                            <dd>USGS-575009</dd>
+                        </dl>
+                        <span class="license-tag public-domain">Public Domain</span>
+                    </div>
+                    <div class="artifact-card">
+                        <img src="historical-assets/smith_1815_map.jpg" alt="William Smith's 1815 Geological Map">
+                        <h4>A Delineation of the Strata of England and Wales (1815)</h4>
+                        <dl class="artifact-meta">
+                            <dt>File</dt>
+                            <dd><code>smith_1815_map.jpg</code></dd>
+                            <dt>Original Size</dt>
+                            <dd>8 feet &times; 6 feet (15 sections)</dd>
+                            <dt>Source</dt>
+                            <dd>NASA Earth Observatory / British Geological Survey</dd>
+                            <dt>Significance</dt>
+                            <dd>First geological map of an entire nation</dd>
+                        </dl>
+                        <span class="license-tag public-domain">Public Domain</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="citation">
+                <h4>Citations</h4>
+                <p><strong>Portrait:</strong> U.S. Geological Survey. "William Smith." USGS Media Gallery.
+                <a href="https://www.usgs.gov/media/images/william-smith" target="_blank">https://www.usgs.gov/media/images/william-smith</a></p>
+                <p><strong>Map:</strong> NASA Earth Observatory. "William Smith's Geological Map of England."
+                <a href="https://www.earthobservatory.nasa.gov/images/8733/william-smiths-geological-map-of-england" target="_blank">https://www.earthobservatory.nasa.gov/images/8733/william-smiths-geological-map-of-england</a></p>
+            </div>
+        </section>
+
+        <!-- HENRY DAVID THOREAU -->
+        <section id="thoreau" class="person-section">
+            <div class="person-header">
+                <div class="portrait-container">
+                    <img src="historical-assets/thoreau_1856_daguerreotype.jpg" alt="Daguerreotype of Henry David Thoreau" class="portrait">
+                </div>
+                <div class="person-info">
+                    <h2>Henry David Thoreau</h2>
+                    <p class="dates">12 July 1817 &ndash; 6 May 1862</p>
+                    <span class="module-badge">strata.thoreau</span>
+                    <p class="role">Data Acquisition: Fetching from Authoritative Sources</p>
+                    <p class="bio">
+                        A professional land surveyor who created over 200 surveys including detailed
+                        bathymetric maps of Walden Pond. Thoreau's meticulous approach to direct
+                        observation&mdash;going to the source rather than accepting hearsay&mdash;embodies
+                        the philosophy of the <code>thoreau</code> module: <strong>fetch authoritative data directly</strong>.
+                    </p>
+                </div>
+            </div>
+
+            <div class="quote">
+                "It is remarkable how long men will believe in the bottomlessness of a pond
+                without taking the trouble to sound it."
+                <div class="quote-attribution">&mdash; Henry David Thoreau, <em>Walden</em></div>
+            </div>
+
+            <div class="artifacts">
+                <h3>Artifacts</h3>
+                <div class="artifact-grid">
+                    <div class="artifact-card">
+                        <img src="historical-assets/thoreau_1856_daguerreotype.jpg" alt="Thoreau 1856 Daguerreotype">
+                        <h4>Daguerreotype of Henry David Thoreau (1856)</h4>
+                        <dl class="artifact-meta">
+                            <dt>File</dt>
+                            <dd><code>thoreau_1856_daguerreotype.jpg</code></dd>
+                            <dt>Photographer</dt>
+                            <dd>Benjamin D. Maxham</dd>
+                            <dt>Date</dt>
+                            <dd>June 18, 1856</dd>
+                            <dt>Location</dt>
+                            <dd>Daguerrean Palace, Worcester, MA</dd>
+                            <dt>Note</dt>
+                            <dd>Thoreau wrote: "my friends think [it] is pretty good though better looking than I."</dd>
+                        </dl>
+                        <span class="license-tag public-domain">Public Domain</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="citation">
+                <h4>Citations</h4>
+                <p><strong>Daguerreotype:</strong> Wikimedia Commons. "Henry David Thoreau."
+                <a href="https://commons.wikimedia.org/wiki/File:Henry_David_Thoreau.jpg" target="_blank">https://commons.wikimedia.org/wiki/File:Henry_David_Thoreau.jpg</a></p>
+                <p>Also available via National Portrait Gallery, Smithsonian Institution (NPG.72.119).</p>
+            </div>
+        </section>
+
+        <!-- ALEXANDER VON HUMBOLDT -->
+        <section id="humboldt" class="person-section">
+            <div class="person-header">
+                <div class="portrait-container">
+                    <img src="historical-assets/humboldt_portrait.jpg" alt="Portrait of Alexander von Humboldt" class="portrait">
+                </div>
+                <div class="person-info">
+                    <h2>Alexander von Humboldt</h2>
+                    <p class="dates">14 September 1769 &ndash; 6 May 1859</p>
+                    <span class="module-badge">strata.humboldt</span>
+                    <p class="role">Processing &amp; Transformation: Revealing Hidden Connections</p>
+                    <p class="bio">
+                        The "Father of Ecology" who invented isothermal lines and thematic mapping.
+                        Humboldt's approach&mdash;collect observations, compare and combine them,
+                        reveal hidden connections&mdash;defines the <code>humboldt</code> module:
+                        <strong>transform raw data to reveal patterns</strong>.
+                    </p>
+                </div>
+            </div>
+
+            <div class="quote">
+                "The most important aim of all physical science is this: to recognize unity in diversity."
+                <div class="quote-attribution">&mdash; Alexander von Humboldt</div>
+            </div>
+
+            <div class="artifacts">
+                <h3>Artifacts</h3>
+                <div class="artifact-grid">
+                    <div class="artifact-card">
+                        <img src="historical-assets/humboldt_portrait.jpg" alt="Humboldt Portrait">
+                        <h4>Portrait of Alexander von Humboldt</h4>
+                        <dl class="artifact-meta">
+                            <dt>File</dt>
+                            <dd><code>humboldt_portrait.jpg</code></dd>
+                            <dt>Source</dt>
+                            <dd>Smithsonian National Portrait Gallery</dd>
+                            <dt>Accession</dt>
+                            <dd>NPG S_NPG.77.28</dd>
+                        </dl>
+                        <span class="license-tag cc0">CC0 1.0 Public Domain</span>
+                    </div>
+                    <div class="artifact-card">
+                        <img src="historical-assets/humboldt_chimborazo.jpg" alt="Chimborazo Cross-Section">
+                        <h4>Le Chimborazo, vu depuis le plateau de Tapia</h4>
+                        <dl class="artifact-meta">
+                            <dt>File</dt>
+                            <dd><code>humboldt_chimborazo.jpg</code></dd>
+                            <dt>From</dt>
+                            <dd><em>Vues des Cordill&egrave;res</em> (Views of the Cordilleras)</dd>
+                            <dt>Source</dt>
+                            <dd>David Rumsey Map Collection / Internet Archive</dd>
+                            <dt>Significance</dt>
+                            <dd>Early infographic showing Andean vegetation zones</dd>
+                        </dl>
+                        <span class="license-tag cc-by-sa">CC BY-SA 3.0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="citation">
+                <h4>Citations</h4>
+                <p><strong>Portrait:</strong> Smithsonian National Portrait Gallery. "Alexander Von Humboldt."
+                <a href="https://npg.si.edu/object/npg_S_NPG.77.28" target="_blank">https://npg.si.edu/object/npg_S_NPG.77.28</a></p>
+                <p><strong>Chimborazo:</strong> David Rumsey Map Collection, Stanford Libraries. "Le Chimborazo, vu depuis le plateau de Tapia."
+                <a href="https://archive.org/details/dr_xxv-le-chimborazo-vu-depuis-le-plateau-de-tapia-200-10555028" target="_blank">https://archive.org/details/dr_xxv-le-chimborazo-vu-depuis-le-plateau-de-tapia-200-10555028</a>.
+                <em>Attribution required for CC BY-SA 3.0 license.</em></p>
+            </div>
+        </section>
+
+        <!-- MATTHEW FONTAINE MAURY -->
+        <section id="maury" class="person-section">
+            <div class="person-header">
+                <div class="portrait-container">
+                    <img src="historical-assets/maury_portrait.jpg" alt="Portrait of Matthew Fontaine Maury" class="portrait">
+                </div>
+                <div class="person-info">
+                    <h2>Matthew Fontaine Maury</h2>
+                    <p class="dates">14 January 1806 &ndash; 1 February 1873</p>
+                    <span class="module-badge">strata.maury</span>
+                    <p class="role">Pipeline Orchestration: Coordinating Many Sources</p>
+                    <p class="bio">
+                        The "Pathfinder of the Seas" and "Father of Oceanography" who collected
+                        ship logs from captains worldwide, aggregating thousands of observations
+                        into comprehensive wind and current charts. His approach defines the
+                        <code>maury</code> module: <strong>coordinate many sources to reveal patterns
+                        invisible to individuals</strong>.
+                    </p>
+                </div>
+            </div>
+
+            <div class="quote">
+                "There is a river in the ocean. In the severest droughts it never fails,
+                and in the mightiest floods it never overflows."
+                <div class="quote-attribution">&mdash; Matthew Fontaine Maury, on the Gulf Stream</div>
+            </div>
+
+            <div class="artifacts">
+                <h3>Artifacts</h3>
+                <div class="artifact-grid">
+                    <div class="artifact-card">
+                        <img src="historical-assets/maury_portrait.jpg" alt="Maury Portrait">
+                        <h4>Commander Matthew Fontaine Maury</h4>
+                        <dl class="artifact-meta">
+                            <dt>File</dt>
+                            <dd><code>maury_portrait.jpg</code></dd>
+                            <dt>Publisher</dt>
+                            <dd>E. Anthony, 501 Broadway, New York</dd>
+                            <dt>From</dt>
+                            <dd>Brady's National Portrait Gallery</dd>
+                            <dt>Source</dt>
+                            <dd>Library of Congress, Liljenquist Family Collection</dd>
+                            <dt>Format</dt>
+                            <dd>Albumen print, carte de visite</dd>
+                        </dl>
+                        <span class="license-tag public-domain">Public Domain</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="citation">
+                <h4>Citations</h4>
+                <p><strong>Portrait:</strong> Library of Congress Prints and Photographs Division. "Commander Matthew Fontaine Maury of Confederate Navy in civilian dress."
+                <a href="https://www.loc.gov/item/2023630301/" target="_blank">https://www.loc.gov/item/2023630301/</a></p>
+                <p><strong>Wind and Current Charts:</strong> Library of Congress Geography and Map Division. Browse Maury's charts:
+                <a href="https://www.loc.gov/collections/general-maps/?fa=contributor:maury,+matthew+fontaine" target="_blank">https://www.loc.gov/collections/general-maps/?fa=contributor:maury,+matthew+fontaine</a></p>
+            </div>
+        </section>
+
+        <!-- FLORENCE KELLEY -->
+        <section id="kelley" class="person-section">
+            <div class="person-header">
+                <div class="portrait-container">
+                    <img src="historical-assets/kelley_portrait.jpg" alt="Portrait of Florence Kelley" class="portrait">
+                </div>
+                <div class="person-info">
+                    <h2>Florence Kelley</h2>
+                    <p class="dates">12 September 1859 &ndash; 17 February 1932</p>
+                    <span class="module-badge">strata.kelley</span>
+                    <p class="role">Visualization: Maps as Evidence, Not Decoration</p>
+                    <p class="bio">
+                        A social reformer who directed the Hull House Maps and Papers (1895)&mdash;the
+                        first systematic spatial investigation of an American neighborhood. Her
+                        color-coded maps of wages and nationalities made hidden patterns visible
+                        to reformers and legislators. The <code>kelley</code> module embodies her
+                        principle: <strong>visualization serves comprehension</strong>.
+                    </p>
+                </div>
+            </div>
+
+            <div class="quote">
+                "So that the plain man who pays for the census gets what he pays for,
+                statistical data in a form in which they are ready for him to understand."
+                <div class="quote-attribution">&mdash; Florence Kelley</div>
+            </div>
+
+            <div class="artifacts">
+                <h3>Artifacts</h3>
+                <div class="artifact-grid">
+                    <div class="artifact-card">
+                        <img src="historical-assets/kelley_portrait.jpg" alt="Kelley Portrait">
+                        <h4>Florence Kelley, 1859-1932</h4>
+                        <dl class="artifact-meta">
+                            <dt>File</dt>
+                            <dd><code>kelley_portrait.jpg</code></dd>
+                            <dt>Date</dt>
+                            <dd>c. January 22, 1925</dd>
+                            <dt>Source</dt>
+                            <dd>Library of Congress Prints and Photographs Division</dd>
+                            <dt>Reproduction Number</dt>
+                            <dd>LC-USZ62-73260</dd>
+                        </dl>
+                        <span class="license-tag public-domain">Public Domain</span>
+                    </div>
+                    <div class="artifact-card">
+                        <h4>Hull-House Maps and Papers (1895)</h4>
+                        <dl class="artifact-meta">
+                            <dt>File</dt>
+                            <dd><code>hull_house_maps_1895.pdf</code> (13.8 MB)</dd>
+                            <dt>Publisher</dt>
+                            <dd>T. Y. Crowell &amp; Co., New York/Boston</dd>
+                            <dt>Source</dt>
+                            <dd>Internet Archive</dd>
+                            <dt>Contents</dt>
+                            <dd>Complete book with nationality maps, wage maps, and essays on social conditions</dd>
+                            <dt>Significance</dt>
+                            <dd>First systematic spatial investigation of an American neighborhood; pioneered data visualization for social reform</dd>
+                        </dl>
+                        <span class="license-tag public-domain">Public Domain</span>
+                        <p style="margin-top: 1rem;"><a href="historical-assets/hull_house_maps_1895.pdf" target="_blank">View PDF &rarr;</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="citation">
+                <h4>Citations</h4>
+                <p><strong>Portrait:</strong> Library of Congress Prints and Photographs Division. "Florence Kelley, 1859-1932."
+                <a href="https://www.loc.gov/pictures/item/2003669896/" target="_blank">https://www.loc.gov/pictures/item/2003669896/</a></p>
+                <p><strong>Hull-House Maps and Papers:</strong> Internet Archive. "Hull-House maps and papers, a presentation of nationalities and wages in a congested district of Chicago."
+                <a href="https://archive.org/details/hullhousemapspap00unse" target="_blank">https://archive.org/details/hullhousemapspap00unse</a></p>
+            </div>
+        </section>
+
+        <!-- USAGE NOTES -->
+        <section id="usage" class="usage-notes">
+            <h2>Usage Notes for Branding Work</h2>
+
+            <h3>Module-to-Figure Mapping</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Module</th>
+                        <th>Historical Figure</th>
+                        <th>Core Principle</th>
+                        <th>Era</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>strata</code></td>
+                        <td>William Smith</td>
+                        <td>Layer order matters</td>
+                        <td>1810s</td>
+                    </tr>
+                    <tr>
+                        <td><code>strata.thoreau</code></td>
+                        <td>Henry David Thoreau</td>
+                        <td>Go to the source</td>
+                        <td>1850s</td>
+                    </tr>
+                    <tr>
+                        <td><code>strata.humboldt</code></td>
+                        <td>Alexander von Humboldt</td>
+                        <td>Seek connections</td>
+                        <td>1800s</td>
+                    </tr>
+                    <tr>
+                        <td><code>strata.maury</code></td>
+                        <td>Matthew Fontaine Maury</td>
+                        <td>Coordinate many sources</td>
+                        <td>1850s</td>
+                    </tr>
+                    <tr>
+                        <td><code>strata.kelley</code></td>
+                        <td>Florence Kelley</td>
+                        <td>Serve the reader</td>
+                        <td>1890s</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>License Summary</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>License</th>
+                        <th>Attribution Required?</th>
+                        <th>Commercial Use?</th>
+                        <th>Files</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="license-tag public-domain">Public Domain</span></td>
+                        <td>No</td>
+                        <td>Yes</td>
+                        <td>smith_portrait, smith_1815_map, thoreau_1856_daguerreotype, maury_portrait, kelley_portrait, hull_house_maps_1895</td>
+                    </tr>
+                    <tr>
+                        <td><span class="license-tag cc0">CC0 1.0</span></td>
+                        <td>No</td>
+                        <td>Yes</td>
+                        <td>humboldt_portrait</td>
+                    </tr>
+                    <tr>
+                        <td><span class="license-tag cc-by-sa">CC BY-SA 3.0</span></td>
+                        <td><strong>Yes</strong></td>
+                        <td>Yes (with attribution)</td>
+                        <td>humboldt_chimborazo</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>For Agents: Key Context</h3>
+            <ul>
+                <li><strong>Theme:</strong> Historical cartography and scientific visualization (19th century)</li>
+                <li><strong>Visual Style:</strong> Parchment tones, serif typography, period-appropriate imagery</li>
+                <li><strong>Central Metaphor:</strong> Geological superposition&mdash;layers build upon each other in a defined order</li>
+                <li><strong>Host Figure:</strong> William Smith serves as the "narrator" uniting all modules</li>
+                <li><strong>Technical Context:</strong> Each figure's work directly maps to module functionality (see table above)</li>
+            </ul>
+
+            <h3>Related Documentation</h3>
+            <ul>
+                <li><code>DEEP_DIVE_SMITH.md</code> &mdash; Full biography with timeline</li>
+                <li><code>DEEP_DIVE_THOREAU.md</code> &mdash; Full biography with timeline</li>
+                <li><code>DEEP_DIVE_HUMBOLDT.md</code> &mdash; Full biography with timeline</li>
+                <li><code>DEEP_DIVE_MAURY.md</code> &mdash; Full biography with timeline</li>
+                <li><code>DEEP_DIVE_KELLEY.md</code> &mdash; Full biography with timeline</li>
+                <li><code>historical-docs.html</code> &mdash; Full narrative documentation in historical voice</li>
+                <li><code>docs/BRANDING.md</code> &mdash; Voice characteristics and sample documentation</li>
+            </ul>
+        </section>
+
+        <footer>
+            <p><strong>Strata Historical Artifacts Collection</strong></p>
+            <p>All images sourced from USGS, Smithsonian Institution, Library of Congress, NASA Earth Observatory, Internet Archive, and Wikimedia Commons.</p>
+            <p>Generated for the Strata cartographic data processing toolkit.</p>
+        </footer>
+    </div>
+</body>
+</html>
