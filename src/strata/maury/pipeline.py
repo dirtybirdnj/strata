@@ -224,9 +224,29 @@ class Pipeline:
                 gdf = source_gdfs[0].copy()
             else:
                 import pandas as pd
+                # Normalize CRS before concatenating (US=NAD83, Canada=NAD83(CSRS))
+                # Use WGS84 (EPSG:4326) as common CRS for merging
+                target_crs = "EPSG:4326"
+                normalized_gdfs = []
+                for src_gdf in source_gdfs:
+                    if src_gdf.crs and src_gdf.crs != target_crs:
+                        normalized_gdfs.append(src_gdf.to_crs(target_crs))
+                    else:
+                        normalized_gdfs.append(src_gdf)
                 gdf = gpd.GeoDataFrame(
-                    pd.concat(source_gdfs, ignore_index=True),
-                    crs=source_gdfs[0].crs,
+                    pd.concat(normalized_gdfs, ignore_index=True),
+                    crs=target_crs,
+                )
+
+            # Apply layer-level bounds clipping if specified
+            if layer_config.bounds and len(layer_config.bounds) == 4:
+                from shapely.geometry import box
+                original_count = len(gdf)
+                clip_box = box(*layer_config.bounds)
+                gdf = gdf.clip(clip_box)
+                gdf = gdf[~gdf.geometry.is_empty]
+                console.print(
+                    f"    [dim]Clipped to bounds: {original_count} → {len(gdf)} features[/]"
                 )
 
             # Apply layer-level filter if specified

@@ -4,6 +4,7 @@ Fetch data from Canadian open data sources.
 Supported sources:
 - CanVec (Natural Resources Canada) - Hydro, roads, admin boundaries
 - NRN (Statistics Canada) - National Road Network
+- NHN (Natural Resources Canada) - National Hydro Network by workunit
 
 Data licensing: Open Government Licence - Canada
 """
@@ -24,6 +25,24 @@ console = Console()
 CANVEC_URLS = {
     # CanVec 1:1,000,000 scale - national coverage
     "hydro_1m": "https://ftp.maps.canada.ca/pub/nrcan_rncan/vector/canvec/shp/Hydro/canvec_1M_CA_Hydro_shp.zip",
+}
+
+# NHN (National Hydro Network) URL pattern
+# Workunits are geographic areas, e.g. 02OJ000 = Richelieu River watershed
+# URL structure: /shp_en/{region}/nhn_rhn_{workunit}_shp_en.zip
+# Region is first 2 digits of workunit, workunit is lowercase in filename
+NHN_URL_TEMPLATE = "https://ftp.maps.canada.ca/pub/nrcan_rncan/vector/geobase_nhn_rhn/shp_en/{region}/nhn_rhn_{workunit_lower}_shp_en.zip"
+
+# Known NHN workunits with descriptive names
+NHN_WORKUNITS = {
+    "02OJ000": "Richelieu River watershed (Lake Champlain to St. Lawrence)",
+    "02OHA00": "Lake Champlain (Quebec portion, western)",
+    "02OHB00": "Lake Champlain (Quebec portion, eastern - includes Missisquoi Bay)",
+    "02OG000": "Yamaska River watershed",
+    "02OA000": "St. Lawrence River (Montreal area)",
+    "02OB000": "Ottawa River (lower)",
+    "02OC000": "Ottawa River (middle)",
+    "02OE000": "St-François River",
 }
 
 # National Road Network (NRN) URLs by province
@@ -80,6 +99,15 @@ SIZE_ESTIMATES = {
     "nrn:yt": 10.0,
     "nrn:nt": 15.0,
     "nrn:nu": 5.0,
+    # NHN workunits
+    "nhn:02OJ000": 8.5,  # Richelieu
+    "nhn:02OHA00": 5.0,  # Lake Champlain west
+    "nhn:02OHB00": 6.0,  # Lake Champlain east (Missisquoi Bay)
+    "nhn:02OG000": 8.0,  # Yamaska
+    "nhn:02OA000": 10.0,
+    "nhn:02OB000": 10.0,
+    "nhn:02OC000": 10.0,
+    "nhn:02OE000": 8.0,
 }
 
 
@@ -100,13 +128,15 @@ def parse_canada_uri(uri: str) -> dict:
     path = uri[7:]  # Remove "canada:"
 
     parts = path.split("/")
-    if len(parts) != 2:
+    if len(parts) < 2:
         raise ValueError(
             f"Invalid Canada URI format: {uri}\n"
-            "Expected: canada:canvec/hydro or canada:nrn/{{province}}"
+            "Expected: canada:canvec/hydro, canada:nrn/{{province}}, or canada:nhn/{{workunit}}[/rivers]"
         )
 
-    source_type, layer = parts
+    source_type = parts[0]
+    layer = parts[1]
+    sublayer = parts[2] if len(parts) > 2 else None
 
     if source_type == "canvec":
         if layer == "hydro":
@@ -140,10 +170,28 @@ def parse_canada_uri(uri: str) -> dict:
             "estimated_size_mb": size_mb,
         }
 
+    elif source_type == "nhn":
+        workunit = layer.upper()  # Workunits are uppercase like 02OJ000
+        region = workunit[:2]  # First 2 digits (e.g., "02")
+        workunit_lower = workunit.lower()  # Filename uses lowercase
+        url = NHN_URL_TEMPLATE.format(region=region, workunit_lower=workunit_lower)
+        size_mb = SIZE_ESTIMATES.get(f"nhn:{workunit}", 10.0)
+        description = NHN_WORKUNITS.get(workunit, f"NHN workunit {workunit}")
+        # sublayer can be "rivers" to get linear water instead of waterbodies
+        nhn_layer = sublayer if sublayer in ("rivers", "waterbody") else "waterbody"
+        return {
+            "source_type": "nhn",
+            "workunit": workunit,
+            "nhn_layer": nhn_layer,
+            "url": url,
+            "estimated_size_mb": size_mb,
+            "description": description,
+        }
+
     else:
         raise ValueError(
             f"Unknown Canada source type: {source_type}\n"
-            "Valid types: canvec, nrn"
+            "Valid types: canvec, nrn, nhn"
         )
 
 
@@ -197,6 +245,13 @@ def fetch_canada(uri: str, force: bool = False) -> str:
                 for shp in shapefiles:
                     if "roadseg" in shp.stem.lower():
                         return str(shp)
+            # For NHN, return waterbody or slwater based on nhn_layer
+            elif source_type == "nhn":
+                nhn_layer = parsed.get("nhn_layer", "waterbody")
+                target = "slwater" if nhn_layer == "rivers" else "waterbody"
+                for shp in shapefiles:
+                    if target in shp.stem.lower():
+                        return str(shp)
             return str(shapefiles[0])
 
     # Download the archive
@@ -243,6 +298,13 @@ def fetch_canada(uri: str, force: bool = False) -> str:
     elif source_type == "nrn":
         for shp in shapefiles:
             if "roadseg" in shp.stem.lower():
+                return str(shp)
+    elif source_type == "nhn":
+        # NHN has WATERBODY_2 (polygons) and SLWATER_1 (lines)
+        nhn_layer = parsed.get("nhn_layer", "waterbody")
+        target = "slwater" if nhn_layer == "rivers" else "waterbody"
+        for shp in shapefiles:
+            if target in shp.stem.lower():
                 return str(shp)
 
     return str(shapefiles[0])

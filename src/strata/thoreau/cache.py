@@ -27,6 +27,15 @@ def get_cached_path(uri: str) -> Path:
     # Convert URI to filesystem-safe path
     # census:tiger/2023/vt/cousub -> census/tiger/2023/vt/cousub
     safe_path = uri.replace(":", "/")
+
+    # For NHN URIs with sublayers (e.g., canada:nhn/02OJ000/rivers),
+    # strip the sublayer since both rivers and waterbody come from same download
+    if safe_path.startswith("canada/nhn/"):
+        parts = safe_path.split("/")
+        if len(parts) > 3:
+            # Keep only canada/nhn/{workunit}
+            safe_path = "/".join(parts[:3])
+
     return get_cache_dir() / safe_path
 
 

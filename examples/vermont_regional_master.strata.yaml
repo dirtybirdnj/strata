@@ -147,6 +147,29 @@ sources:
     uri: canada:nrn/qc
     description: Quebec road network
 
+  quebec_rivers_richelieu:
+    uri: canada:nhn/02OJ000/rivers
+    description: Quebec rivers - Richelieu watershed
+
+  quebec_rivers_champlain:
+    uri: canada:nhn/02OHB00/rivers
+    description: Quebec rivers - Lake Champlain area
+
+  # ============================================================
+  # RICHELIEU CORRIDOR (Lake Champlain to St. Lawrence)
+  # ============================================================
+  richelieu_hydro:
+    uri: canada:nhn/02OJ000
+    description: Richelieu River watershed from NHN
+
+  # ============================================================
+  # MISSISQUOI BAY (cross-border water)
+  # NHN data for detailed Lake Champlain Quebec waters
+  # ============================================================
+  missisquoi_hydro:
+    uri: canada:nhn/02OHB00
+    description: Lake Champlain eastern portion including Missisquoi Bay
+
   # ============================================================
   # LAKE CHAMPLAIN (special handling)
   # ============================================================
@@ -262,6 +285,36 @@ layers:
       stroke_width: 0.5
       fill: "#1565c0"
     order: 12
+
+  # Richelieu corridor (Lake Champlain to St. Lawrence)
+  - name: richelieu_corridor
+    source: richelieu_hydro
+    filter:
+      min_area_km2: 0.1
+    operations:
+      - type: merge
+      - type: clean
+      - type: simplify
+        tolerance: 0.0003
+    style:
+      stroke: "#0d47a1"
+      stroke_width: 0.5
+      fill: "#1565c0"
+    order: 13
+
+  # Missisquoi Bay Quebec waters (from NHN detailed data)
+  - name: missisquoi_bay
+    source: missisquoi_hydro
+    filter:
+      min_area_km2: 0.01
+    operations:
+      - type: simplify
+        tolerance: 0.0003
+    style:
+      stroke: "#0d47a1"
+      stroke_width: 0.5
+      fill: "#1565c0"
+    order: 14
 
   # ============================================================
   # TOWN BOUNDARIES WITH WATER CUTOUTS (Order 20-30)
@@ -503,6 +556,18 @@ layers:
       stroke_width: 0.3
       fill: none
     order: 44
+
+  # Quebec rivers (from NHN)
+  - name: quebec_rivers
+    source: [quebec_rivers_richelieu, quebec_rivers_champlain]
+    operations:
+      - type: simplify
+        tolerance: 0.0004
+    style:
+      stroke: "#42a5f5"
+      stroke_width: 0.3
+      fill: none
+    order: 45
 
   # ============================================================
   # ROADS (Order 50-60)

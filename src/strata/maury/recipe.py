@@ -54,6 +54,7 @@ class LayerConfig(BaseModel):
 
     name: str
     source: str | list[str]
+    bounds: list[float] | None = None  # [west, south, east, north] to clip layer
     filter: dict[str, Any] | None = None  # Filter to apply when processing layer
     operations: list[OperationConfig] = Field(default_factory=list)
     style: StyleConfig = Field(default_factory=StyleConfig)
