@@ -9,6 +9,7 @@ by having to pull so much harder before the water got underneath to help me."
 
 from .census import fetch_census, parse_census_uri, estimate_census_size
 from .quebec import fetch_quebec, parse_quebec_uri, estimate_quebec_size
+from .canada import fetch_canada, parse_canada_uri, estimate_canada_size
 from .cache import get_cache_dir, is_cached, get_cached_path, clear_cache
 
 __all__ = [
@@ -20,6 +21,9 @@ __all__ = [
     "fetch_quebec",
     "parse_quebec_uri",
     "estimate_quebec_size",
+    "fetch_canada",
+    "parse_canada_uri",
+    "estimate_canada_size",
     "get_cache_dir",
     "is_cached",
     "get_cached_path",
@@ -48,8 +52,8 @@ def fetch(uri: str, force: bool = False) -> str:
 
     if uri.startswith("census:"):
         return fetch_census(uri, force=force)
-    elif uri.startswith("canvec:"):
-        raise NotImplementedError("CanVec fetching not yet implemented")
+    elif uri.startswith("canada:"):
+        return fetch_canada(uri, force=force)
     elif uri.startswith("quebec:"):
         return fetch_quebec(uri, force=force)
     elif uri.startswith("file:"):
@@ -83,8 +87,8 @@ def estimate_size(uri: str) -> dict:
     """
     if uri.startswith("census:"):
         return estimate_census_size(uri)
-    elif uri.startswith("canvec:"):
-        return {"uri": uri, "estimated_size_mb": 50.0, "cached": False, "note": "CanVec not yet implemented"}
+    elif uri.startswith("canada:"):
+        return estimate_canada_size(uri)
     elif uri.startswith("quebec:"):
         return estimate_quebec_size(uri)
     elif uri.startswith("file:"):

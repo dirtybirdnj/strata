@@ -1,84 +1,26 @@
 """
 Strata TUI Wizard Application.
 
-A 1980s BIOS-style wizard for creating .strata.yaml recipes.
+A terminal-based wizard for creating .strata.yaml recipes.
+Built with Textual for a rich, interactive experience.
 """
 
-from textual.app import App, ComposeResult
+from textual.app import App
 from textual.binding import Binding
-from textual.containers import Container, Vertical
-from textual.screen import Screen
-from textual.widgets import Button, Footer, Header, Input, Label, Static
 
-
-class WelcomeScreen(Screen):
-    """Welcome screen - Step 1/5."""
-
-    BINDINGS = [
-        Binding("escape", "cancel", "Cancel"),
-        Binding("enter", "next", "Continue"),
-    ]
-
-    def compose(self) -> ComposeResult:
-        yield Header()
-        yield Container(
-            Static(
-                """
-╔═╗╔╦╗╦═╗╔═╗╔╦╗╔═╗
-╚═╗ ║ ╠╦╝╠═╣ ║ ╠═╣
-╚═╝ ╩ ╩╚═╩ ╩ ╩ ╩ ╩  Recipe Wizard
-                """,
-                id="logo",
-            ),
-            Static("[1/5] Welcome", id="step"),
-            Static(
-                "\nWelcome! Let's create a new map recipe.\n\n"
-                "A recipe defines:\n"
-                "  • Where to get geographic data (sources)\n"
-                "  • How to process it (layers with operations)\n"
-                "  • What to output (SVG, GeoJSON, tiles)\n",
-                id="intro",
-            ),
-            Vertical(
-                Label("Recipe name:"),
-                Input(placeholder="champlain_region", id="name"),
-                Static(
-                    "(lowercase, underscores, used for output directory)",
-                    classes="hint",
-                ),
-                id="name-section",
-            ),
-            Vertical(
-                Label("Description (optional):"),
-                Input(placeholder="Lake Champlain and surrounding towns", id="description"),
-                id="desc-section",
-            ),
-            Button("Continue →", id="next", variant="primary"),
-            id="main",
-        )
-        yield Footer()
-
-    def action_next(self) -> None:
-        """Move to next screen."""
-        name_input = self.query_one("#name", Input)
-        desc_input = self.query_one("#description", Input)
-
-        # Store in app
-        self.app.recipe_data["name"] = name_input.value or "untitled"
-        self.app.recipe_data["description"] = desc_input.value
-
-        # TODO: Push next screen
-        self.app.exit(message="Wizard not yet fully implemented - recipe data captured")
-
-    def action_cancel(self) -> None:
-        """Cancel wizard."""
-        self.app.exit()
+from .screens import WelcomeScreen
 
 
 class StrataWizard(App):
     """Main Strata TUI wizard application."""
 
+    TITLE = "Strata Recipe Builder"
+
     CSS = """
+    Screen {
+        background: $surface;
+    }
+
     #logo {
         color: $accent;
         text-align: center;
@@ -88,6 +30,7 @@ class StrataWizard(App):
     #step {
         text-align: right;
         color: $text-muted;
+        padding: 0 2;
     }
 
     #intro {
@@ -107,13 +50,27 @@ class StrataWizard(App):
         text-style: italic;
     }
 
-    #next {
-        margin-top: 2;
+    Button {
+        margin: 0 1;
+    }
+
+    .panel-title {
+        text-style: bold;
+        color: $text;
+    }
+
+    Input {
+        margin: 0 1;
+    }
+
+    Input:focus {
+        border: tall $accent;
     }
     """
 
     BINDINGS = [
         Binding("ctrl+c", "quit", "Quit"),
+        Binding("ctrl+q", "quit", "Quit"),
         Binding("f1", "help", "Help"),
     ]
 
@@ -132,6 +89,7 @@ class StrataWizard(App):
             "description": "",
             "sources": {},
             "layers": [],
+            "bounds": None,
             "output": {},
         }
 
@@ -141,9 +99,32 @@ class StrataWizard(App):
 
     def action_help(self) -> None:
         """Show help."""
-        self.notify("Help not yet implemented", title="Help")
+        self.notify(
+            "Strata Recipe Builder\n\n"
+            "Navigate with arrow keys and Tab\n"
+            "Press Enter to select/continue\n"
+            "Press Escape to go back",
+            title="Help",
+            timeout=5,
+        )
+
+
+def run_wizard(
+    name: str | None = None,
+    template: str | None = None,
+    output_dir: str | None = None,
+) -> dict | None:
+    """Run the Strata wizard and return the recipe data."""
+    app = StrataWizard(
+        initial_name=name,
+        template=template,
+        output_dir=output_dir,
+    )
+    result = app.run()
+    if result:
+        print(result)
+    return app.recipe_data
 
 
 if __name__ == "__main__":
-    app = StrataWizard()
-    app.run()
+    run_wizard()

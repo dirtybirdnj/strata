@@ -65,15 +65,16 @@ STATE_FIPS = {
 
 # TIGER layer types and their URL patterns
 # Some types are per-state (2-digit FIPS), others per-county (5-digit FIPS)
+# National types use "us" instead of state FIPS and are filtered client-side
 TIGER_TYPES = {
-    "cousub": {"folder": "COUSUB", "per_county": False},
-    "areawater": {"folder": "AREAWATER", "per_county": True},
-    "linearwater": {"folder": "LINEARWATER", "per_county": True},
-    "prisecroads": {"folder": "PRISECROADS", "per_county": False},
-    "county": {"folder": "COUNTY", "per_county": False},
-    "state": {"folder": "STATE", "per_county": False},
-    "place": {"folder": "PLACE", "per_county": False},
-    "tract": {"folder": "TRACT", "per_county": True},
+    "cousub": {"folder": "COUSUB", "per_county": False, "national": False},
+    "areawater": {"folder": "AREAWATER", "per_county": True, "national": False},
+    "linearwater": {"folder": "LINEARWATER", "per_county": True, "national": False},
+    "prisecroads": {"folder": "PRISECROADS", "per_county": False, "national": False},
+    "county": {"folder": "COUNTY", "per_county": False, "national": True},  # US-wide file
+    "state": {"folder": "STATE", "per_county": False, "national": True},  # US-wide file
+    "place": {"folder": "PLACE", "per_county": False, "national": False},
+    "tract": {"folder": "TRACT", "per_county": True, "national": False},
 }
 
 # County FIPS codes by state (we'll fetch the list dynamically or use known ones)
@@ -104,12 +105,28 @@ NY_CHAMPLAIN_COUNTIES = [
     "115",  # Washington
 ]
 
+# NY counties in western NY (Niagara region)
+NY_NIAGARA_COUNTIES = [
+    "029",  # Erie (Buffalo)
+    "063",  # Niagara
+    "073",  # Orleans
+    "037",  # Genesee
+    "121",  # Wyoming
+    "009",  # Cattaraugus
+    "013",  # Chautauqua
+]
+
+# Combined NY counties (we'll merge these for statewide coverage)
+NY_ALL_COUNTIES = NY_CHAMPLAIN_COUNTIES + NY_NIAGARA_COUNTIES
+
 STATE_COUNTIES = {
     "vt": VT_COUNTIES,
-    "ny": NY_CHAMPLAIN_COUNTIES,  # Just Champlain-adjacent for now
+    "ny": NY_ALL_COUNTIES,  # Champlain + Niagara region counties
     "nh": ["001", "003", "005", "007", "009", "011", "013", "015", "017", "019"],  # All NH counties
     "me": ["001", "003", "005", "007", "009", "011", "013", "015", "017", "019", "021", "023", "025", "027", "029", "031"],
     "ma": ["001", "003", "005", "007", "009", "011", "013", "015", "017", "019", "021", "023", "025", "027"],
+    # Hawaii counties (all 5)
+    "hi": ["001", "003", "005", "007", "009"],  # Hawaii, Honolulu, Kalawao, Kauai, Maui
 }
 
 
@@ -153,9 +170,17 @@ def parse_census_uri(uri: str) -> dict:
     type_info = TIGER_TYPES[layer_type]
     tiger_folder = type_info["folder"]
     per_county = type_info["per_county"]
+    is_national = type_info.get("national", False)
 
     # Build URL(s)
-    if per_county:
+    if is_national:
+        # National file (e.g., county, state) - single US-wide file
+        url = (
+            f"https://www2.census.gov/geo/tiger/TIGER{year}/{tiger_folder}/"
+            f"tl_{year}_us_{layer_type}.zip"
+        )
+        urls = [url]
+    elif per_county:
         # Per-county files - need to download multiple
         counties = STATE_COUNTIES.get(state_lower, [])
         urls = []
@@ -191,6 +216,7 @@ def parse_census_uri(uri: str) -> dict:
         "url": url,
         "urls": urls,
         "per_county": per_county,
+        "national": is_national,
         "estimated_size_mb": size_mb,
     }
 
@@ -259,12 +285,18 @@ def fetch_census(uri: str, force: bool = False) -> str:
     # Check cache first
     if not force and is_cached(uri):
         cache_path = get_cached_path(uri)
-        shapefiles = list(cache_path.glob("*.shp"))
-        # For merged data, look for our merged file
+        # For merged per-county data, look for merged.shp
         merged = cache_path / "merged.shp"
         if merged.exists():
             console.print(f"  [green]✓[/] {uri} [dim](cached)[/]")
             return str(merged)
+        # For filtered national data, look for filtered.shp
+        filtered = cache_path / "filtered.shp"
+        if filtered.exists():
+            console.print(f"  [green]✓[/] {uri} [dim](cached)[/]")
+            return str(filtered)
+        # For regular per-state files
+        shapefiles = list(cache_path.glob("*.shp"))
         if shapefiles:
             console.print(f"  [green]✓[/] {uri} [dim](cached)[/]")
             return str(shapefiles[0])
@@ -273,11 +305,49 @@ def fetch_census(uri: str, force: bool = False) -> str:
     parsed = parse_census_uri(uri)
     urls = parsed["urls"]
     per_county = parsed["per_county"]
+    is_national = parsed.get("national", False)
+    state_fips = parsed["fips"]
 
     cache_path = get_cached_path(uri)
     cache_path.mkdir(parents=True, exist_ok=True)
 
-    if per_county and len(urls) > 1:
+    if is_national:
+        # National file - download once and filter by state FIPS
+        url = urls[0]
+        console.print(f"  [cyan]↓[/] Downloading {uri} (national file, filtering to state)...")
+
+        bytes_downloaded = _download_single_file(url, cache_path)
+
+        # Find the shapefile and filter by state
+        shapefiles = list(cache_path.glob("*.shp"))
+        if not shapefiles:
+            raise RuntimeError(f"No shapefile found in downloaded archive: {url}")
+
+        import geopandas as gpd
+
+        gdf = gpd.read_file(shapefiles[0])
+
+        # Filter by state FIPS (STATEFP column)
+        if "STATEFP" in gdf.columns:
+            state_gdf = gdf[gdf["STATEFP"] == state_fips].copy()
+        elif "STATEFP20" in gdf.columns:
+            state_gdf = gdf[gdf["STATEFP20"] == state_fips].copy()
+        else:
+            # Try to infer from GEOID
+            if "GEOID" in gdf.columns:
+                state_gdf = gdf[gdf["GEOID"].str.startswith(state_fips)].copy()
+            else:
+                console.print(f"  [yellow]Warning: Could not filter national file by state[/]")
+                state_gdf = gdf
+
+        # Save filtered file
+        filtered_path = cache_path / "filtered.shp"
+        state_gdf.to_file(filtered_path)
+
+        console.print(f"  [green]✓[/] {uri} [dim]({bytes_downloaded / 1024 / 1024:.1f} MB, {len(state_gdf)} features)[/]")
+        return str(filtered_path)
+
+    elif per_county and len(urls) > 1:
         # Download multiple county files and merge
         console.print(f"  [cyan]↓[/] Downloading {uri} ({len(urls)} counties)...")
 

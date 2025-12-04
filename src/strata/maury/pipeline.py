@@ -229,6 +229,15 @@ class Pipeline:
                     crs=source_gdfs[0].crs,
                 )
 
+            # Apply layer-level filter if specified
+            if layer_config.filter:
+                original_count = len(gdf)
+                gdf = self._apply_filter(gdf, layer_config.filter)
+                if len(gdf) < original_count:
+                    console.print(
+                        f"    [dim]Filtered: {original_count} → {len(gdf)} features[/]"
+                    )
+
             # Apply operations
             operations = [op.model_dump() for op in layer_config.operations]
             if operations:

@@ -1,0 +1,105 @@
+# Hawaiian Islands Map
+# All major Hawaiian islands with county subdivisions and water bodies
+# Generated to test Strata with non-continental US data
+#
+# Optimized for pen plotter output
+
+name: hawaii_islands
+description: Hawaiian Islands with county subdivisions and water features
+version: 1
+
+sources:
+  # Hawaii county subdivisions (Census "places" since HI doesn't have traditional cousubs)
+  hi_places:
+    uri: census:tiger/2023/hi/place
+    description: Hawaii populated places
+
+  # Hawaii counties (islands roughly map to counties)
+  hi_counties:
+    uri: census:tiger/2023/hi/county
+    description: Hawaii county boundaries (island outlines)
+
+  # Water bodies
+  hi_water:
+    uri: census:tiger/2023/hi/areawater
+    description: Hawaii lakes, reservoirs, and coastal water
+
+  # Major roads
+  hi_roads:
+    uri: census:tiger/2023/hi/prisecroads
+    description: Hawaii primary and secondary roads
+
+layers:
+  # Layer 1: County/Island outlines (base)
+  - name: hi_counties
+    source: hi_counties
+    operations:
+      - type: simplify
+        tolerance: 0.0003
+    style:
+      stroke: "#5d4037"
+      stroke_width: 0.6
+      fill: "#efebe9"
+      vary_fill: true
+    order: 1
+
+  # Layer 2: Places/communities
+  - name: hi_places
+    source: hi_places
+    operations:
+      - type: simplify
+        tolerance: 0.0002
+    style:
+      stroke: "#757575"
+      stroke_width: 0.3
+      fill: "#f5f5f5"
+      vary_fill: true
+    order: 2
+
+  # Layer 3: Water features
+  - name: hi_water
+    source: hi_water
+    operations:
+      - type: simplify
+        tolerance: 0.0003
+    style:
+      stroke: "#1565c0"
+      stroke_width: 0.3
+      fill: "#bbdefb"
+    order: 3
+
+  # Layer 4: Roads
+  - name: hi_roads
+    source: hi_roads
+    operations:
+      - type: simplify
+        tolerance: 0.0002
+    style:
+      stroke: "#d32f2f"
+      stroke_width: 0.4
+      fill: none
+    order: 4
+
+output:
+  # Main Hawaiian islands bounding box
+  # Includes: Hawaii (Big Island), Maui, Oahu, Kauai, Molokai, Lanai, Niihau, Kahoolawe
+  bounds: [-160.25, 18.90, -154.80, 22.25]
+  projection: epsg:4326
+
+  formats:
+    - type: svg
+      quality:
+        - name: fine
+          simplify: 0.0002
+        - name: medium
+          simplify: 0.0005
+      options:
+        per_layer: true
+        combined: true
+        page_size: [18, 12]  # Landscape for island chain
+        margin: 0.5
+
+    - type: geojson
+      options:
+        per_layer: true
+        precision: 6

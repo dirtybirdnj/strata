@@ -1,0 +1,110 @@
+# Niagara Falls Region Map
+# Shows the US-Canada border region around Niagara Falls
+# Demonstrates cross-border data integration with NY and Ontario
+#
+# Optimized for pen plotter output
+
+name: niagara_falls
+description: Niagara Falls region spanning US-Canada border
+version: 1
+
+sources:
+  # New York county subdivisions (towns around Niagara Falls)
+  ny_towns:
+    uri: census:tiger/2023/ny/cousub
+    description: New York county subdivisions
+
+  # New York counties for border context
+  ny_counties:
+    uri: census:tiger/2023/ny/county
+    description: New York counties
+
+  # Quebec municipalities (for Ontario we'd need a different source,
+  # but Quebec MRCs extend somewhat towards the Niagara region)
+  # Note: For proper Ontario data, we'd need to add an Ontario handler
+
+  # Water bodies (includes Niagara River, Lake Erie, Lake Ontario)
+  ny_water:
+    uri: census:tiger/2023/ny/areawater
+    description: New York water bodies
+
+  # Major roads
+  ny_roads:
+    uri: census:tiger/2023/ny/prisecroads
+    description: New York primary and secondary roads
+
+layers:
+  # Layer 1: NY Counties (faint background)
+  - name: ny_counties
+    source: ny_counties
+    operations:
+      - type: simplify
+        tolerance: 0.0005
+    style:
+      stroke: "#bdbdbd"
+      stroke_width: 0.3
+      fill: "#fafafa"
+    order: 1
+
+  # Layer 2: NY Towns (detailed boundaries)
+  - name: ny_towns
+    source: ny_towns
+    operations:
+      - type: subtract
+        target: ny_water
+      - type: simplify
+        tolerance: 0.0003
+    style:
+      stroke: "#616161"
+      stroke_width: 0.4
+      fill: "#f5f5f5"
+      vary_fill: true
+    order: 2
+
+  # Layer 3: Water (Niagara River, Lakes)
+  - name: ny_water
+    source: ny_water
+    operations:
+      - type: simplify
+        tolerance: 0.0003
+    style:
+      stroke: "#1565c0"
+      stroke_width: 0.4
+      fill: "#bbdefb"
+    order: 3
+
+  # Layer 4: Roads
+  - name: ny_roads
+    source: ny_roads
+    operations:
+      - type: simplify
+        tolerance: 0.0002
+    style:
+      stroke: "#d32f2f"
+      stroke_width: 0.5
+      fill: none
+    order: 4
+
+output:
+  # Niagara Falls region bounding box
+  # Centered on the falls, extending to show Buffalo, Lewiston, and parts of Ontario
+  bounds: [-79.30, 42.85, -78.85, 43.30]
+  projection: epsg:4326
+
+  formats:
+    - type: svg
+      quality:
+        - name: fine
+          simplify: 0.0002
+        - name: medium
+          simplify: 0.0005
+      options:
+        per_layer: true
+        combined: true
+        page_size: [12, 12]  # Square for this region
+        margin: 0.5
+
+    - type: geojson
+      options:
+        per_layer: true
+        precision: 6

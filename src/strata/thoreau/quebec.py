@@ -25,6 +25,8 @@ QUEBEC_URLS = {
     "sda_20k": "https://diffusion.mern.gouv.qc.ca/Diffusion/RGQ/Vectoriel/Theme/Local/SDA_20k/SHP/SHP.zip",
     # Administrative boundaries at 1/100,000 scale (47 MB) - faster downloads
     "sda_100k": "https://diffusion.mern.gouv.qc.ca/diffusion/RGQ/Vectoriel/Theme/Regional/SDA_100k/SHP/BDAT(adm)_SHP.zip",
+    # National Road Network from Statistics Canada (~200 MB)
+    "nrn": "https://geo.statcan.gc.ca/nrn_rrn/qc/nrn_rrn_qc_SHAPE.zip",
 }
 
 # Size estimates in MB
@@ -33,6 +35,7 @@ QUEBEC_SIZE_ESTIMATES = {
     "sda_100k": 47.0,
     "municipalities": 47.0,  # Alias for sda_100k
     "mrc": 10.0,  # MRC boundaries only (subset)
+    "highways": 200.0,  # NRN Quebec road network
 }
 
 # Layer name mappings within the Quebec SDA shapefile archives
@@ -43,6 +46,8 @@ QUEBEC_LAYERS = {
     "mrc": "mrc_s",  # Regional county municipalities (MRC)
     "regions": "regio_s",  # Administrative regions
     "metropolitan": "comet_s",  # Metropolitan communities
+    # NRN layers
+    "highways": "ROADSEG",  # Road segments from NRN (will be filtered)
 }
 
 
