@@ -1,0 +1,130 @@
+# Vermont Fishing Access Areas 12x24" Print Map
+# Shows all Vermont Fish & Wildlife fishing access points and boat ramps
+# overlaid on Vermont towns with water bodies.
+#
+# Data sources:
+# - Vermont Fish & Wildlife Department fishing access areas
+# - US Census TIGER/Line for base map layers
+#
+# Optimized for pen plotter output
+
+name: vt_fishing_access_12x24
+description: Vermont fishing access areas and boat launch locations
+version: 1
+
+sources:
+  # Vermont towns
+  vt_towns:
+    uri: census:tiger/2023/vt/cousub
+    description: Vermont county subdivisions
+
+  # Vermont water bodies
+  vt_water:
+    uri: census:tiger/2023/vt/areawater
+    description: Vermont lakes, ponds, reservoirs
+
+  # Vermont rivers
+  vt_rivers:
+    uri: census:tiger/2023/vt/linearwater
+    description: Vermont rivers and streams
+
+  # Major roads for context
+  vt_roads:
+    uri: census:tiger/2023/vt/prisecroads
+    description: Vermont primary and secondary roads
+    filter:
+      RTTYP: ["I", "U"]  # Interstate and US routes only
+
+  # Fishing access points (local GeoJSON)
+  fishing_access_vt:
+    uri: file:examples/data/fishing_access_vt.geojson
+    description: Vermont Fish & Wildlife fishing access areas
+
+layers:
+  # Layer 1: Vermont towns base layer
+  - name: vt_towns
+    source: vt_towns
+    operations:
+      - type: subtract
+        target: vt_water
+      - type: simplify
+        tolerance: 0.0002
+    style:
+      stroke: "#9e9e9e"
+      stroke_width: 0.3
+      fill: "#f5f5f5"
+      vary_fill: true
+    order: 1
+
+  # Layer 2: Water bodies
+  - name: vt_water
+    source: vt_water
+    operations:
+      - type: simplify
+        tolerance: 0.0003
+    style:
+      stroke: "#1976d2"
+      stroke_width: 0.3
+      fill: "#bbdefb"
+    order: 2
+
+  # Layer 3: Rivers and streams
+  - name: vt_rivers
+    source: vt_rivers
+    operations:
+      - type: simplify
+        tolerance: 0.0003
+    style:
+      stroke: "#42a5f5"
+      stroke_width: 0.2
+      fill: none
+    order: 3
+
+  # Layer 4: Major roads
+  - name: vt_roads
+    source: vt_roads
+    operations:
+      - type: simplify
+        tolerance: 0.0002
+    style:
+      stroke: "#616161"
+      stroke_width: 0.25
+      fill: none
+    order: 4
+
+  # Layer 5: Fishing access points
+  - name: fishing_access
+    source: fishing_access_vt
+    style:
+      stroke: "#1565c0"
+      stroke_width: 0.6
+      fill: "#2196f3"
+      marker: circle
+      marker_size: 8
+    order: 5
+
+output:
+  # Vermont state bounds
+  bounds: [-73.44, 42.72, -71.46, 45.02]
+  projection: epsg:4326
+
+  formats:
+    # SVG for pen plotters - 12x24 inch
+    - type: svg
+      quality:
+        - name: fine
+          simplify: 0.0002
+        - name: medium
+          simplify: 0.0005
+      options:
+        per_layer: true
+        combined: true
+        optimize_for: plotter
+        page_size: [12, 24]
+        margin: 0.5
+
+    # GeoJSON for web viewing
+    - type: geojson
+      options:
+        per_layer: true
+        precision: 6

@@ -14,6 +14,8 @@ from shapely.geometry import (
     LineString,
     MultiLineString,
     MultiPolygon,
+    MultiPoint,
+    Point,
     Polygon,
 )
 
@@ -272,6 +274,62 @@ class SVGExporter:
 
         return " ".join(path_parts)
 
+    def _point_to_marker(
+        self,
+        point: Point,
+        scale_x: float,
+        scale_y: float,
+        offset_x: float,
+        offset_y: float,
+        marker_type: str = "circle",
+        marker_size: float = 4.0,
+    ) -> dict:
+        """
+        Convert a Point to SVG marker data.
+
+        Args:
+            point: Shapely Point
+            scale_x, scale_y, offset_x, offset_y: Transform params
+            marker_type: "circle", "square", "diamond", "cross", "x", "triangle"
+            marker_size: Marker size in pixels
+
+        Returns:
+            Dict with 'type' and type-specific attributes
+        """
+        if point.is_empty:
+            return None
+
+        cx, cy = self._transform_coords(
+            point.x, point.y, scale_x, scale_y, offset_x, offset_y
+        )
+
+        r = marker_size / 2
+
+        if marker_type == "circle":
+            return {"type": "circle", "cx": cx, "cy": cy, "r": r}
+        elif marker_type == "square":
+            return {"type": "rect", "x": cx - r, "y": cy - r, "width": marker_size, "height": marker_size}
+        elif marker_type == "diamond":
+            # Diamond is a rotated square, use path
+            path = f"M {cx} {cy-r} L {cx+r} {cy} L {cx} {cy+r} L {cx-r} {cy} Z"
+            return {"type": "path", "d": path}
+        elif marker_type == "triangle":
+            # Equilateral triangle pointing up
+            h = r * 1.732  # sqrt(3)
+            path = f"M {cx} {cy-r} L {cx+r} {cy+h/2} L {cx-r} {cy+h/2} Z"
+            return {"type": "path", "d": path}
+        elif marker_type == "cross":
+            # Plus sign
+            path = f"M {cx-r} {cy} L {cx+r} {cy} M {cx} {cy-r} L {cx} {cy+r}"
+            return {"type": "path", "d": path, "fill": "none"}
+        elif marker_type == "x":
+            # X mark
+            path = f"M {cx-r} {cy-r} L {cx+r} {cy+r} M {cx+r} {cy-r} L {cx-r} {cy+r}"
+            return {"type": "path", "d": path, "fill": "none"}
+        else:
+            # Default to circle
+            return {"type": "circle", "cx": cx, "cy": cy, "r": r}
+
     def _linestring_to_path(
         self,
         line: LineString,
@@ -298,40 +356,97 @@ class SVGExporter:
 
         return " ".join(path_parts)
 
-    def _geometry_to_paths(
+    def _geometry_to_svg_elements(
         self,
         geom: Any,
         scale_x: float,
         scale_y: float,
         offset_x: float,
         offset_y: float,
-    ) -> list[str]:
-        """Convert any Shapely geometry to list of SVG path strings."""
-        paths = []
+        marker_type: str = "circle",
+        marker_size: float = 4.0,
+    ) -> list[dict]:
+        """
+        Convert any Shapely geometry to list of SVG element dicts.
+
+        Returns list of dicts with 'type' key and type-specific attributes:
+        - {"type": "path", "d": "M..."} for polygons/lines
+        - {"type": "circle", "cx": x, "cy": y, "r": r} for points
+        - {"type": "rect", "x": x, "y": y, "width": w, "height": h}
+        """
+        elements = []
 
         if isinstance(geom, Polygon):
             path = self._polygon_to_path(geom, scale_x, scale_y, offset_x, offset_y)
             if path:
-                paths.append(path)
+                elements.append({"type": "path", "d": path})
 
         elif isinstance(geom, MultiPolygon):
             for poly in geom.geoms:
                 path = self._polygon_to_path(poly, scale_x, scale_y, offset_x, offset_y)
                 if path:
-                    paths.append(path)
+                    elements.append({"type": "path", "d": path})
 
         elif isinstance(geom, LineString):
             path = self._linestring_to_path(geom, scale_x, scale_y, offset_x, offset_y)
             if path:
-                paths.append(path)
+                elements.append({"type": "path", "d": path})
 
         elif isinstance(geom, MultiLineString):
             for line in geom.geoms:
                 path = self._linestring_to_path(line, scale_x, scale_y, offset_x, offset_y)
                 if path:
-                    paths.append(path)
+                    elements.append({"type": "path", "d": path})
 
-        return paths
+        elif isinstance(geom, Point):
+            marker = self._point_to_marker(
+                geom, scale_x, scale_y, offset_x, offset_y,
+                marker_type=marker_type, marker_size=marker_size
+            )
+            if marker:
+                elements.append(marker)
+
+        elif isinstance(geom, MultiPoint):
+            for pt in geom.geoms:
+                marker = self._point_to_marker(
+                    pt, scale_x, scale_y, offset_x, offset_y,
+                    marker_type=marker_type, marker_size=marker_size
+                )
+                if marker:
+                    elements.append(marker)
+
+        return elements
+
+    def _element_to_svg(
+        self,
+        element: dict,
+        stroke: str,
+        stroke_width: float,
+        fill: str,
+    ) -> str:
+        """Convert an element dict to SVG markup."""
+        elem_type = element.get("type")
+
+        if elem_type == "path":
+            elem_fill = element.get("fill", fill)
+            return (
+                f'<path d="{element["d"]}" '
+                f'stroke="{stroke}" stroke-width="{stroke_width}" '
+                f'fill="{elem_fill}" stroke-linejoin="round" stroke-linecap="round"/>'
+            )
+        elif elem_type == "circle":
+            return (
+                f'<circle cx="{element["cx"]:.3f}" cy="{element["cy"]:.3f}" r="{element["r"]:.3f}" '
+                f'stroke="{stroke}" stroke-width="{stroke_width}" fill="{fill}"/>'
+            )
+        elif elem_type == "rect":
+            return (
+                f'<rect x="{element["x"]:.3f}" y="{element["y"]:.3f}" '
+                f'width="{element["width"]:.3f}" height="{element["height"]:.3f}" '
+                f'stroke="{stroke}" stroke-width="{stroke_width}" fill="{fill}"/>'
+            )
+        else:
+            return ""
 
     def export_layer(
         self,
@@ -379,20 +494,25 @@ class SVGExporter:
             f'viewBox="0 0 {self.width_px:.3f} {self.height_px:.3f}">',
         ]
 
-        # Add paths
+        # Get marker style options
+        marker_type = style.get("marker", "circle")
+        marker_size = style.get("marker_size", 6.0)
+
+        # Add elements
         for idx, row in enumerate(gdf.itertuples()):
             geom = row.geometry
-            paths = self._geometry_to_paths(geom, scale_x, scale_y, offset_x, offset_y)
+            elements = self._geometry_to_svg_elements(
+                geom, scale_x, scale_y, offset_x, offset_y,
+                marker_type=marker_type, marker_size=marker_size
+            )
 
             # Get feature color using the new function
             feature_fill = get_feature_color(row, style, idx)
 
-            for path_data in paths:
-                svg_parts.append(
-                    f'  <path d="{path_data}" '
-                    f'stroke="{stroke}" stroke-width="{stroke_width}" '
-                    f'fill="{feature_fill}" stroke-linejoin="round" stroke-linecap="round"/>'
-                )
+            for element in elements:
+                svg_markup = self._element_to_svg(element, stroke, stroke_width, feature_fill)
+                if svg_markup:
+                    svg_parts.append(f"  {svg_markup}")
 
         svg_parts.append("</svg>")
 
@@ -450,23 +570,26 @@ class SVGExporter:
         for layer_name, (gdf, style) in layers.items():
             stroke = style.get("stroke", "#000000")
             stroke_width = style.get("stroke_width", 0.5)
+            marker_type = style.get("marker", "circle")
+            marker_size = style.get("marker_size", 6.0)
 
             group_id = layer_name.replace(" ", "_").replace("-", "_")
             svg_parts.append(f'  <g id="{group_id}">')
 
             for idx, row in enumerate(gdf.itertuples()):
                 geom = row.geometry
-                paths = self._geometry_to_paths(geom, scale_x, scale_y, offset_x, offset_y)
+                elements = self._geometry_to_svg_elements(
+                    geom, scale_x, scale_y, offset_x, offset_y,
+                    marker_type=marker_type, marker_size=marker_size
+                )
 
                 # Get feature color using the new function (supports color_map)
                 fill = get_feature_color(row, style, idx)
 
-                for path_data in paths:
-                    svg_parts.append(
-                        f'    <path d="{path_data}" '
-                        f'stroke="{stroke}" stroke-width="{stroke_width}" '
-                        f'fill="{fill}" stroke-linejoin="round" stroke-linecap="round"/>'
-                    )
+                for element in elements:
+                    svg_markup = self._element_to_svg(element, stroke, stroke_width, fill)
+                    if svg_markup:
+                        svg_parts.append(f"    {svg_markup}")
 
             svg_parts.append("  </g>")
 

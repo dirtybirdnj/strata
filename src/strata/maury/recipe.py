@@ -44,6 +44,9 @@ class StyleConfig(BaseModel):
     fill_pattern_angle: float | None = None  # Future: angle for line patterns
     opacity: float = 1.0
     dash_array: list[float] | None = None
+    # Point/marker styling
+    marker: str = "circle"  # circle, square, diamond, triangle, cross, x
+    marker_size: float = 6.0  # Marker size in pixels
 
 
 class LayerConfig(BaseModel):
