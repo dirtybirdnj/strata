@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strata - A Geological Approach to Cartographic Data</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&display=swap');
+
+        :root {
+            --parchment: #f4e4bc;
+            --parchment-dark: #e8d4a8;
+            --ink: #2c1810;
+            --ink-light: #4a3728;
+            --gold: #8b7355;
+            --gold-bright: #c9a959;
+            --red: #8b2500;
+            --blue: #1e3a5f;
+            --green: #2d4a3e;
+            --stone-grey: #6b6b6b;
+            --limestone: #d4c5a9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Crimson Text', Georgia, serif;
+            background: var(--parchment);
+            color: var(--ink);
+            line-height: 1.7;
+            font-size: 18px;
+        }
+
+        /* Parchment texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header - Title Page */
+        header {
+            background: linear-gradient(180deg, var(--parchment-dark) 0%, var(--parchment) 100%);
+            padding: 4rem 0;
+            text-align: center;
+            border-bottom: 3px double var(--gold);
+            position: relative;
+        }
+
+        .strata-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            letter-spacing: 0.5em;
+        }
+
+        .atlas-title {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--ink);
+            margin-bottom: 0.5rem;
+        }
+
+        .atlas-subtitle {
+            font-family: 'IM Fell English', serif;
+            font-size: 1.4rem;
+            font-style: italic;
+            color: var(--ink-light);
+            margin-bottom: 1rem;
+        }
+
+        .atlas-description {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.1rem;
+            color: var(--ink-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        header::after {
+            content: '— Anno Domini MMXXV —';
+            display: block;
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            letter-spacing: 0.2em;
+            color: var(--gold);
+            margin-top: 1.5rem;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--parchment-dark);
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--gold);
+        }
+
+        nav ul {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            font-family: 'Cinzel', serif;
+            color: var(--ink);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            transition: all 0.3s;
+        }
+
+        nav a:hover {
+            border-color: var(--gold);
+            color: var(--red);
+        }
+
+        /* Sections */
+        section {
+            padding: 4rem 0;
+            border-bottom: 1px solid var(--gold);
+        }
+
+        h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            letter-spacing: 0.1em;
+        }
+
+        h2::before, h2::after {
+            content: '—';
+            margin: 0 0.5rem;
+            color: var(--gold);
+        }
+
+        h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            color: var(--red);
+            margin: 2rem 0 1rem;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 0.5rem;
+        }
+
+        h4 {
+            font-family: 'IM Fell English', serif;
+            font-size: 1.1rem;
+            font-style: italic;
+            color: var(--ink-light);
+            margin: 1.5rem 0 0.5rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+
+        /* Blockquotes - historical voice */
+        blockquote {
+            background: linear-gradient(90deg, var(--parchment-dark), transparent);
+            border-left: 3px solid var(--gold);
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            color: var(--ink-light);
+        }
+
+        blockquote cite {
+            display: block;
+            text-align: right;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            color: var(--gold);
+        }
+
+        /* Code blocks */
+        pre {
+            background: #fffef8;
+            border: 1px solid var(--gold);
+            border-radius: 0;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            position: relative;
+        }
+
+        pre::before {
+            content: '✎ Notation';
+            position: absolute;
+            top: -0.7rem;
+            left: 1rem;
+            background: var(--parchment);
+            padding: 0 0.5rem;
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            font-size: 0.8rem;
+            color: var(--gold);
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            background: var(--parchment-dark);
+            padding: 0.1rem 0.3rem;
+            font-size: 0.9em;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        /* Historical figure cards */
+        .figure-card {
+            background: #fffef8;
+            border: 2px solid var(--gold);
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .figure-card::before {
+            content: '';
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            right: 0.5rem;
+            bottom: 0.5rem;
+            border: 1px solid var(--gold);
+            pointer-events: none;
+        }
+
+        .figure-card.host {
+            border-color: var(--red);
+            background: linear-gradient(135deg, #fffef8 0%, var(--limestone) 100%);
+        }
+
+        .figure-card.host::before {
+            border-color: var(--red);
+        }
+
+        .figure-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: var(--red);
+            margin-bottom: 0.25rem;
+        }
+
+        .figure-dates {
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .figure-title {
+            font-family: 'Crimson Text', serif;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 1rem;
+        }
+
+        .figure-role {
+            display: inline-block;
+            background: var(--ink);
+            color: var(--parchment);
+            padding: 0.25rem 0.75rem;
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border: 1px solid var(--gold);
+        }
+
+        th {
+            background: var(--parchment-dark);
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+        }
+
+        li {
+            margin: 0.5rem 0;
+        }
+
+        li::marker {
+            color: var(--gold);
+        }
+
+        /* Decorative elements */
+        .ornament {
+            text-align: center;
+            font-size: 1.5rem;
+            color: var(--gold);
+            margin: 2rem 0;
+        }
+
+        .drop-cap {
+            float: left;
+            font-family: 'Cinzel', serif;
+            font-size: 4rem;
+            line-height: 0.8;
+            padding-right: 0.5rem;
+            color: var(--red);
+        }
+
+        /* Strata diagram */
+        .strata-diagram {
+            background: linear-gradient(180deg,
+                var(--limestone) 0%, var(--limestone) 20%,
+                #b8a88a 20%, #b8a88a 40%,
+                #9e8e72 40%, #9e8e72 60%,
+                #847a62 60%, #847a62 80%,
+                var(--stone-grey) 80%, var(--stone-grey) 100%
+            );
+            border: 2px solid var(--ink);
+            padding: 1rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .strata-diagram .layer {
+            padding: 0.75rem 1rem;
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            color: var(--ink);
+            border-bottom: 1px dashed rgba(0,0,0,0.2);
+        }
+
+        .strata-diagram .layer:last-child {
+            border-bottom: none;
+        }
+
+        .strata-diagram .layer-order {
+            float: right;
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            color: var(--ink-light);
+        }
+
+        /* Screenshot placeholders */
+        .screenshot {
+            background: var(--parchment-dark);
+            border: 2px solid var(--gold);
+            padding: 3rem;
+            text-align: center;
+            margin: 1.5rem 0;
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            color: var(--ink-light);
+        }
+
+        .screenshot::before {
+            content: '🖼';
+            display: block;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--parchment-dark);
+            padding: 3rem 0;
+            text-align: center;
+            border-top: 3px double var(--gold);
+        }
+
+        footer p {
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            color: var(--ink-light);
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .atlas-title { font-size: 2rem; letter-spacing: 0.1em; }
+            nav ul { flex-direction: column; align-items: center; gap: 0.5rem; }
+            .container { padding: 0 1rem; }
+            .figure-card { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="strata-icon">▤ ▥ ▦ ▧ ▨</div>
+            <h1 class="atlas-title">Strata</h1>
+            <p class="atlas-subtitle">A Geological Approach to Cartographic Data</p>
+            <p class="atlas-description">
+                Wherein the principles discovered in the rock strata of England
+                are applied to the construction of plotter-ready vector maps
+                from the open data sources of the modern age.
+            </p>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#preface">Preface</a></li>
+                <li><a href="#workshop">The Workshop</a></li>
+                <li><a href="#thoreau">Thoreau</a></li>
+                <li><a href="#humboldt">Humboldt</a></li>
+                <li><a href="#maury">Maury</a></li>
+                <li><a href="#kelley">Kelley</a></li>
+                <li><a href="#operations">Operations</a></li>
+                <li><a href="#examples">Exemplars</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Preface by William Smith -->
+    <section id="preface">
+        <div class="container">
+            <h2>Preface</h2>
+
+            <div class="figure-card host">
+                <div class="figure-name">William Smith</div>
+                <div class="figure-dates">1769 – 1839</div>
+                <div class="figure-title">Father of English Geology • Creator of the First Geological Map of a Nation</div>
+            </div>
+
+            <p><span class="drop-cap">I</span> was but a canal surveyor when I made my discovery. In the cuttings of the Somerset Coal Canal, where the exposed rock faces revealed what no book could teach, I observed that the same strata were found always in the same order of superposition. Each layer distinct, identifiable by its fossils, and positioned in proper relation to those above and below.</p>
+
+            <blockquote>
+                "The same strata were found always in the same order of superposition and contained the same peculiar fossils. Organized fossils are to the naturalist as coins to the antiquary; they are the antiquities of the earth."
+                <cite>— William Smith, 1816</cite>
+            </blockquote>
+
+            <p>This same principle—that <em>order matters</em>, that layers must be properly superposed—applies with equal force to the construction of maps. A cartographic map, like a geological section, is built from layers: the regional backgrounds at the bottom, water bodies above, boundaries with their cutouts next, and roads at the very top. Each stratum serves its purpose; none can be omitted without loss.</p>
+
+            <p>I have assembled in this workshop a remarkable company of natural philosophers and practical workers, each contributing their particular genius to the cartographer's art:</p>
+
+            <ul>
+                <li><strong>Henry David Thoreau</strong>, the surveyor of Walden Pond, oversees the acquisition of data with the same precision he brought to his soundings</li>
+                <li><strong>Alexander von Humboldt</strong>, who perceived unity in diversity, guides our geometric transformations</li>
+                <li><strong>Matthew Fontaine Maury</strong>, pathfinder of the seas, orchestrates the flow of our operations</li>
+                <li><strong>Florence Kelley</strong>, champion of the common citizen, ensures our visualizations serve those who will use them</li>
+            </ul>
+
+            <p>The software that bears my name—<strong>Strata</strong>—embodies this philosophy. Come, let me show you how to build maps as the Earth itself is built: layer upon layer, each in its proper place.</p>
+
+            <div class="ornament">▤ ▥ ▦ ▧ ▨</div>
+        </div>
+    </section>
+
+    <!-- The Workshop (Architecture) -->
+    <section id="workshop">
+        <div class="container">
+            <h2>The Workshop</h2>
+
+            <h3>The Principle of Superposition</h3>
+
+            <p>Just as I learned in the canal cuts of Somerset, the order of layers determines everything. In cartography, we call this the "layer sandwich"—and it must be assembled with the same care as any geological section:</p>
+
+            <div class="strata-diagram">
+                <div class="layer">Roads & Labels <span class="layer-order">← drawn last (top)</span></div>
+                <div class="layer">Small Water Features (show through cutouts)</div>
+                <div class="layer">Town Boundaries (with water cutouts)</div>
+                <div class="layer">Major Water Bodies (lakes, rivers)</div>
+                <div class="layer">Regional Backgrounds <span class="layer-order">← drawn first (bottom)</span></div>
+            </div>
+
+            <h3>The Organization of the Workshop</h3>
+
+            <pre><code>strata/
+├── __init__.py         ← The foundation (superposition principle)
+├── thoreau/            ← Data Acquisition (surveying & measurement)
+│   ├── census.py       ← US Census TIGER data
+│   ├── quebec.py       ← Quebec administrative boundaries
+│   ├── canada.py       ← Canadian federal data (CanVec, NRN)
+│   └── cache.py        ← Local data storage
+├── humboldt/           ← Geometric Transformation (unity in diversity)
+│   ├── geometry.py     ← Spatial operations
+│   └── projection.py   ← Coordinate systems
+├── maury/              ← Pipeline Orchestration (coordination)
+│   ├── recipe.py       ← YAML parsing & validation
+│   └── pipeline.py     ← Build execution
+├── kelley/             ← Visualization & Output (evidence for the citizen)
+│   └── svg.py          ← SVG rendering
+└── tui/                ← The Interactive Wizard
+    ├── app.py
+    ├── catalog.py
+    └── screens/</code></pre>
+
+            <h3>The Flow of Work</h3>
+
+            <pre><code>Recipe YAML (The Cartographer's Instructions)
+        │
+        ▼
+┌───────────────────────────────────────────────────────────┐
+│  THOREAU: "I have walked to the Census Bureau..."          │
+│  Downloads: Census, Quebec, Canada → Local Cache           │
+└───────────────────────────────────────────────────────────┘
+        │
+        ▼
+┌───────────────────────────────────────────────────────────┐
+│  MAURY: "Consulting the records of many sources..."        │
+│  Parses recipe, loads sources, coordinates execution       │
+└───────────────────────────────────────────────────────────┘
+        │
+        ▼
+┌───────────────────────────────────────────────────────────┐
+│  HUMBOLDT: "Unity in diversity of phenomena..."            │
+│  For each layer: merge, subtract, dissolve, simplify       │
+└───────────────────────────────────────────────────────────┘
+        │
+        ▼
+┌───────────────────────────────────────────────────────────┐
+│  KELLEY: "Data in a form ready to understand..."           │
+│  Renders SVG, GeoJSON, per-layer and combined outputs      │
+└───────────────────────────────────────────────────────────┘</code></pre>
+
+            <div class="ornament">▤ ▥ ▦</div>
+        </div>
+    </section>
+
+    <!-- Thoreau Section -->
+    <section id="thoreau">
+        <div class="container">
+            <h2>The Surveyor's Art</h2>
+
+            <div class="figure-card">
+                <div class="figure-name">Henry David Thoreau</div>
+                <div class="figure-dates">1817 – 1862</div>
+                <div class="figure-title">Surveyor of Concord • Author of Walden</div>
+                <div class="figure-role">strata.thoreau — Data Acquisition</div>
+
+                <blockquote>
+                    "It is remarkable how long men will believe in the bottomlessness of a pond without taking the trouble to sound it. I surveyed it carefully, before the ice broke up, early in '46, with compass and chain and sounding line."
+                    <cite>— Henry David Thoreau, Walden</cite>
+                </blockquote>
+
+                <p>I have walked to the Census Bureau, so to speak, and returned with their TIGER files—those careful delineations of every county, town, and water body in the nation. The work of acquisition is simple but requires patience. One must know where to look.</p>
+            </div>
+
+            <h3>The Sources</h3>
+
+            <h4>United States Census Bureau</h4>
+            <p>Format: <code>census:tiger/{year}/{state}/{layer}</code></p>
+
+            <table>
+                <thead>
+                    <tr><th>Layer</th><th>Description</th><th>Geometry</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>cousub</code></td><td>County subdivisions (towns)</td><td>Polygon</td></tr>
+                    <tr><td><code>areawater</code></td><td>Lakes and ponds</td><td>Polygon</td></tr>
+                    <tr><td><code>linearwater</code></td><td>Rivers and streams</td><td>Line</td></tr>
+                    <tr><td><code>prisecroads</code></td><td>Roads</td><td>Line</td></tr>
+                    <tr><td><code>county</code></td><td>County boundaries</td><td>Polygon</td></tr>
+                    <tr><td><code>state</code></td><td>State boundary</td><td>Polygon</td></tr>
+                </tbody>
+            </table>
+
+            <h4>Quebec Open Data</h4>
+            <p>Format: <code>quebec:{layer}</code></p>
+
+            <table>
+                <thead>
+                    <tr><th>Layer</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>municipalities</code></td><td>Municipal boundaries (~2,263)</td></tr>
+                    <tr><td><code>mrc</code></td><td>Regional county municipalities (138)</td></tr>
+                    <tr><td><code>regions</code></td><td>Administrative regions (17)</td></tr>
+                </tbody>
+            </table>
+
+            <h4>Canada National Data</h4>
+            <p>Format: <code>canada:{source}/{layer}</code></p>
+
+            <table>
+                <thead>
+                    <tr><th>URI</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>canada:canvec/hydro</code></td><td>National hydrography (~150 MB)</td></tr>
+                    <tr><td><code>canada:nrn/{province}</code></td><td>Road network (all 13 provinces)</td></tr>
+                </tbody>
+            </table>
+
+            <div class="ornament">▤ ▥ ▦</div>
+        </div>
+    </section>
+
+    <!-- Humboldt Section -->
+    <section id="humboldt">
+        <div class="container">
+            <h2>The Science of Transformation</h2>
+
+            <div class="figure-card">
+                <div class="figure-name">Alexander von Humboldt</div>
+                <div class="figure-dates">1769 – 1859</div>
+                <div class="figure-title">Father of Ecology • Scientific Explorer</div>
+                <div class="figure-role">strata.humboldt — Geometric Transformation</div>
+
+                <blockquote>
+                    "Nature considered rationally, that is to say, submitted to the process of thought, is a unity in diversity of phenomena; a harmony, blending together all created things."
+                    <cite>— Alexander von Humboldt, Cosmos</cite>
+                </blockquote>
+
+                <p>When we subtract water from land, we reveal the true relationship between these phenomena—the way the lake carves its space from the surrounding towns. These are not merely shapes but connections made visible.</p>
+            </div>
+
+            <h3>The Operations</h3>
+
+            <h4>simplify</h4>
+            <pre><code>- type: simplify
+  tolerance: 0.0003
+  preserve_topology: true</code></pre>
+
+            <h4>subtract</h4>
+            <pre><code>- type: subtract
+  target: vt_water</code></pre>
+
+            <h4>merge_touching</h4>
+            <p>Unite features that touch—essential for lakes spanning borders:</p>
+            <pre><code>- type: merge_touching
+  buffer_distance: 0.0001</code></pre>
+
+            <h4>dissolve</h4>
+            <pre><code>- type: dissolve
+  by: HYDROID</code></pre>
+
+            <div class="ornament">▤ ▥ ▦</div>
+        </div>
+    </section>
+
+    <!-- Maury Section -->
+    <section id="maury">
+        <div class="container">
+            <h2>The Pathfinder's Coordination</h2>
+
+            <div class="figure-card">
+                <div class="figure-name">Matthew Fontaine Maury</div>
+                <div class="figure-dates">1806 – 1873</div>
+                <div class="figure-title">Pathfinder of the Seas • Father of Oceanography</div>
+                <div class="figure-role">strata.maury — Pipeline Orchestration</div>
+
+                <blockquote>
+                    "There is a river in the ocean. In the severest droughts it never fails, and in the mightiest floods it never overflows."
+                    <cite>— Matthew Fontaine Maury</cite>
+                </blockquote>
+
+                <p>No single source tells the complete story. Only by aggregating observations from many sources can we produce charts worthy of the landscape they represent.</p>
+            </div>
+
+            <h3>The Recipe Format</h3>
+
+            <pre><code>name: my_map
+description: A layered map
+version: 1
+
+sources:
+  vt_towns:
+    uri: census:tiger/2023/vt/cousub
+  vt_water:
+    uri: census:tiger/2023/vt/areawater
+
+layers:
+  - name: towns
+    source: vt_towns
+    operations:
+      - type: subtract
+        target: vt_water
+      - type: simplify
+        tolerance: 0.0003
+    style:
+      stroke: "#424242"
+      fill: "#f5f5f5"
+    order: 1
+
+output:
+  bounds: [-73.44, 42.72, -71.46, 45.02]
+  formats:
+    - type: svg</code></pre>
+
+            <h3>The Commands</h3>
+
+            <table>
+                <thead>
+                    <tr><th>Command</th><th>Purpose</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>strata new</code></td><td>Launch the interactive wizard</td></tr>
+                    <tr><td><code>strata prepare recipe.yaml</code></td><td>Download all sources</td></tr>
+                    <tr><td><code>strata build recipe.yaml -o output</code></td><td>Execute the pipeline</td></tr>
+                    <tr><td><code>strata validate recipe.yaml</code></td><td>Verify correctness</td></tr>
+                </tbody>
+            </table>
+
+            <div class="ornament">▤ ▥ ▦</div>
+        </div>
+    </section>
+
+    <!-- Kelley Section -->
+    <section id="kelley">
+        <div class="container">
+            <h2>The Art of Revelation</h2>
+
+            <div class="figure-card">
+                <div class="figure-name">Florence Kelley</div>
+                <div class="figure-dates">1859 – 1932</div>
+                <div class="figure-title">Social Reformer • Pioneer of Social Mapping</div>
+                <div class="figure-role">strata.kelley — Visualization & Output</div>
+
+                <blockquote>
+                    "So that the plain man who pays for the census gets what he pays for, statistical data in a form in which they are ready for him to understand."
+                    <cite>— Florence Kelley</cite>
+                </blockquote>
+
+                <p>A map is not decoration. A map is evidence. Every color choice, every line weight must serve the goal of comprehension.</p>
+            </div>
+
+            <h3>Output Configuration</h3>
+
+            <pre><code>output:
+  bounds: [-73.44, 42.72, -71.46, 45.02]
+  formats:
+    - type: svg
+      quality:
+        - name: fine
+          simplify: 0.0002
+        - name: medium
+          simplify: 0.0005
+      options:
+        per_layer: true
+        combined: true
+        page_size: [12, 24]
+        margin: 0.5
+
+    - type: geojson
+      options:
+        per_layer: true
+        precision: 6</code></pre>
+
+            <div class="ornament">▤ ▥ ▦</div>
+        </div>
+    </section>
+
+    <!-- Operations Reference -->
+    <section id="operations">
+        <div class="container">
+            <h2>Complete Index of Operations</h2>
+
+            <table>
+                <thead>
+                    <tr><th>Operation</th><th>Purpose</th><th>Parameters</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>simplify</code></td><td>Reduce complexity</td><td><code>tolerance</code></td></tr>
+                    <tr><td><code>subtract</code></td><td>Cut away features</td><td><code>target</code></td></tr>
+                    <tr><td><code>merge</code></td><td>Unite all features</td><td>—</td></tr>
+                    <tr><td><code>merge_touching</code></td><td>Unite touching features</td><td><code>buffer_distance</code></td></tr>
+                    <tr><td><code>dissolve</code></td><td>Merge by attribute</td><td><code>by</code></td></tr>
+                    <tr><td><code>clip</code></td><td>Restrict to boundary</td><td><code>target</code></td></tr>
+                    <tr><td><code>buffer</code></td><td>Expand/shrink</td><td><code>distance</code></td></tr>
+                    <tr><td><code>clean</code></td><td>Fix topology</td><td><code>buffer_distance</code></td></tr>
+                    <tr><td><code>remove_holes</code></td><td>Fill voids</td><td><code>min_hole_area</code></td></tr>
+                    <tr><td><code>extract_islands</code></td><td>Get holes as features</td><td><code>min_area</code></td></tr>
+                </tbody>
+            </table>
+
+            <div class="ornament">▤ ▥ ▦</div>
+        </div>
+    </section>
+
+    <!-- Examples Section -->
+    <section id="examples">
+        <div class="container">
+            <h2>Exemplars</h2>
+
+            <h3>hawaii_islands.strata.yaml</h3>
+            <pre><code>strata build examples/hawaii_islands.strata.yaml -o output</code></pre>
+            <div class="screenshot">The Hawaiian Islands</div>
+
+            <h3>lake_champlain_quebec_12x24.strata.yaml</h3>
+            <p>Demonstrates <code>merge_touching</code> for Lake Memphremagog.</p>
+            <pre><code>strata build examples/lake_champlain_quebec_12x24.strata.yaml -o output</code></pre>
+            <div class="screenshot">Lake Champlain with Quebec</div>
+
+            <h3>vermont_regional_master.strata.yaml</h3>
+            <pre><code>strata build examples/vermont_regional_master.strata.yaml -o output</code></pre>
+            <div class="screenshot">The Vermont Region</div>
+
+            <div class="ornament">▤ ▥ ▦</div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>▤ ▥ ▦ ▧ ▨</p>
+            <p><em>Built upon the principles discovered in the rock strata of Somerset</em></p>
+            <p><em>Anno Domini MMXXV</em></p>
+            <p style="margin-top: 2rem; font-size: 0.9rem;">
+                "Each stratum serves its purpose; none can be omitted without loss."
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
