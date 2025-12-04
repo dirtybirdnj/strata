@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strata - Plotter-Ready Vector Maps</title>
+    <style>
+        :root {
+            --bg: #1a1a2e;
+            --bg-secondary: #16213e;
+            --accent: #0f3460;
+            --accent-light: #e94560;
+            --text: #eaeaea;
+            --text-muted: #a0a0a0;
+            --code-bg: #0d1117;
+            --success: #2ea043;
+            --warning: #d29922;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--accent) 100%);
+            padding: 4rem 0;
+            text-align: center;
+            border-bottom: 3px solid var(--accent-light);
+        }
+
+        .logo {
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
+            color: var(--accent-light);
+            margin-bottom: 1rem;
+            white-space: pre;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, var(--text), var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--bg-secondary);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--accent);
+        }
+
+        nav ul {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: var(--text);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        nav a:hover {
+            background: var(--accent);
+            color: var(--accent-light);
+        }
+
+        /* Sections */
+        section {
+            padding: 4rem 0;
+            border-bottom: 1px solid var(--accent);
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent-light);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h2::before {
+            content: '▸';
+            color: var(--accent-light);
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem;
+            color: var(--text);
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-muted);
+        }
+
+        /* Code blocks */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9rem;
+        }
+
+        code {
+            font-family: 'Fira Code', 'Consolas', monospace;
+            background: var(--code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .yaml { color: #79c0ff; }
+        .comment { color: #8b949e; }
+        .string { color: #a5d6ff; }
+        .keyword { color: #ff7b72; }
+        .number { color: #79c0ff; }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-light);
+        }
+
+        .card h4 {
+            margin-top: 0;
+            color: var(--accent-light);
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border: 1px solid var(--accent);
+        }
+
+        th {
+            background: var(--bg-secondary);
+            color: var(--accent-light);
+        }
+
+        tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+            color: var(--text-muted);
+        }
+
+        li {
+            margin: 0.5rem 0;
+        }
+
+        /* Screenshot placeholders */
+        .screenshot {
+            background: var(--bg-secondary);
+            border: 2px dashed var(--accent);
+            border-radius: 8px;
+            padding: 3rem;
+            text-align: center;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+        }
+
+        .screenshot::before {
+            content: '📷';
+            display: block;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Architecture diagram */
+        .architecture {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .arch-layer {
+            background: var(--bg-secondary);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+        }
+
+        .arch-layer h4 {
+            margin: 0 0 0.5rem;
+            color: var(--accent-light);
+        }
+
+        .arch-modules {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .arch-module {
+            background: var(--code-bg);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-success { background: var(--success); color: white; }
+        .badge-warning { background: var(--warning); color: black; }
+        .badge-info { background: var(--accent); color: white; }
+
+        /* Footer */
+        footer {
+            background: var(--bg-secondary);
+            padding: 2rem 0;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .logo { font-size: 1rem; }
+            nav ul { flex-direction: column; align-items: center; gap: 0.5rem; }
+            .container { padding: 0 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">╔═╗╔╦╗╦═╗╔═╗╔╦╗╔═╗
+╚═╗ ║ ╠╦╝╠═╣ ║ ╠═╣
+╚═╝ ╩ ╩╚═╩ ╩ ╩ ╩ ╩</div>
+            <h1>Strata</h1>
+            <p class="tagline">Create plotter-ready vector maps from open GIS data sources</p>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#cli">CLI Reference</a></li>
+                <li><a href="#tui">TUI Wizard</a></li>
+                <li><a href="#recipes">Recipe Format</a></li>
+                <li><a href="#data-sources">Data Sources</a></li>
+                <li><a href="#operations">Operations</a></li>
+                <li><a href="#examples">Examples</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Overview Section -->
+    <section id="overview">
+        <div class="container">
+            <h2>Overview</h2>
+            <p>Strata is a command-line tool and Python library for creating publication-quality vector maps optimized for pen plotters. It downloads geographic data from open sources, processes it through customizable pipelines, and outputs SVG files ready for plotting.</p>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h4>Declarative Recipes</h4>
+                    <p>Define your map in YAML with sources, layers, operations, and styles. No coding required.</p>
+                </div>
+                <div class="card">
+                    <h4>Smart Caching</h4>
+                    <p>Downloads are cached locally. Build the same map repeatedly without re-downloading gigabytes of data.</p>
+                </div>
+                <div class="card">
+                    <h4>Plotter-Optimized</h4>
+                    <p>Multiple simplification levels, per-layer SVGs, and combined outputs designed for pen plotters.</p>
+                </div>
+                <div class="card">
+                    <h4>Cross-Border Support</h4>
+                    <p>Merge data from US Census, Quebec, and Canadian federal sources seamlessly.</p>
+                </div>
+            </div>
+
+            <h3>Quick Start</h3>
+            <pre><code><span class="comment"># Install (from the strata directory)</span>
+pip install -e .
+
+<span class="comment"># Create a new recipe interactively</span>
+strata new
+
+<span class="comment"># Or build an existing recipe</span>
+strata build examples/hawaii_islands.strata.yaml -o output
+
+<span class="comment"># Open the result</span>
+open output/hawaii_islands/svg/fine/combined.svg</code></pre>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architecture">
+        <div class="container">
+            <h2>Architecture</h2>
+            <p>Strata is organized into four named modules, each handling a specific part of the pipeline:</p>
+
+            <div class="architecture">
+                <div class="arch-layer">
+                    <h4>CLI & TUI Layer</h4>
+                    <p>User interface components</p>
+                    <div class="arch-modules">
+                        <span class="arch-module">strata.cli</span>
+                        <span class="arch-module">strata.tui.app</span>
+                        <span class="arch-module">strata.tui.screens.*</span>
+                        <span class="arch-module">strata.tui.catalog</span>
+                    </div>
+                </div>
+
+                <div class="arch-layer">
+                    <h4>Thoreau - Data Fetching</h4>
+                    <p>"Simplify, simplify" - Downloads and caches geographic data from remote sources</p>
+                    <div class="arch-modules">
+                        <span class="arch-module">thoreau.census</span>
+                        <span class="arch-module">thoreau.quebec</span>
+                        <span class="arch-module">thoreau.canada</span>
+                        <span class="arch-module">thoreau.cache</span>
+                    </div>
+                </div>
+
+                <div class="arch-layer">
+                    <h4>Maury - Pipeline Orchestration</h4>
+                    <p>"The sea has its rivers" - Parses recipes and orchestrates the build process</p>
+                    <div class="arch-modules">
+                        <span class="arch-module">maury.recipe</span>
+                        <span class="arch-module">maury.pipeline</span>
+                    </div>
+                </div>
+
+                <div class="arch-layer">
+                    <h4>Humboldt - Geometry Processing</h4>
+                    <p>"Unity in diversity of phenomena" - Spatial transformations and analysis</p>
+                    <div class="arch-modules">
+                        <span class="arch-module">humboldt.geometry</span>
+                        <span class="arch-module">humboldt.projection</span>
+                    </div>
+                </div>
+
+                <div class="arch-layer">
+                    <h4>Kelley - Output Generation</h4>
+                    <p>Named for the Kelley Blue Book of cartography - Renders final outputs</p>
+                    <div class="arch-modules">
+                        <span class="arch-module">kelley.svg</span>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Data Flow</h3>
+            <pre><code>Recipe YAML
+    │
+    ▼
+┌─────────────────────────────────────────────────────────────┐
+│  Thoreau: Fetch & Cache                                     │
+│  census:tiger/2023/vt/cousub → ~/Library/Caches/strata/     │
+└─────────────────────────────────────────────────────────────┘
+    │
+    ▼
+┌─────────────────────────────────────────────────────────────┐
+│  Maury: Load Sources into GeoDataFrames                     │
+│  Apply source-level filters                                 │
+└─────────────────────────────────────────────────────────────┘
+    │
+    ▼
+┌─────────────────────────────────────────────────────────────┐
+│  For each layer:                                            │
+│    1. Combine sources (if multiple)                         │
+│    2. Apply layer filters (min_area_km2, attributes)        │
+│    3. Execute operations (subtract, merge, simplify...)     │
+│    4. Clip to output bounds                                 │
+└─────────────────────────────────────────────────────────────┘
+    │
+    ▼
+┌─────────────────────────────────────────────────────────────┐
+│  Kelley: Generate Outputs                                   │
+│  SVG (per-layer + combined) │ GeoJSON │ PMTiles             │
+└─────────────────────────────────────────────────────────────┘</code></pre>
+        </div>
+    </section>
+
+    <!-- CLI Reference Section -->
+    <section id="cli">
+        <div class="container">
+            <h2>CLI Reference</h2>
+            <p>Strata provides a comprehensive command-line interface for all operations.</p>
+
+            <h3>Main Commands</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Command</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>strata new</code></td>
+                        <td>Launch interactive TUI wizard to create a new recipe</td>
+                    </tr>
+                    <tr>
+                        <td><code>strata build</code></td>
+                        <td>Build outputs from a recipe file</td>
+                    </tr>
+                    <tr>
+                        <td><code>strata prepare</code></td>
+                        <td>Download and cache all sources without building</td>
+                    </tr>
+                    <tr>
+                        <td><code>strata validate</code></td>
+                        <td>Check a recipe for errors</td>
+                    </tr>
+                    <tr>
+                        <td><code>strata cache</code></td>
+                        <td>Manage local data cache</td>
+                    </tr>
+                    <tr>
+                        <td><code>strata sources</code></td>
+                        <td>Browse and search available data sources</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>strata build</h3>
+            <pre><code>strata build [OPTIONS] RECIPE
+
+Options:
+  -f, --format TEXT   Only build specific format (svg, geojson, pmtiles)
+  -q, --quality TEXT  Only build specific quality level
+  -l, --layer TEXT    Only build specific layer(s)
+  -o, --output PATH   Output directory
+  --no-cache          Don't use cached source data
+  --dry-run           Show what would be built
+  -v, --verbose       Show detailed progress</code></pre>
+
+            <h4>Examples</h4>
+            <pre><code><span class="comment"># Build everything</span>
+strata build examples/vermont_12x18.strata.yaml -o output
+
+<span class="comment"># Build only SVG at fine quality</span>
+strata build recipe.yaml -f svg -q fine -o output
+
+<span class="comment"># Build only the water layer</span>
+strata build recipe.yaml -l vt_water -o output
+
+<span class="comment"># Dry run to see what would happen</span>
+strata build recipe.yaml --dry-run</code></pre>
+
+            <h3>strata prepare</h3>
+            <pre><code>strata prepare [OPTIONS] RECIPE
+
+Options:
+  --dry-run  Show what would be downloaded
+  --force    Re-download even if cached</code></pre>
+
+            <h4>Examples</h4>
+            <pre><code><span class="comment"># Download all sources for a recipe</span>
+strata prepare examples/vermont_regional_12x18.strata.yaml
+
+<span class="comment"># See what would be downloaded</span>
+strata prepare examples/vermont_regional_12x18.strata.yaml --dry-run
+
+<span class="comment"># Force re-download</span>
+strata prepare examples/vermont_regional_12x18.strata.yaml --force</code></pre>
+
+            <h3>strata cache</h3>
+            <pre><code><span class="comment"># Show cache location</span>
+strata cache path
+
+<span class="comment"># List cached data</span>
+strata cache list
+
+<span class="comment"># Clear all cached data</span>
+strata cache clear</code></pre>
+
+            <div class="screenshot">
+                Screenshot: CLI build output showing progress
+            </div>
+        </div>
+    </section>
+
+    <!-- TUI Wizard Section -->
+    <section id="tui">
+        <div class="container">
+            <h2>TUI Wizard</h2>
+            <p>The interactive TUI (Terminal User Interface) guides you through creating a new recipe step by step.</p>
+
+            <pre><code>strata new [OPTIONS] [NAME]
+
+Options:
+  --from TEXT        Start from a template recipe
+  -o, --output PATH  Output directory</code></pre>
+
+            <h3>Screen 1: Welcome</h3>
+            <p>Enter your recipe name and description. The name becomes the output directory and filename.</p>
+            <div class="screenshot">
+                Screenshot: Welcome screen with name input
+            </div>
+
+            <h3>Screen 2: Source Browser</h3>
+            <p>Browse and select data sources from the catalog:</p>
+            <ul>
+                <li><strong>US Census TIGER</strong> - All 50 states organized by region, with 8 layer types each</li>
+                <li><strong>Quebec (Canada)</strong> - Municipalities, MRCs, regions, metropolitan areas</li>
+                <li><strong>Canada (National)</strong> - CanVec hydro, NRN roads for all 13 provinces/territories</li>
+                <li><strong>Custom Sources</strong> - Add local files or URLs</li>
+            </ul>
+
+            <h4>Keyboard Shortcuts</h4>
+            <table>
+                <thead>
+                    <tr><th>Key</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>Enter</code></td><td>Select/deselect source</td></tr>
+                    <tr><td><code>/</code></td><td>Focus search box</td></tr>
+                    <tr><td><code>↑↓</code></td><td>Navigate tree</td></tr>
+                    <tr><td><code>←→</code></td><td>Collapse/expand nodes</td></tr>
+                    <tr><td><code>Escape</code></td><td>Go back</td></tr>
+                </tbody>
+            </table>
+            <div class="screenshot">
+                Screenshot: Source browser with Canada sources expanded
+            </div>
+
+            <h3>Screen 3: Bounds Configuration</h3>
+            <p>Define the geographic extent of your map. Choose from presets or enter custom coordinates.</p>
+
+            <h4>Available Presets</h4>
+            <ul>
+                <li>Vermont (Full State)</li>
+                <li>Lake Champlain Region</li>
+                <li>Lake Champlain + Quebec</li>
+                <li>Hawaiian Islands</li>
+                <li>Oahu</li>
+                <li>Niagara Falls Region</li>
+                <li>Continental US</li>
+            </ul>
+            <div class="screenshot">
+                Screenshot: Bounds screen with preset selection
+            </div>
+
+            <h3>Screen 4: Layer Configuration</h3>
+            <p>Configure how sources become layers:</p>
+            <ul>
+                <li>Reorder layers (bottom to top drawing order)</li>
+                <li>Configure styles (stroke, fill, width)</li>
+                <li>Enable operations (simplify, subtract water, etc.)</li>
+                <li>Auto-configure intelligently groups by geometry type</li>
+            </ul>
+            <div class="screenshot">
+                Screenshot: Layer configuration with style options
+            </div>
+
+            <h3>Screen 5: Output Configuration</h3>
+            <p>Configure the final outputs:</p>
+            <ul>
+                <li>Page size presets (Letter, Tabloid, 12x24, 18x24, etc.)</li>
+                <li>Output formats (SVG, GeoJSON)</li>
+                <li>Per-layer vs combined files</li>
+                <li>Live YAML preview</li>
+            </ul>
+            <div class="screenshot">
+                Screenshot: Output configuration with YAML preview
+            </div>
+        </div>
+    </section>
+
+    <!-- Recipe Format Section -->
+    <section id="recipes">
+        <div class="container">
+            <h2>Recipe Format</h2>
+            <p>Recipes are YAML files that define everything needed to build a map.</p>
+
+            <h3>Basic Structure</h3>
+            <pre><code><span class="keyword">name:</span> <span class="string">my_map</span>
+<span class="keyword">description:</span> <span class="string">A description of this map</span>
+<span class="keyword">version:</span> <span class="number">1</span>
+
+<span class="keyword">sources:</span>
+  <span class="comment"># Define where data comes from</span>
+  source_name:
+    <span class="keyword">uri:</span> <span class="string">census:tiger/2023/vt/cousub</span>
+    <span class="keyword">description:</span> <span class="string">Vermont towns</span>
+
+<span class="keyword">layers:</span>
+  <span class="comment"># Define how data is processed and styled</span>
+  - <span class="keyword">name:</span> <span class="string">layer_name</span>
+    <span class="keyword">source:</span> <span class="string">source_name</span>
+    <span class="keyword">operations:</span>
+      - <span class="keyword">type:</span> <span class="string">simplify</span>
+        <span class="keyword">tolerance:</span> <span class="number">0.0003</span>
+    <span class="keyword">style:</span>
+      <span class="keyword">stroke:</span> <span class="string">"#424242"</span>
+      <span class="keyword">stroke_width:</span> <span class="number">0.5</span>
+      <span class="keyword">fill:</span> <span class="string">"#f5f5f5"</span>
+    <span class="keyword">order:</span> <span class="number">1</span>
+
+<span class="keyword">output:</span>
+  <span class="keyword">bounds:</span> <span class="string">[-73.44, 42.72, -71.46, 45.02]</span>
+  <span class="keyword">projection:</span> <span class="string">epsg:4326</span>
+  <span class="keyword">formats:</span>
+    - <span class="keyword">type:</span> <span class="string">svg</span>
+      <span class="keyword">quality:</span>
+        - <span class="keyword">name:</span> <span class="string">fine</span>
+          <span class="keyword">simplify:</span> <span class="number">0.0002</span></code></pre>
+
+            <h3>Source Filters</h3>
+            <p>Filter data at the source level before processing:</p>
+            <pre><code><span class="keyword">sources:</span>
+  interstates:
+    <span class="keyword">uri:</span> <span class="string">census:tiger/2023/vt/prisecroads</span>
+    <span class="keyword">filter:</span>
+      <span class="keyword">RTTYP:</span> <span class="string">"I"</span>  <span class="comment"># Only interstates</span></code></pre>
+
+            <h3>Layer Filters</h3>
+            <p>Filter at the layer level:</p>
+            <pre><code><span class="keyword">layers:</span>
+  - <span class="keyword">name:</span> <span class="string">major_lakes</span>
+    <span class="keyword">source:</span> <span class="string">vt_water</span>
+    <span class="keyword">filter:</span>
+      <span class="keyword">min_area_km2:</span> <span class="number">0.5</span>  <span class="comment"># Only lakes >= 0.5 sq km</span></code></pre>
+
+            <h3>Multiple Sources per Layer</h3>
+            <pre><code><span class="keyword">layers:</span>
+  - <span class="keyword">name:</span> <span class="string">lake_champlain</span>
+    <span class="keyword">source:</span> <span class="string">[champlain_vt, champlain_ny]</span>  <span class="comment"># Merge two sources</span>
+    <span class="keyword">operations:</span>
+      - <span class="keyword">type:</span> <span class="string">merge</span>
+      - <span class="keyword">type:</span> <span class="string">simplify</span></code></pre>
+
+            <h3>Style Options</h3>
+            <table>
+                <thead>
+                    <tr><th>Option</th><th>Type</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>stroke</code></td><td>Color</td><td>Line color (hex)</td></tr>
+                    <tr><td><code>stroke_width</code></td><td>Number</td><td>Line width in points</td></tr>
+                    <tr><td><code>fill</code></td><td>Color</td><td>Fill color (hex or "none")</td></tr>
+                    <tr><td><code>fill_opacity</code></td><td>Number</td><td>Fill opacity (0-1)</td></tr>
+                    <tr><td><code>vary_fill</code></td><td>Boolean</td><td>Auto-vary fill colors per feature</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Data Sources Section -->
+    <section id="data-sources">
+        <div class="container">
+            <h2>Data Sources</h2>
+            <p>Strata supports multiple open data sources via URI schemes.</p>
+
+            <h3>US Census TIGER/Line</h3>
+            <p>Format: <code>census:tiger/{year}/{state}/{layer}</code></p>
+
+            <table>
+                <thead>
+                    <tr><th>Layer</th><th>Description</th><th>Geometry</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>cousub</code></td><td>County subdivisions (towns, townships)</td><td>Polygon</td></tr>
+                    <tr><td><code>areawater</code></td><td>Lakes, ponds, reservoirs</td><td>Polygon</td></tr>
+                    <tr><td><code>linearwater</code></td><td>Rivers, streams</td><td>Line</td></tr>
+                    <tr><td><code>prisecroads</code></td><td>Primary & secondary roads</td><td>Line</td></tr>
+                    <tr><td><code>county</code></td><td>County boundaries</td><td>Polygon</td></tr>
+                    <tr><td><code>state</code></td><td>State boundary</td><td>Polygon</td></tr>
+                    <tr><td><code>place</code></td><td>Cities, CDPs</td><td>Polygon</td></tr>
+                    <tr><td><code>tract</code></td><td>Census tracts</td><td>Polygon</td></tr>
+                </tbody>
+            </table>
+
+            <h4>State Codes</h4>
+            <p>All 50 US states plus DC and PR. Use lowercase two-letter codes: <code>vt</code>, <code>ny</code>, <code>ca</code>, <code>hi</code>, etc.</p>
+
+            <h4>Road Filtering</h4>
+            <p>Filter by RTTYP (Route Type):</p>
+            <ul>
+                <li><code>I</code> - Interstate</li>
+                <li><code>U</code> - US Route</li>
+                <li><code>S</code> - State Route</li>
+                <li><code>C</code> - County Road</li>
+            </ul>
+
+            <h3>Quebec Administrative</h3>
+            <p>Format: <code>quebec:{layer}</code></p>
+
+            <table>
+                <thead>
+                    <tr><th>Layer</th><th>Description</th><th>Features</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>municipalities</code></td><td>Municipal boundaries</td><td>~2,263</td></tr>
+                    <tr><td><code>mrc</code></td><td>Regional county municipalities</td><td>138</td></tr>
+                    <tr><td><code>regions</code></td><td>Administrative regions</td><td>17</td></tr>
+                    <tr><td><code>metropolitan</code></td><td>Metropolitan communities</td><td>2</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Canada National</h3>
+            <p>Format: <code>canada:{source}/{layer}</code></p>
+
+            <h4>CanVec (Natural Resources Canada)</h4>
+            <table>
+                <thead>
+                    <tr><th>URI</th><th>Description</th><th>Size</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>canada:canvec/hydro</code></td><td>National hydro (1:1M scale)</td><td>~150 MB</td></tr>
+                </tbody>
+            </table>
+
+            <h4>NRN (National Road Network)</h4>
+            <p>Available for all 13 provinces and territories:</p>
+            <table>
+                <thead>
+                    <tr><th>URI</th><th>Province/Territory</th><th>Size</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>canada:nrn/nl</code></td><td>Newfoundland & Labrador</td><td>~25 MB</td></tr>
+                    <tr><td><code>canada:nrn/pe</code></td><td>Prince Edward Island</td><td>~5 MB</td></tr>
+                    <tr><td><code>canada:nrn/ns</code></td><td>Nova Scotia</td><td>~35 MB</td></tr>
+                    <tr><td><code>canada:nrn/nb</code></td><td>New Brunswick</td><td>~50 MB</td></tr>
+                    <tr><td><code>canada:nrn/qc</code></td><td>Quebec</td><td>~200 MB</td></tr>
+                    <tr><td><code>canada:nrn/on</code></td><td>Ontario</td><td>~350 MB</td></tr>
+                    <tr><td><code>canada:nrn/mb</code></td><td>Manitoba</td><td>~80 MB</td></tr>
+                    <tr><td><code>canada:nrn/sk</code></td><td>Saskatchewan</td><td>~100 MB</td></tr>
+                    <tr><td><code>canada:nrn/ab</code></td><td>Alberta</td><td>~150 MB</td></tr>
+                    <tr><td><code>canada:nrn/bc</code></td><td>British Columbia</td><td>~200 MB</td></tr>
+                    <tr><td><code>canada:nrn/yt</code></td><td>Yukon</td><td>~10 MB</td></tr>
+                    <tr><td><code>canada:nrn/nt</code></td><td>Northwest Territories</td><td>~15 MB</td></tr>
+                    <tr><td><code>canada:nrn/nu</code></td><td>Nunavut</td><td>~5 MB</td></tr>
+                </tbody>
+            </table>
+
+            <h4>NRN Road Classes</h4>
+            <p>Filter with <code>ROADCLASS</code>:</p>
+            <ul>
+                <li><code>Freeway</code> - Autoroutes/highways</li>
+                <li><code>Expressway / Highway</code></li>
+                <li><code>Arterial</code></li>
+                <li><code>Collector</code></li>
+                <li><code>Local / Street</code></li>
+            </ul>
+
+            <h3>Cache Locations</h3>
+            <pre><code>~/Library/Caches/strata/
+├── census/          <span class="comment"># US Census TIGER data</span>
+├── quebec/          <span class="comment"># Quebec administrative data</span>
+└── canada/          <span class="comment"># CanVec and NRN data</span></code></pre>
+        </div>
+    </section>
+
+    <!-- Operations Section -->
+    <section id="operations">
+        <div class="container">
+            <h2>Operations</h2>
+            <p>Operations transform geometry data in the processing pipeline.</p>
+
+            <h3>simplify</h3>
+            <p>Reduce geometry complexity using Douglas-Peucker algorithm.</p>
+            <pre><code>- <span class="keyword">type:</span> <span class="string">simplify</span>
+  <span class="keyword">tolerance:</span> <span class="number">0.0003</span>  <span class="comment"># In degrees (for WGS84)</span>
+  <span class="keyword">preserve_topology:</span> <span class="keyword">true</span>  <span class="comment"># Prevent self-intersections</span></code></pre>
+
+            <h3>subtract</h3>
+            <p>Cut away geometry from another layer (e.g., water cutouts from towns).</p>
+            <pre><code>- <span class="keyword">type:</span> <span class="string">subtract</span>
+  <span class="keyword">target:</span> <span class="string">vt_water</span>  <span class="comment"># Source name to subtract</span></code></pre>
+
+            <h3>merge</h3>
+            <p>Merge all features into a single geometry.</p>
+            <pre><code>- <span class="keyword">type:</span> <span class="string">merge</span></code></pre>
+
+            <h3>merge_touching</h3>
+            <p>Merge features whose geometries touch or overlap. Essential for cross-border features.</p>
+            <pre><code>- <span class="keyword">type:</span> <span class="string">merge_touching</span>
+  <span class="keyword">buffer_distance:</span> <span class="number">0.0001</span>  <span class="comment"># ~10m tolerance for near-touching</span></code></pre>
+            <p><span class="badge badge-info">New</span> Uses union-find algorithm to efficiently group connected features.</p>
+
+            <h3>dissolve</h3>
+            <p>Merge features by attribute value (e.g., merge lake polygons by HYDROID).</p>
+            <pre><code>- <span class="keyword">type:</span> <span class="string">dissolve</span>
+  <span class="keyword">by:</span> <span class="string">HYDROID</span>  <span class="comment"># Column to group by</span></code></pre>
+
+            <h3>clip</h3>
+            <p>Clip to a boundary or the output bounds.</p>
+            <pre><code>- <span class="keyword">type:</span> <span class="string">clip</span>
+  <span class="keyword">target:</span> <span class="string">bounds</span>  <span class="comment"># Or a source name</span></code></pre>
+
+            <h3>buffer</h3>
+            <p>Expand or shrink geometries.</p>
+            <pre><code>- <span class="keyword">type:</span> <span class="string">buffer</span>
+  <span class="keyword">distance:</span> <span class="number">0.001</span>  <span class="comment"># Positive = expand, negative = shrink</span></code></pre>
+
+            <h3>clean</h3>
+            <p>Fix topology issues and remove slivers.</p>
+            <pre><code>- <span class="keyword">type:</span> <span class="string">clean</span>
+  <span class="keyword">buffer_distance:</span> <span class="number">0.0001</span>  <span class="comment"># Optional erosion/dilation</span></code></pre>
+
+            <h3>remove_holes</h3>
+            <p>Fill interior rings (holes) in polygons.</p>
+            <pre><code>- <span class="keyword">type:</span> <span class="string">remove_holes</span>
+  <span class="keyword">min_hole_area:</span> <span class="number">0.0</span>  <span class="comment"># 0 = remove all holes</span></code></pre>
+
+            <h3>extract_islands</h3>
+            <p>Extract holes as separate features (for drawing islands).</p>
+            <pre><code>- <span class="keyword">type:</span> <span class="string">extract_islands</span>
+  <span class="keyword">min_area:</span> <span class="number">0.0001</span>  <span class="comment"># Minimum island area</span></code></pre>
+
+            <h3>exclude</h3>
+            <p>Remove features that intersect a target layer.</p>
+            <pre><code>- <span class="keyword">type:</span> <span class="string">exclude</span>
+  <span class="keyword">target:</span> <span class="string">water_bodies</span></code></pre>
+        </div>
+    </section>
+
+    <!-- Examples Section -->
+    <section id="examples">
+        <div class="container">
+            <h2>Example Recipes</h2>
+            <p>The <code>examples/</code> directory contains ready-to-use recipes.</p>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h4>hawaii_islands.strata.yaml</h4>
+                    <p>All Hawaiian islands with counties, places, water, and roads.</p>
+                    <pre><code>strata build examples/hawaii_islands.strata.yaml -o output</code></pre>
+                    <div class="screenshot">
+                        Screenshot: Hawaii output
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h4>niagara_falls.strata.yaml</h4>
+                    <p>Niagara Falls region showing US-Canada border area.</p>
+                    <pre><code>strata build examples/niagara_falls.strata.yaml -o output</code></pre>
+                    <div class="screenshot">
+                        Screenshot: Niagara output
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h4>lake_champlain_quebec_12x24.strata.yaml</h4>
+                    <p>Lake Champlain with Quebec municipalities and cross-border Lake Memphremagog.</p>
+                    <pre><code>strata build examples/lake_champlain_quebec_12x24.strata.yaml -o output</code></pre>
+                    <div class="screenshot">
+                        Screenshot: Champlain + Quebec output
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h4>vermont_regional_master.strata.yaml</h4>
+                    <p>Complete regional map with all neighbors: VT, NY, NH, MA, Quebec.</p>
+                    <pre><code>strata build examples/vermont_regional_master.strata.yaml -o output</code></pre>
+                    <div class="screenshot">
+                        Screenshot: Regional master output
+                    </div>
+                </div>
+            </div>
+
+            <h3>Minimal Example</h3>
+            <p>The simplest possible recipe:</p>
+            <pre><code><span class="keyword">name:</span> <span class="string">simple_vt</span>
+<span class="keyword">description:</span> <span class="string">Vermont towns only</span>
+<span class="keyword">version:</span> <span class="number">1</span>
+
+<span class="keyword">sources:</span>
+  vt_towns:
+    <span class="keyword">uri:</span> <span class="string">census:tiger/2023/vt/cousub</span>
+
+<span class="keyword">layers:</span>
+  - <span class="keyword">name:</span> <span class="string">towns</span>
+    <span class="keyword">source:</span> <span class="string">vt_towns</span>
+    <span class="keyword">style:</span>
+      <span class="keyword">stroke:</span> <span class="string">"#333"</span>
+      <span class="keyword">fill:</span> <span class="string">"#eee"</span>
+    <span class="keyword">order:</span> <span class="number">1</span>
+
+<span class="keyword">output:</span>
+  <span class="keyword">bounds:</span> <span class="string">[-73.44, 42.72, -71.46, 45.02]</span>
+  <span class="keyword">formats:</span>
+    - <span class="keyword">type:</span> <span class="string">svg</span></code></pre>
+
+            <h3>Cross-Border Lake Example</h3>
+            <p>Demonstrating <code>merge_touching</code> for Lake Memphremagog:</p>
+            <pre><code><span class="keyword">sources:</span>
+  vt_water:
+    <span class="keyword">uri:</span> <span class="string">census:tiger/2023/vt/areawater</span>
+  quebec_hydro:
+    <span class="keyword">uri:</span> <span class="string">canada:canvec/hydro</span>
+
+<span class="keyword">layers:</span>
+  - <span class="keyword">name:</span> <span class="string">lake_memphremagog</span>
+    <span class="keyword">source:</span> <span class="string">[vt_water, quebec_hydro]</span>
+    <span class="keyword">filter:</span>
+      <span class="keyword">min_area_km2:</span> <span class="number">10</span>
+    <span class="keyword">operations:</span>
+      - <span class="keyword">type:</span> <span class="string">merge_touching</span>  <span class="comment"># Unites VT and Quebec portions</span>
+        <span class="keyword">buffer_distance:</span> <span class="number">0.001</span>
+      - <span class="keyword">type:</span> <span class="string">clean</span>
+      - <span class="keyword">type:</span> <span class="string">simplify</span>
+        <span class="keyword">tolerance:</span> <span class="number">0.0003</span>
+    <span class="keyword">style:</span>
+      <span class="keyword">fill:</span> <span class="string">"#1565c0"</span>
+    <span class="keyword">order:</span> <span class="number">1</span></code></pre>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>Strata - Created December 2025</p>
+            <p>Open source under MIT License</p>
+        </div>
+    </footer>
+</body>
+</html>
