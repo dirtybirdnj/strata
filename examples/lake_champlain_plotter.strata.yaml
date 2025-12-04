@@ -1,0 +1,225 @@
+# Lake Champlain Plotter Map (12x24)
+# Focused view of Lake Champlain corridor
+# Taller format to capture the full lake from Whitehall to Quebec
+
+name: lake_champlain_plotter
+description: Lake Champlain focused map for pen plotter (12x24)
+version: 1
+
+sources:
+  # Vermont
+  vt_towns:
+    uri: census:tiger/2023/vt/cousub
+  vt_water:
+    uri: census:tiger/2023/vt/areawater
+  vt_roads:
+    uri: census:tiger/2023/vt/prisecroads
+
+  # New York
+  ny_towns:
+    uri: census:tiger/2023/ny/cousub
+  ny_water:
+    uri: census:tiger/2023/ny/areawater
+  ny_roads:
+    uri: census:tiger/2023/ny/prisecroads
+
+  # Quebec
+  quebec_muni:
+    uri: quebec:municipalities
+  quebec_hydro:
+    uri: canada:canvec/hydro
+  quebec_roads:
+    uri: canada:nrn/qc
+
+  # Richelieu corridor
+  richelieu_hydro:
+    uri: canada:nhn/02OJ000
+
+  # Lake Champlain
+  champlain_vt:
+    uri: census:tiger/2023/vt/areawater
+    filter:
+      FULLNAME_contains: Champlain
+  champlain_ny:
+    uri: census:tiger/2023/ny/areawater
+    filter:
+      FULLNAME_contains: Champlain
+
+layers:
+  # Quebec municipalities - beige
+  - name: quebec_towns
+    source: quebec_muni
+    operations:
+      - type: simplify
+        tolerance: 0.0008
+    style:
+      stroke: "#a1887f"
+      stroke_width: 0.3
+      fill: "#d7ccc8"
+      vary_fill: true
+    order: 1
+
+  # New York towns - blue-grey
+  - name: ny_towns
+    source: ny_towns
+    operations:
+      - type: simplify
+        tolerance: 0.0008
+    style:
+      stroke: "#455a64"
+      stroke_width: 0.3
+      fill: "#78909c"
+      vary_fill: true
+    order: 2
+
+  # Vermont towns - green
+  - name: vt_towns
+    source: vt_towns
+    operations:
+      - type: simplify
+        tolerance: 0.0006
+    style:
+      stroke: "#1b5e20"
+      stroke_width: 0.4
+      fill: "#66bb6a"
+      vary_fill: true
+    order: 3
+
+  # Lake Champlain (main feature)
+  - name: lake_champlain
+    source: [champlain_vt, champlain_ny]
+    operations:
+      - type: merge
+      - type: simplify
+        tolerance: 0.0004
+    style:
+      stroke: "#0d47a1"
+      stroke_width: 0.6
+      fill: "#1976d2"
+    order: 10
+
+  # Richelieu corridor to St. Lawrence
+  - name: richelieu_corridor
+    source: richelieu_hydro
+    filter:
+      min_area_km2: 0.1
+    operations:
+      - type: merge
+      - type: simplify
+        tolerance: 0.0004
+    style:
+      stroke: "#0d47a1"
+      stroke_width: 0.5
+      fill: "#1976d2"
+    order: 11
+
+  # Vermont lakes
+  - name: vt_lakes
+    source: vt_water
+    filter:
+      min_area_km2: 0.5
+    operations:
+      - type: simplify
+        tolerance: 0.0006
+    style:
+      stroke: "#0d47a1"
+      stroke_width: 0.3
+      fill: "#1976d2"
+    order: 12
+
+  # NY lakes
+  - name: ny_lakes
+    source: ny_water
+    filter:
+      min_area_km2: 1.0
+    operations:
+      - type: simplify
+        tolerance: 0.0008
+    style:
+      stroke: "#0d47a1"
+      stroke_width: 0.3
+      fill: "#1976d2"
+    order: 13
+
+  # Quebec lakes
+  - name: quebec_lakes
+    source: quebec_hydro
+    filter:
+      min_area_km2: 1.0
+    operations:
+      - type: simplify
+        tolerance: 0.0008
+    style:
+      stroke: "#0d47a1"
+      stroke_width: 0.3
+      fill: "#1976d2"
+    order: 14
+
+  # Quebec highways
+  - name: quebec_highways
+    source: quebec_roads
+    filter:
+      ROADCLASS: "Freeway"
+    operations:
+      - type: simplify
+        tolerance: 0.0004
+    style:
+      stroke: "#424242"
+      stroke_width: 0.8
+      fill: none
+    order: 50
+
+  # US Interstates
+  - name: interstates
+    source: [vt_roads, ny_roads]
+    filter:
+      RTTYP: "I"
+    operations:
+      - type: simplify
+        tolerance: 0.0004
+    style:
+      stroke: "#424242"
+      stroke_width: 0.8
+      fill: none
+    order: 55
+
+  # US Routes
+  - name: us_routes
+    source: [vt_roads, ny_roads]
+    filter:
+      RTTYP: "U"
+    operations:
+      - type: simplify
+        tolerance: 0.0004
+    style:
+      stroke: "#616161"
+      stroke_width: 0.5
+      fill: none
+    order: 56
+
+output:
+  # Lake Champlain focused bounds (Whitehall NY to Quebec border)
+  bounds: [-73.84, 43.5, -72.66, 45.2]
+  projection: epsg:4326
+
+  formats:
+    - type: svg
+      quality:
+        - name: high_detail
+          simplify: 0.0002
+        - name: medium_detail
+          simplify: 0.0006
+        - name: low_detail
+          simplify: 0.0015
+        - name: draft
+          simplify: 0.004
+      options:
+        per_layer: true
+        combined: true
+        page_size: [12, 24]
+        margin: 0.5
+
+    - type: geojson
+      options:
+        per_layer: true
+        precision: 5
