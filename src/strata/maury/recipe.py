@@ -39,6 +39,9 @@ class StyleConfig(BaseModel):
     fill_by: str | None = None  # Column name to determine fill color
     color_map: dict[str, str] | None = None  # Mapping of column values to colors
     vary_fill: bool = True  # Whether to vary fill colors slightly per feature
+    fill_pattern: str | None = None  # Future: "hatch", "dots", "lines", etc.
+    fill_pattern_spacing: float | None = None  # Future: spacing for fill patterns
+    fill_pattern_angle: float | None = None  # Future: angle for line patterns
     opacity: float = 1.0
     dash_array: list[float] | None = None
 

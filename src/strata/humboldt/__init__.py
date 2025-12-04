@@ -6,7 +6,7 @@ thought, is a unity in diversity of phenomena."
     — Alexander von Humboldt, Cosmos
 """
 
-from .geometry import subtract, clip, merge, simplify, buffer
+from .geometry import subtract, clip, merge, simplify, buffer, extract_islands, remove_holes
 from .projection import transform_crs
 
 __all__ = [
@@ -15,6 +15,8 @@ __all__ = [
     "merge",
     "simplify",
     "buffer",
+    "extract_islands",
+    "remove_holes",
     "transform_crs",
     "process_layer",
 ]
@@ -83,8 +85,14 @@ def process_layer(
                     target_union = target_gdf.geometry.union_all()
                     result = result[~result.geometry.intersects(target_union)]
 
-        elif op_type == "identify_islands":
-            # TODO: Implement island detection
-            pass
+        elif op_type == "extract_islands":
+            # Extract islands (holes) from water polygons
+            min_area = op.get("min_area", 0.0)
+            result = extract_islands(result, min_area=min_area)
+
+        elif op_type == "remove_holes":
+            # Remove holes from polygons (fill islands)
+            min_hole_area = op.get("min_hole_area", 0.0)
+            result = remove_holes(result, min_hole_area=min_hole_area)
 
     return result

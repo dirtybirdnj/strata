@@ -3,7 +3,7 @@ Core geometry operations using Shapely/GeoPandas.
 """
 
 import geopandas as gpd
-from shapely.geometry import box
+from shapely.geometry import box, Polygon, MultiPolygon
 from shapely.ops import unary_union
 
 
@@ -139,4 +139,110 @@ def buffer(
     result["geometry"] = result.geometry.buffer(distance)
     # Remove empty geometries (from negative buffer)
     result = result[~result.geometry.is_empty]
+    return result
+
+
+def extract_islands(
+    gdf: gpd.GeoDataFrame,
+    min_area: float = 0.0,
+) -> gpd.GeoDataFrame:
+    """
+    Extract islands (interior rings/holes) from polygon geometries.
+
+    Water bodies like Lake Champlain are represented as polygons with
+    interior rings (holes) where islands exist. This function extracts
+    those holes as separate polygon features.
+
+    Args:
+        gdf: GeoDataFrame with polygon geometries (e.g., lake polygons)
+        min_area: Minimum area in CRS units to include (filters tiny islands)
+
+    Returns:
+        GeoDataFrame containing island polygons
+    """
+    islands = []
+
+    for idx, row in gdf.iterrows():
+        geom = row.geometry
+
+        if geom is None or geom.is_empty:
+            continue
+
+        # Handle both Polygon and MultiPolygon
+        polygons = []
+        if isinstance(geom, Polygon):
+            polygons = [geom]
+        elif isinstance(geom, MultiPolygon):
+            polygons = list(geom.geoms)
+
+        for poly in polygons:
+            # Extract interior rings (holes = islands in water)
+            for interior in poly.interiors:
+                island_poly = Polygon(interior)
+
+                # Filter by area
+                if island_poly.area >= min_area:
+                    # Create a new row with island geometry
+                    island_data = {"geometry": island_poly}
+
+                    # Copy relevant attributes from parent
+                    for col in gdf.columns:
+                        if col != "geometry":
+                            island_data[col] = row[col]
+
+                    # Add source info
+                    island_data["_source_idx"] = idx
+                    island_data["_island_area"] = island_poly.area
+
+                    islands.append(island_data)
+
+    if not islands:
+        # Return empty GeoDataFrame with same structure
+        return gpd.GeoDataFrame(columns=list(gdf.columns) + ["_source_idx", "_island_area"], crs=gdf.crs)
+
+    return gpd.GeoDataFrame(islands, crs=gdf.crs)
+
+
+def remove_holes(
+    gdf: gpd.GeoDataFrame,
+    min_hole_area: float = 0.0,
+) -> gpd.GeoDataFrame:
+    """
+    Remove interior rings (holes) from polygon geometries.
+
+    This creates "filled" polygons without islands, useful when you want
+    to show the water body outline without island cutouts.
+
+    Args:
+        gdf: GeoDataFrame with polygon geometries
+        min_hole_area: Only remove holes larger than this (0 = remove all)
+
+    Returns:
+        GeoDataFrame with holes removed
+    """
+    result = gdf.copy()
+
+    def remove_holes_from_geom(geom):
+        if geom is None or geom.is_empty:
+            return geom
+
+        if isinstance(geom, Polygon):
+            if min_hole_area <= 0:
+                # Remove all holes
+                return Polygon(geom.exterior)
+            else:
+                # Keep small holes, remove large ones
+                kept_holes = [
+                    interior for interior in geom.interiors
+                    if Polygon(interior).area < min_hole_area
+                ]
+                return Polygon(geom.exterior, kept_holes)
+
+        elif isinstance(geom, MultiPolygon):
+            new_polys = [remove_holes_from_geom(p) for p in geom.geoms]
+            return MultiPolygon(new_polys)
+
+        return geom
+
+    result["geometry"] = result.geometry.apply(remove_holes_from_geom)
     return result

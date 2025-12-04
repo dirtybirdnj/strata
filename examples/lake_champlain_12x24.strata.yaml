@@ -38,6 +38,13 @@ sources:
     filter:
       FULLNAME_contains: Champlain
 
+  # For island extraction - same source, will extract islands as separate layer
+  lake_champlain_for_islands:
+    uri: census:tiger/2023/vt/areawater
+    description: Lake Champlain for island extraction
+    filter:
+      FULLNAME_contains: Champlain
+
   # All Vermont water bodies (for town cutouts)
   vt_water:
     uri: census:tiger/2023/vt/areawater
@@ -126,19 +133,37 @@ layers:
       fill: none
     order: 2
 
-  # Layer 3: Lake Champlain (filtered - just the lake, not all water)
+  # Layer 3: Lake Champlain filled (shows the lake body with light blue fill)
   - name: lake_champlain
     source: [lake_champlain_vt, lake_champlain_ny]
     operations:
+      - type: remove_holes  # Remove islands from lake polygon for clean fill
       - type: simplify
         tolerance: 0.0002
     style:
       stroke: "#0d47a1"
       stroke_width: 0.6
-      fill: none
+      fill: "#bbdefb"  # Light blue fill for water
+      # fill_pattern: "hatch"  # Future: line fill patterns for plotter
+      # fill_pattern_spacing: 2.0
+      # fill_pattern_angle: 45
     order: 3
 
-  # Layer 4: Rivers and streams
+  # Layer 4: Champlain Islands (extracted from lake holes)
+  - name: champlain_islands
+    source: lake_champlain_for_islands
+    operations:
+      - type: extract_islands
+        min_area: 0.00001  # Filter out tiny islands
+      - type: simplify
+        tolerance: 0.0002
+    style:
+      stroke: "#424242"
+      stroke_width: 0.4
+      fill: "#e8f5e9"  # Light green for islands (land)
+    order: 4
+
+  # Layer 5: Rivers and streams
   - name: rivers
     source: [vt_rivers, ny_rivers]
     operations:
@@ -148,9 +173,9 @@ layers:
       stroke: "#42a5f5"
       stroke_width: 0.25
       fill: none
-    order: 4
+    order: 5
 
-  # Layer 5: State routes (lowest road hierarchy, gray)
+  # Layer 6: State routes (lowest road hierarchy, gray)
   - name: state_routes
     source: [vt_state_routes, ny_state_routes]
     operations:
@@ -160,9 +185,9 @@ layers:
       stroke: "#9e9e9e"
       stroke_width: 0.3
       fill: none
-    order: 5
+    order: 6
 
-  # Layer 6: US highways (medium hierarchy, blue)
+  # Layer 7: US highways (medium hierarchy, blue)
   - name: us_routes
     source: [vt_us_routes, ny_us_routes]
     operations:
@@ -172,9 +197,9 @@ layers:
       stroke: "#1976d2"
       stroke_width: 0.5
       fill: none
-    order: 6
+    order: 7
 
-  # Layer 7: Interstate highways (highest hierarchy, red)
+  # Layer 8: Interstate highways (highest hierarchy, red)
   - name: interstates
     source: [vt_interstates, ny_interstates]
     operations:
@@ -184,7 +209,7 @@ layers:
       stroke: "#d32f2f"
       stroke_width: 0.7
       fill: none
-    order: 7
+    order: 8
 
 output:
   # Lake Champlain focused bounds (taller aspect ratio for N-S orientation)
