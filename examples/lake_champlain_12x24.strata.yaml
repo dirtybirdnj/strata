@@ -1,0 +1,140 @@
+# Lake Champlain 12x24" Print Map
+# Focused view of Lake Champlain showing Vermont and New York shorelines,
+# town boundaries with water cutouts, and the lake's island geography.
+#
+# This recipe recreates the vt-geodata project's lake_champlain_12x24 map:
+# - Lake Champlain with all islands visible
+# - Vermont and New York towns along the shoreline
+# - Water cutouts showing lake shoreline detail
+# - Taller aspect ratio (1:2) for the north-south lake orientation
+# - Optimized for pen plotter output
+
+name: lake_champlain_12x24
+description: Lake Champlain focused map showing VT/NY shorelines and islands
+version: 1
+
+sources:
+  # Vermont towns (county subdivisions)
+  vt_towns:
+    uri: census:tiger/2023/vt/cousub
+    description: Vermont county subdivisions
+
+  # New York towns (Champlain-adjacent counties only)
+  ny_towns:
+    uri: census:tiger/2023/ny/cousub
+    description: New York county subdivisions (Clinton, Essex, Franklin, Warren, Washington)
+
+  # Vermont water bodies
+  vt_water:
+    uri: census:tiger/2023/vt/areawater
+    description: Vermont lakes, ponds, reservoirs (includes Lake Champlain VT portion)
+
+  # New York water bodies
+  ny_water:
+    uri: census:tiger/2023/ny/areawater
+    description: New York water bodies (includes Lake Champlain NY portion)
+
+  # Vermont roads
+  vt_roads:
+    uri: census:tiger/2023/vt/prisecroads
+    description: Vermont primary and secondary roads
+
+  # New York roads
+  ny_roads:
+    uri: census:tiger/2023/ny/prisecroads
+    description: New York primary and secondary roads
+
+layers:
+  # Layer 1: New York towns with water cutouts (western shore)
+  - name: ny_towns
+    source: ny_towns
+    operations:
+      - type: subtract
+        target: ny_water
+      - type: simplify
+        tolerance: 0.0003
+    style:
+      stroke: "#8a9bab"
+      stroke_width: 0.4
+      fill: none
+    order: 1
+
+  # Layer 2: Vermont towns with water cutouts (eastern shore)
+  - name: vt_towns
+    source: vt_towns
+    operations:
+      - type: subtract
+        target: vt_water
+      - type: simplify
+        tolerance: 0.0002
+        preserve_topology: true
+    style:
+      stroke: "#424242"
+      stroke_width: 0.5
+      fill: none
+    order: 2
+
+  # Layer 3: Lake Champlain and water features (VT portion)
+  - name: vt_water
+    source: vt_water
+    operations:
+      - type: simplify
+        tolerance: 0.0002
+    style:
+      stroke: "#1565c0"
+      stroke_width: 0.5
+      fill: none
+    order: 3
+
+  # Layer 4: Lake Champlain and water features (NY portion)
+  - name: ny_water
+    source: ny_water
+    operations:
+      - type: simplify
+        tolerance: 0.0002
+    style:
+      stroke: "#1565c0"
+      stroke_width: 0.5
+      fill: none
+    order: 4
+
+  # Layer 5: Roads overlay
+  - name: roads
+    source: [vt_roads, ny_roads]
+    operations:
+      - type: simplify
+        tolerance: 0.0002
+    style:
+      stroke: "#616161"
+      stroke_width: 0.35
+      fill: none
+    order: 5
+
+output:
+  # Lake Champlain focused bounds (taller aspect ratio for N-S orientation)
+  # Matches vt-geodata: [-73.84, 43.5, -72.66, 45.2]
+  bounds: [-73.84, 43.50, -72.66, 45.20]
+  projection: epsg:4326
+
+  formats:
+    # SVG for pen plotters - 12x24 inch (1:2 aspect ratio)
+    - type: svg
+      quality:
+        - name: ultra_fine
+          simplify: 0.0001
+        - name: fine
+          simplify: 0.0003
+        - name: medium
+          simplify: 0.0007
+      options:
+        per_layer: true
+        combined: true
+        optimize_for: plotter
+        page_size: [12, 24]
+        margin: 0.5
+
+    # GeoJSON for web viewing and analysis
+    - type: geojson
+      options:
+        per_layer: true
+        precision: 6
