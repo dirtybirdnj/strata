@@ -68,6 +68,16 @@ class QualityConfig(BaseModel):
     simplify: float
 
 
+class PlotterFillConfig(BaseModel):
+    """Configuration for plotter fill pattern generation."""
+
+    enabled: bool = True
+    spacing: float = 3.0  # Base line spacing
+    stroke_width: float = 0.5  # Output stroke width
+    include_outlines: bool = True  # Include polygon outlines
+    rat_king_bin: str | None = None  # Path to rat-king binary (auto-detected if None)
+
+
 class SVGOptions(BaseModel):
     """Options for SVG output."""
 
@@ -77,6 +87,7 @@ class SVGOptions(BaseModel):
     stroke_units: str = "mm"
     page_size: list[float] = Field(default_factory=lambda: [11, 17])
     margin: float = 0.5
+    plotter_fill: PlotterFillConfig | None = None  # Optional plotter fill post-processing
 
 
 class GeoJSONOptions(BaseModel):

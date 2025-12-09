@@ -399,6 +399,60 @@ class Pipeline:
             created.extend(files)
             console.print(f"  [green]✓[/] SVG ({q_name}): {len(files)} files")
 
+            # Apply plotter fill if configured
+            if options.plotter_fill and options.plotter_fill.enabled and combined:
+                plotter_files = self._apply_plotter_fill(svg_dir, options.plotter_fill)
+                created.extend(plotter_files)
+
+        return created
+
+    def _apply_plotter_fill(self, svg_dir: Path, config) -> list[Path]:
+        """
+        Apply plotter fill patterns to combined SVG files.
+
+        Args:
+            svg_dir: Directory containing SVG files
+            config: PlotterFillConfig with settings
+
+        Returns:
+            List of created plotter fill SVG paths
+        """
+        from strata.kelley import generate_plotter_fill, check_rat_king_available
+
+        created = []
+
+        # Determine rat-king binary path
+        bin_path = config.rat_king_bin
+        if bin_path is None:
+            # Default location
+            bin_path = "/Users/mgilbert/Code/rat-king/crates/target/release/rat-king"
+
+        # Check availability
+        if not check_rat_king_available(bin_path):
+            console.print(f"  [yellow]![/] Plotter fill skipped: rat-king not found at {bin_path}")
+            return created
+
+        # Find combined.svg and apply plotter fill
+        combined_svg = svg_dir / "combined.svg"
+        if combined_svg.exists():
+            output_svg = svg_dir / "combined_plotter.svg"
+
+            console.print(f"  Generating plotter fill...")
+            success = generate_plotter_fill(
+                combined_svg,
+                output_svg,
+                bin_path=bin_path,
+                stroke_width=config.stroke_width,
+                include_outlines=config.include_outlines,
+                base_spacing=config.spacing,
+            )
+
+            if success:
+                created.append(output_svg)
+                console.print(f"  [green]✓[/] Plotter fill: {output_svg.name}")
+            else:
+                console.print(f"  [yellow]![/] Plotter fill generation failed")
+
         return created
 
     def _export_geojson(self, output_dir: Path, format_config) -> list[Path]:

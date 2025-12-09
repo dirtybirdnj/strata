@@ -346,7 +346,38 @@ bounds: source:vt_towns              # Use bounds of specific source
     stroke_units: mm      # Unit for stroke widths
     page_size: [w, h]     # Page dimensions in inches
     margin: float         # Page margin in inches
+    plotter_fill:         # Optional: convert fills to hatch patterns
+      enabled: bool       # Enable plotter fill (default: true when present)
+      spacing: float      # Base line spacing (default: 3.0)
+      stroke_width: float # Output stroke width (default: 0.5)
+      include_outlines: bool  # Include polygon outlines (default: true)
+      rat_king_bin: string    # Path to rat-king binary (auto-detected)
 ```
+
+##### Plotter Fill
+
+When `plotter_fill` is specified, the combined SVG is post-processed to convert
+colored polygon fills into hatched line patterns. This is ideal for single-pen
+plotter output where color cannot be represented.
+
+Each unique fill color gets a distinct pattern/angle combination:
+- Different patterns: lines, crosshatch, honeycomb, zigzag, etc.
+- Different angles: 0°, 30°, 45°, 60°, 90°, etc.
+- Darker colors get denser fills (smaller spacing)
+
+**Requires:** rat-king CLI (https://github.com/dirtybirdnj/rat-king)
+
+```yaml
+# Example: Enable plotter fill with custom settings
+options:
+  combined: true
+  plotter_fill:
+    enabled: true
+    spacing: 4.0         # Lighter fill (larger spacing)
+    stroke_width: 0.3    # Thinner lines
+```
+
+Output: Creates `combined_plotter.svg` alongside `combined.svg`.
 
 #### GeoJSON Format Options
 
@@ -394,7 +425,8 @@ output/
     │   │   ├── 03_towns.svg
     │   │   ├── 04_small_water.svg
     │   │   ├── 05_highways.svg
-    │   │   └── combined.svg
+    │   │   ├── combined.svg
+    │   │   └── combined_plotter.svg  # If plotter_fill enabled
     │   ├── fine/
     │   ├── medium/
     │   └── coarse/

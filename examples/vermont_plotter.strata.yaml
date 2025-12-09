@@ -79,10 +79,12 @@ layers:
   # Each region uses 4 color variations
   # ============================================================
 
-  # Quebec municipalities - beige palette
+  # Quebec municipalities - beige palette (with water cutouts)
   - name: quebec_towns
     source: quebec_muni
     operations:
+      - type: subtract
+        target: quebec_hydro  # Cut out lakes for clean boundaries
       - type: simplify
         tolerance: 0.001
     style:
@@ -344,6 +346,13 @@ output:
         combined: true
         page_size: [12, 18]
         margin: 0.5
+        # Plotter fill converts colored polygons to hatch patterns
+        # for single-pen plotter output (requires rat-king CLI)
+        plotter_fill:
+          enabled: true
+          spacing: 3.0         # Base line spacing (smaller = denser)
+          stroke_width: 0.5    # Output line width
+          include_outlines: true
 
     - type: geojson
       options:

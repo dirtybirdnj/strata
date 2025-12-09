@@ -2,11 +2,12 @@
 # Extends north to show Quebec municipalities along the US-Canada border
 # Demonstrates cross-border data integration: VT, NY, and Quebec
 # Includes Lake Memphremagog with merge_touching for cross-border lake merging
+# Includes Richelieu Corridor - the river system connecting Lake Champlain to St. Lawrence
 #
 # Optimized for pen plotter output
 
 name: lake_champlain_quebec_12x24
-description: Lake Champlain region including Quebec municipalities and cross-border lakes
+description: Lake Champlain region including Quebec municipalities, cross-border lakes, and Richelieu Corridor
 version: 1
 
 sources:
@@ -43,6 +44,21 @@ sources:
     uri: canada:canvec/hydro
     description: Quebec lakes from CanVec (includes Memphremagog north portion)
 
+  # Richelieu Corridor - connects Lake Champlain to St. Lawrence River
+  # NHN (National Hydro Network) provides detailed river data by watershed
+  richelieu_rivers:
+    uri: canada:nhn/02OJ000/rivers
+    description: Richelieu River system (Lake Champlain to St. Lawrence)
+
+  richelieu_waterbodies:
+    uri: canada:nhn/02OJ000
+    description: Richelieu watershed lakes and ponds
+
+  # Missisquoi Bay area (eastern Lake Champlain in Quebec)
+  missisquoi_rivers:
+    uri: canada:nhn/02OHB00/rivers
+    description: Missisquoi Bay rivers (Quebec portion)
+
   # Water bodies for cutouts
   vt_water:
     uri: census:tiger/2023/vt/areawater
@@ -75,9 +91,12 @@ sources:
 
 layers:
   # Layer 1: Quebec municipalities (northern border)
+  # Water cutouts using CanVec hydro data for clean boundaries
   - name: quebec_muni
     source: quebec_muni
     operations:
+      - type: subtract
+        target: [quebec_hydro, richelieu_waterbodies]  # Cut out lakes and rivers
       - type: simplify
         tolerance: 0.0003
     style:
@@ -174,9 +193,37 @@ layers:
       fill: none
     order: 7
 
+  # Layer 8: Richelieu Corridor rivers
+  # The Richelieu River connects Lake Champlain to the St. Lawrence River
+  - name: richelieu_rivers
+    source: [richelieu_rivers, missisquoi_rivers]
+    operations:
+      - type: simplify
+        tolerance: 0.0003
+    style:
+      stroke: "#1565c0"
+      stroke_width: 0.6
+      fill: none
+    order: 8
+
+  # Layer 9: Richelieu Corridor lakes/ponds
+  - name: richelieu_waterbodies
+    source: richelieu_waterbodies
+    filter:
+      min_area_km2: 0.5  # Only larger water bodies
+    operations:
+      - type: simplify
+        tolerance: 0.0003
+    style:
+      stroke: "#0d47a1"
+      stroke_width: 0.4
+      fill: "#bbdefb"
+    order: 9
+
 output:
-  # Extended bounds: north for Quebec, east for Lake Memphremagog
-  bounds: [-73.84, 43.50, -72.00, 45.50]
+  # Extended bounds: north for Richelieu Corridor (to St. Lawrence), east for Lake Memphremagog
+  # Richelieu River flows from Lake Champlain to the St. Lawrence near Sorel-Tracy (~46.0°N)
+  bounds: [-73.84, 43.50, -72.00, 46.10]
   projection: epsg:4326
 
   formats:

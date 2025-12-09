@@ -10,23 +10,26 @@ The `strata` CLI provides commands for building maps from recipes, managing data
 
 ```
 strata
-├── new           # Interactive wizard to create a recipe
-├── build         # Build outputs from a recipe
-├── fetch         # Download/cache sources without building
-├── preview       # Quick preview of a recipe
-├── validate      # Check a recipe for errors
-├── sources       # Manage data sources
-│   ├── list      # List available sources
-│   ├── search    # Search for sources
-│   └── info      # Get info about a source
-├── cache         # Manage local cache
-│   ├── list      # List cached data
-│   ├── clear     # Clear cache
-│   └── path      # Show cache directory
-└── config        # Manage configuration
-    ├── show      # Show current config
-    ├── set       # Set a config value
-    └── path      # Show config file path
+├── new              # Interactive wizard to create a recipe
+├── build            # Build outputs from a recipe
+├── prepare          # Download/cache all sources
+├── fetch            # Download/cache specific sources
+├── preview          # Quick preview of a recipe
+├── validate         # Check a recipe for errors
+├── plotter-fill     # Convert SVG fills to hatch patterns
+├── plotter-fill-all # Batch convert all combined.svg files
+├── sources          # Manage data sources
+│   ├── list         # List available sources
+│   ├── search       # Search for sources
+│   └── info         # Get info about a source
+├── cache            # Manage local cache
+│   ├── list         # List cached data
+│   ├── clear        # Clear cache
+│   └── path         # Show cache directory
+└── config           # Manage configuration
+    ├── show         # Show current config
+    ├── set          # Set a config value
+    └── path         # Show config file path
 ```
 
 ## Commands
@@ -102,21 +105,77 @@ Rendering outputs:
 Done! Output in: ./output/champlain_region/
 ```
 
+### `strata prepare`
+
+Download and cache all sources for a recipe.
+
+```bash
+strata prepare RECIPE [OPTIONS]
+
+# Examples
+strata prepare champlain.strata.yaml
+strata prepare champlain.strata.yaml --dry-run   # Show what would download
+```
+
+**Options:**
+- `--dry-run` — Show what would be downloaded
+- `--force` — Re-download even if cached
+
 ### `strata fetch`
 
-Download and cache sources without processing.
+Download and cache specific sources (alternative to prepare).
 
 ```bash
 strata fetch RECIPE [OPTIONS]
 
 # Examples
-strata fetch champlain.strata.yaml
 strata fetch champlain.strata.yaml --source vt_towns
 ```
 
 **Options:**
-- `--source SOURCE` — Only fetch specific source(s)
+- `-s, --source TEXT` — Only fetch specific source(s) (repeatable)
 - `--force` — Re-download even if cached
+
+### `strata plotter-fill`
+
+Convert SVG polygon fills to hatched line patterns for pen plotters.
+
+```bash
+strata plotter-fill SVG_FILE [OPTIONS]
+
+# Examples
+strata plotter-fill combined.svg                    # Single file
+strata plotter-fill combined.svg -o plotter.svg     # Custom output
+strata plotter-fill combined.svg --spacing 4.0      # Adjust density
+```
+
+**Options:**
+- `-o, --output PATH` — Output file (default: `{input}_plotter.svg`)
+- `-s, --spacing FLOAT` — Base line spacing (default: 3.0)
+- `-w, --stroke-width FLOAT` — Output stroke width (default: 0.5)
+- `--no-outlines` — Don't include polygon outlines
+- `--rat-king PATH` — Path to rat-king binary (auto-detected)
+
+**Requires:** rat-king CLI (https://github.com/dirtybirdnj/rat-king)
+
+### `strata plotter-fill-all`
+
+Batch convert all combined.svg files in an output directory.
+
+```bash
+strata plotter-fill-all OUTPUT_DIR [OPTIONS]
+
+# Examples
+strata build recipe.yaml -o output
+strata plotter-fill-all output/           # Creates _plotter.svg for all combined.svg
+```
+
+**Options:**
+- `-s, --spacing FLOAT` — Base line spacing (default: 3.0)
+- `-w, --stroke-width FLOAT` — Output stroke width (default: 0.5)
+- `--rat-king PATH` — Path to rat-king binary (auto-detected)
+
+**Note:** Prefer using YAML-driven plotter fill via `plotter_fill:` in the recipe output options. These commands are for manual post-processing.
 
 ### `strata preview`
 
