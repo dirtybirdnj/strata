@@ -7,8 +7,16 @@ statistical data in a form in which they are ready for him to understand."
 """
 
 from .svg import render_svg, SVGExporter
+from .plotter_fill import (
+    generate_plotter_fill,
+    process_plotter_output,
+    check_rat_king_available,
+)
 
 __all__ = [
     "render_svg",
     "SVGExporter",
+    "generate_plotter_fill",
+    "process_plotter_output",
+    "check_rat_king_available",
 ]

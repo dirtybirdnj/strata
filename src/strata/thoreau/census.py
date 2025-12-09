@@ -119,6 +119,19 @@ NY_NIAGARA_COUNTIES = [
 # Combined NY counties (we'll merge these for statewide coverage)
 NY_ALL_COUNTIES = NY_CHAMPLAIN_COUNTIES + NY_NIAGARA_COUNTIES
 
+# Texas counties - El Paso area (border region)
+TX_ELPASO_COUNTIES = [
+    "141",  # El Paso County
+    "229",  # Hudspeth County
+]
+
+# Washington state counties - Okanogan area (Canadian border)
+WA_OKANOGAN_COUNTIES = [
+    "047",  # Okanogan County (contains Oroville)
+    "019",  # Ferry County
+    "075",  # Whatcom County (Bellingham area, also borders Canada)
+]
+
 STATE_COUNTIES = {
     "vt": VT_COUNTIES,
     "ny": NY_ALL_COUNTIES,  # Champlain + Niagara region counties
@@ -127,6 +140,10 @@ STATE_COUNTIES = {
     "ma": ["001", "003", "005", "007", "009", "011", "013", "015", "017", "019", "021", "023", "025", "027"],
     # Hawaii counties (all 5)
     "hi": ["001", "003", "005", "007", "009"],  # Hawaii, Honolulu, Kalawao, Kauai, Maui
+    # Texas - El Paso border region
+    "tx": TX_ELPASO_COUNTIES,
+    # Washington - Canadian border region
+    "wa": WA_OKANOGAN_COUNTIES,
 }
 
 

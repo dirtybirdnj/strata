@@ -53,11 +53,12 @@ def is_cached(uri: str) -> bool:
     if not cache_path.exists():
         return False
 
-    # Check for shapefile or geojson (recursively for nested archives)
+    # Check for shapefile, geojson, or geopackage (recursively for nested archives)
     shapefiles = list(cache_path.rglob("*.shp"))
     geojsons = list(cache_path.rglob("*.geojson"))
+    geopackages = list(cache_path.rglob("*.gpkg"))
 
-    return len(shapefiles) > 0 or len(geojsons) > 0
+    return len(shapefiles) > 0 or len(geojsons) > 0 or len(geopackages) > 0
 
 
 def clear_cache(uri: str | None = None) -> None:

@@ -61,3 +61,7 @@ Thumbs.db
 !examples/*.geojson
 *.pmtiles
 *.mbtiles
+*.gpkg
+
+# Local data directory (for large downloads like OpenSkiMap)
+data/

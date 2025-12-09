@@ -148,6 +148,31 @@ CANADA_LAYERS = {
     },
 }
 
+# OpenSkiMap layers (worldwide ski data)
+OPENSKIMAP_LAYERS = {
+    "runs": {
+        "name": "Ski Runs",
+        "description": "Downhill ski trails and runs (worldwide)",
+        "geometry": "line",
+        "uri": "openskimap:runs",
+        "size_mb": 200,  # Shared GeoPackage
+    },
+    "lifts": {
+        "name": "Ski Lifts",
+        "description": "Chairlifts, gondolas, surface lifts (worldwide)",
+        "geometry": "line",
+        "uri": "openskimap:lifts",
+        "size_mb": 200,
+    },
+    "areas": {
+        "name": "Ski Areas",
+        "description": "Ski resort boundaries (worldwide)",
+        "geometry": "polygon",
+        "uri": "openskimap:areas",
+        "size_mb": 200,
+    },
+}
+
 # National Road Network by province/territory
 NRN_PROVINCES = {
     # Eastern
@@ -261,12 +286,33 @@ def build_canada_catalog() -> list[CatalogEntry]:
     return entries
 
 
+def build_openskimap_catalog() -> list[CatalogEntry]:
+    """Build catalog entries for OpenSkiMap ski data."""
+    entries = []
+
+    for layer_code, layer_info in OPENSKIMAP_LAYERS.items():
+        entries.append(
+            CatalogEntry(
+                uri=layer_info["uri"],
+                name=layer_info["name"],
+                description=layer_info["description"],
+                geometry=layer_info["geometry"],
+                source_type="openskimap",
+                region="Worldwide",
+                estimated_size_mb=layer_info.get("size_mb"),
+            )
+        )
+
+    return entries
+
+
 def get_full_catalog() -> list[CatalogEntry]:
     """Get the complete data source catalog."""
     entries = []
     entries.extend(build_census_catalog())
     entries.extend(build_quebec_catalog())
     entries.extend(build_canada_catalog())
+    entries.extend(build_openskimap_catalog())
     return entries
 
 
@@ -306,4 +352,9 @@ def get_layers_for_source(source_type: str) -> list[tuple[str, str, str]]:
                 f"National Road Network for {prov_info['name']}",
             ))
         return layers
+    elif source_type == "openskimap":
+        return [
+            (code, info["name"], info["description"])
+            for code, info in OPENSKIMAP_LAYERS.items()
+        ]
     return []

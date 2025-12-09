@@ -23,6 +23,7 @@ from ..catalog import (
     QUEBEC_LAYERS,
     CANADA_LAYERS,
     NRN_PROVINCES,
+    OPENSKIMAP_LAYERS,
     get_states_list,
 )
 
@@ -217,6 +218,18 @@ class SourceBrowserScreen(Screen):
                         "geometry": "line",
                     },
                     "state": prov_info["name"],
+                },
+            )
+
+        # OpenSkiMap worldwide ski data
+        ski_node = tree.root.add("OpenSkiMap (Worldwide)", expand=False)
+        for layer_code, layer_info in OPENSKIMAP_LAYERS.items():
+            ski_node.add_leaf(
+                f"{layer_info['name']}",
+                data={
+                    "uri": layer_info["uri"],
+                    "info": layer_info,
+                    "state": "Worldwide",
                 },
             )
 

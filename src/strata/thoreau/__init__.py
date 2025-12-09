@@ -10,6 +10,9 @@ by having to pull so much harder before the water got underneath to help me."
 from .census import fetch_census, parse_census_uri, estimate_census_size
 from .quebec import fetch_quebec, parse_quebec_uri, estimate_quebec_size
 from .canada import fetch_canada, parse_canada_uri, estimate_canada_size
+from .openskimap import fetch_openskimap, parse_openskimap_uri, estimate_openskimap_size
+from .mexico import fetch_mexico, parse_mexico_uri, estimate_mexico_size
+from .naturalearth import fetch_naturalearth, parse_naturalearth_uri, estimate_naturalearth_size
 from .cache import get_cache_dir, is_cached, get_cached_path, clear_cache
 
 __all__ = [
@@ -24,6 +27,15 @@ __all__ = [
     "fetch_canada",
     "parse_canada_uri",
     "estimate_canada_size",
+    "fetch_openskimap",
+    "parse_openskimap_uri",
+    "estimate_openskimap_size",
+    "fetch_mexico",
+    "parse_mexico_uri",
+    "estimate_mexico_size",
+    "fetch_naturalearth",
+    "parse_naturalearth_uri",
+    "estimate_naturalearth_size",
     "get_cache_dir",
     "is_cached",
     "get_cached_path",
@@ -56,6 +68,12 @@ def fetch(uri: str, force: bool = False) -> str:
         return fetch_canada(uri, force=force)
     elif uri.startswith("quebec:"):
         return fetch_quebec(uri, force=force)
+    elif uri.startswith("openskimap:"):
+        return fetch_openskimap(uri, force=force)
+    elif uri.startswith("mexico:"):
+        return fetch_mexico(uri, force=force)
+    elif uri.startswith("naturalearth:"):
+        return fetch_naturalearth(uri, force=force)
     elif uri.startswith("file:"):
         # Local file - validate and return the path
         local_path = uri[5:]  # Strip "file:" prefix
@@ -91,6 +109,12 @@ def estimate_size(uri: str) -> dict:
         return estimate_canada_size(uri)
     elif uri.startswith("quebec:"):
         return estimate_quebec_size(uri)
+    elif uri.startswith("openskimap:"):
+        return estimate_openskimap_size(uri)
+    elif uri.startswith("mexico:"):
+        return estimate_mexico_size(uri)
+    elif uri.startswith("naturalearth:"):
+        return estimate_naturalearth_size(uri)
     elif uri.startswith("file:"):
         from pathlib import Path
         path = Path(uri[5:])

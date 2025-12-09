@@ -220,7 +220,11 @@ def preview(recipe: str, bounds: str | None, open_svg: bool, output: str | None)
 
     for name, path in paths.items():
         try:
-            gdf = gpd.read_file(path)
+            # Handle GeoPackage with layer specification (format: "path:layer_name")
+            layer = None
+            if ":" in path and ".gpkg:" in path:
+                path, layer = path.rsplit(":", 1)
+            gdf = gpd.read_file(path, layer=layer)
             total = len(gdf)
 
             # Count features intersecting bounds
@@ -513,6 +517,125 @@ def config_path():
 
     path = user_config_dir("strata", "dirtybirdnj")
     console.print(f"{path}/config.yaml")
+
+
+@main.command("plotter-fill")
+@click.argument("input_svg", type=click.Path(exists=True))
+@click.option("--output", "-o", type=click.Path(), help="Output SVG path (default: input_plotter.svg)")
+@click.option("--spacing", "-s", type=float, default=3.0, help="Base line spacing (default: 3.0)")
+@click.option("--stroke-width", "-w", type=float, default=0.5, help="Output stroke width (default: 0.5)")
+@click.option("--no-outlines", is_flag=True, help="Don't include polygon outlines")
+@click.option("--rat-king", "rat_king_bin", type=click.Path(),
+              default="/Users/mgilbert/Code/rat-king/crates/target/release/rat-king",
+              help="Path to rat-king binary")
+def plotter_fill(
+    input_svg: str,
+    output: str | None,
+    spacing: float,
+    stroke_width: float,
+    no_outlines: bool,
+    rat_king_bin: str,
+):
+    """Convert colored SVG to plotter-ready hatch patterns.
+
+    Takes an SVG with colored polygon fills and converts each unique
+    color to a distinct hatch pattern. The output is line-only SVG
+    suitable for single-pen plotter output.
+
+    Each color gets a unique pattern/angle combination based on:
+    - Pattern type (lines, crosshatch, honeycomb, etc.)
+    - Rotation angle
+    - Spacing (darker colors get denser fill)
+
+    Examples:
+        strata plotter-fill combined.svg
+        strata plotter-fill combined.svg -o output_plotter.svg
+        strata plotter-fill combined.svg --spacing 4.0 --stroke-width 0.3
+    """
+    from pathlib import Path
+    from strata.kelley import generate_plotter_fill, check_rat_king_available
+
+    input_path = Path(input_svg)
+
+    if output:
+        output_path = Path(output)
+    else:
+        output_path = input_path.parent / f"{input_path.stem}_plotter.svg"
+
+    console.print(f"\n[bold]Plotter Fill:[/] {input_svg}\n")
+
+    # Check rat-king availability
+    if not check_rat_king_available(rat_king_bin):
+        console.print(f"[red]Error:[/] rat-king not found at {rat_king_bin}")
+        console.print("\nTo build rat-king:")
+        console.print("  cd ~/Code/rat-king/crates && cargo build --release")
+        raise SystemExit(1)
+
+    # Generate plotter fill
+    success = generate_plotter_fill(
+        input_path,
+        output_path,
+        bin_path=rat_king_bin,
+        stroke_width=stroke_width,
+        include_outlines=not no_outlines,
+        base_spacing=spacing,
+    )
+
+    if success:
+        console.print(f"\n[green]✓[/] Created: {output_path}")
+    else:
+        console.print(f"\n[red]Failed to generate plotter fill[/]")
+        raise SystemExit(1)
+
+
+@main.command("plotter-fill-all")
+@click.argument("output_dir", type=click.Path(exists=True))
+@click.option("--spacing", "-s", type=float, default=3.0, help="Base line spacing (default: 3.0)")
+@click.option("--stroke-width", "-w", type=float, default=0.5, help="Output stroke width (default: 0.5)")
+@click.option("--rat-king", "rat_king_bin", type=click.Path(),
+              default="/Users/mgilbert/Code/rat-king/crates/target/release/rat-king",
+              help="Path to rat-king binary")
+def plotter_fill_all(
+    output_dir: str,
+    spacing: float,
+    stroke_width: float,
+    rat_king_bin: str,
+):
+    """Convert all combined.svg files in output directory to plotter fills.
+
+    Finds all combined.svg files and creates corresponding _plotter.svg
+    files with hatch patterns.
+
+    Example:
+        strata build recipe.yaml -o output
+        strata plotter-fill-all output/
+    """
+    from pathlib import Path
+    from strata.kelley import process_plotter_output, check_rat_king_available
+
+    console.print(f"\n[bold]Plotter Fill All:[/] {output_dir}\n")
+
+    # Check rat-king availability
+    if not check_rat_king_available(rat_king_bin):
+        console.print(f"[red]Error:[/] rat-king not found at {rat_king_bin}")
+        console.print("\nTo build rat-king:")
+        console.print("  cd ~/Code/rat-king/crates && cargo build --release")
+        raise SystemExit(1)
+
+    # Process all combined SVGs
+    created = process_plotter_output(
+        Path(output_dir),
+        bin_path=rat_king_bin,
+        stroke_width=stroke_width,
+        base_spacing=spacing,
+    )
+
+    if created:
+        console.print(f"\n[green]✓[/] Created {len(created)} plotter fill files")
+        for path in created:
+            console.print(f"  {path}")
+    else:
+        console.print(f"\n[yellow]No combined.svg files found to process[/]")
 
 
 if __name__ == "__main__":

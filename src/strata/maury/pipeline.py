@@ -103,11 +103,16 @@ class Pipeline:
         for name, path in paths.items():
             console.print(f"  Loading {name}...")
 
+            # Handle GeoPackage with layer specification (format: "path:layer_name")
+            layer = None
+            if ":" in path and ".gpkg:" in path:
+                path, layer = path.rsplit(":", 1)
+
             # Use bbox parameter to filter on load (reduces memory for large datasets)
             if bbox:
-                gdf = gpd.read_file(path, bbox=bbox)
+                gdf = gpd.read_file(path, bbox=bbox, layer=layer)
             else:
-                gdf = gpd.read_file(path)
+                gdf = gpd.read_file(path, layer=layer)
 
             # Apply filters if specified
             source_config = self.recipe.sources.get(name)
