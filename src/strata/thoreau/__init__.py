@@ -13,6 +13,7 @@ from .canada import fetch_canada, parse_canada_uri, estimate_canada_size
 from .openskimap import fetch_openskimap, parse_openskimap_uri, estimate_openskimap_size
 from .mexico import fetch_mexico, parse_mexico_uri, estimate_mexico_size
 from .naturalearth import fetch_naturalearth, parse_naturalearth_uri, estimate_naturalearth_size
+from .usgs import fetch_usgs, parse_usgs_uri, estimate_usgs_size, list_services as list_usgs_services
 from .cache import get_cache_dir, is_cached, get_cached_path, clear_cache
 
 __all__ = [
@@ -36,6 +37,10 @@ __all__ = [
     "fetch_naturalearth",
     "parse_naturalearth_uri",
     "estimate_naturalearth_size",
+    "fetch_usgs",
+    "parse_usgs_uri",
+    "estimate_usgs_size",
+    "list_usgs_services",
     "get_cache_dir",
     "is_cached",
     "get_cached_path",
@@ -43,13 +48,15 @@ __all__ = [
 ]
 
 
-def fetch(uri: str, force: bool = False) -> str:
+def fetch(uri: str, force: bool = False, bbox: tuple | None = None) -> str:
     """
     Fetch data from a source URI and return the local path.
 
     Args:
         uri: Source URI (e.g., "census:tiger/2023/vt/cousub")
         force: Re-download even if cached
+        bbox: Bounding box for spatial queries (required for usgs: sources
+              unless bbox is included in the URI)
 
     Returns:
         Path to local data file (shapefile or geojson)
@@ -74,6 +81,8 @@ def fetch(uri: str, force: bool = False) -> str:
         return fetch_mexico(uri, force=force)
     elif uri.startswith("naturalearth:"):
         return fetch_naturalearth(uri, force=force)
+    elif uri.startswith("usgs:"):
+        return fetch_usgs(uri, bbox=bbox, force=force)
     elif uri.startswith("file:"):
         # Local file - validate and return the path
         local_path = uri[5:]  # Strip "file:" prefix
@@ -115,6 +124,8 @@ def estimate_size(uri: str) -> dict:
         return estimate_mexico_size(uri)
     elif uri.startswith("naturalearth:"):
         return estimate_naturalearth_size(uri)
+    elif uri.startswith("usgs:"):
+        return estimate_usgs_size(uri)
     elif uri.startswith("file:"):
         from pathlib import Path
         path = Path(uri[5:])

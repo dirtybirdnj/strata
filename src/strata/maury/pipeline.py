@@ -71,11 +71,17 @@ class Pipeline:
         """
         console.print("\n[bold]Fetching sources:[/]")
 
+        # Get bbox from recipe for sources that need it (e.g., usgs:)
+        bbox = None
+        bounds_config = self.recipe.output.bounds
+        if isinstance(bounds_config, list) and len(bounds_config) == 4:
+            bbox = tuple(bounds_config)
+
         paths = {}
         for name, source_config in self.recipe.sources.items():
             uri = source_config.uri
             try:
-                path = thoreau.fetch(uri, force=force)
+                path = thoreau.fetch(uri, force=force, bbox=bbox)
                 paths[name] = path
             except NotImplementedError as e:
                 console.print(f"  [yellow]![/] {name}: {e}")
