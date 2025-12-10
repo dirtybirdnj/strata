@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Henry David Thoreau - Strata Historical Figure</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&display=swap');
+
+        :root {
+            --parchment: #f4e4bc;
+            --parchment-dark: #e8d4a8;
+            --ink: #2c1810;
+            --ink-light: #4a3728;
+            --gold: #8b7355;
+            --red: #8b2500;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Crimson Text', Georgia, serif;
+            background: var(--parchment);
+            color: var(--ink);
+            line-height: 1.7;
+            font-size: 18px;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
+
+        header {
+            background: linear-gradient(180deg, var(--parchment-dark) 0%, var(--parchment) 100%);
+            padding: 3rem 0;
+            text-align: center;
+            border-bottom: 3px double var(--gold);
+        }
+
+        .back-link {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            color: var(--gold);
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .back-link:hover { color: var(--red); }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: var(--ink);
+            margin-bottom: 0.5rem;
+        }
+
+        .dates {
+            font-family: 'IM Fell English', serif;
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--ink-light);
+        }
+
+        .module-badge {
+            display: inline-block;
+            background: var(--red);
+            color: var(--parchment);
+            padding: 0.3rem 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        section { padding: 3rem 0; border-bottom: 1px solid var(--gold); }
+
+        h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: var(--ink);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            letter-spacing: 0.1em;
+        }
+
+        h2::before, h2::after { content: '—'; margin: 0 0.5rem; color: var(--gold); }
+
+        h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: var(--red);
+            margin: 1.5rem 0 1rem;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 0.5rem;
+        }
+
+        p { margin-bottom: 1rem; text-align: justify; }
+
+        blockquote {
+            background: linear-gradient(90deg, var(--parchment-dark), transparent);
+            border-left: 3px solid var(--gold);
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            color: var(--ink-light);
+        }
+
+        blockquote cite {
+            display: block;
+            text-align: right;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            color: var(--gold);
+        }
+
+        table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td { padding: 0.75rem 1rem; text-align: left; border: 1px solid var(--gold); }
+        th { background: var(--parchment-dark); font-family: 'Cinzel', serif; font-size: 0.9rem; }
+
+        pre {
+            background: #fffef8;
+            border: 1px solid var(--gold);
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            background: var(--parchment-dark);
+            padding: 0.1rem 0.3rem;
+            font-size: 0.9em;
+        }
+
+        pre code { background: none; padding: 0; }
+
+        .ornament { text-align: center; font-size: 1.5rem; color: var(--gold); margin: 2rem 0; }
+
+        .timeline-item {
+            margin: 1.5rem 0;
+            padding-left: 1.5rem;
+            border-left: 2px solid var(--gold);
+        }
+
+        .timeline-year {
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            color: var(--red);
+        }
+
+        .source-card {
+            background: var(--parchment-dark);
+            border: 1px solid var(--gold);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .source-card h4 {
+            font-family: 'Cinzel', serif;
+            color: var(--red);
+            margin-bottom: 0.5rem;
+        }
+
+        .source-card code {
+            display: block;
+            margin: 0.5rem 0;
+        }
+
+        footer {
+            background: var(--parchment-dark);
+            padding: 2rem 0;
+            text-align: center;
+            border-top: 3px double var(--gold);
+        }
+
+        footer p {
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            color: var(--ink-light);
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; }
+            .container { padding: 0 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="historical-docs.html" class="back-link">&larr; Return to Main Documentation</a>
+            <h1>Henry David Thoreau</h1>
+            <p class="dates">12 July 1817 — 6 May 1862</p>
+            <p style="font-family: 'IM Fell English', serif; font-style: italic; margin-top: 0.5rem;">
+                Surveyor of Concord • Author of Walden • Transcendentalist Philosopher
+            </p>
+            <span class="module-badge">strata.thoreau</span>
+        </div>
+    </header>
+
+    <section>
+        <div class="container">
+            <h2>The Surveyor's Principle</h2>
+
+            <blockquote>
+                "It is remarkable how long men will believe in the bottomlessness of a pond without taking the trouble to sound it. I surveyed it carefully, before the ice broke up, early in '46, with compass and chain and sounding line."
+                <cite>— Henry David Thoreau, Walden (1854)</cite>
+            </blockquote>
+
+            <p>Henry David Thoreau was not merely a philosopher of nature—he was a <strong>professional surveyor</strong>. Between 1850 and 1861, Thoreau conducted over 150 surveys in and around Concord, Massachusetts, meticulously documenting property boundaries, woodlots, and water features. His surveying work was not incidental to his philosophical writings but integral to them: the careful observer who measured Walden Pond to its actual depth of 102 feet was the same man who urged his readers to "live deliberately."</p>
+
+            <p>Thoreau inherited the surveying profession from his father, who had been a pencil manufacturer. The younger Thoreau brought to the work an unusual combination of mathematical precision and poetic observation. His survey notes contain not only bearings and distances but also observations about the plants, animals, and seasonal changes he encountered.</p>
+
+            <p>This dual nature—rigorous measurement paired with attentive observation—makes Thoreau the ideal namesake for Strata's data acquisition module. Just as Thoreau would not accept hearsay about Walden Pond's depth but went out upon the ice with his sounding line, the <code>thoreau</code> module fetches data directly from authoritative sources.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Biographical Timeline</h2>
+
+            <div class="timeline-item">
+                <span class="timeline-year">1817</span> — Born in Concord, Massachusetts, to John Thoreau and Cynthia Dunbar
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1833-1837</span> — Attended Harvard College; studied rhetoric, classics, philosophy, and mathematics
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1838</span> — Opened a progressive school with brother John; began lifelong friendship with Ralph Waldo Emerson
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1842</span> — Brother John died of lockjaw; devastating loss profoundly affected Thoreau's philosophy
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1845-1847</span> — Lived in a cabin he built at Walden Pond on land owned by Emerson; wrote first draft of <em>Walden</em>
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1846</span> — Jailed overnight for refusing to pay poll tax (protest against slavery and Mexican-American War); surveyed Walden Pond, finding it 102 feet deep; climbed Mount Katahdin in Maine
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1849</span> — Published "Resistance to Civil Government" (later known as "Civil Disobedience")
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1850</span> — Began professional surveying career; traveled to Montreal and Quebec City
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1854</span> — Published <em>Walden; or, Life in the Woods</em>
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1859</span> — Defended John Brown after Harper's Ferry raid; "A Plea for Captain John Brown"
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1862</span> — Died of tuberculosis in Concord at age 44; buried at Sleepy Hollow Cemetery
+            </div>
+
+            <div class="ornament">⚘ ✤ ⚘</div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>The Art of Surveying</h2>
+
+            <p>Thoreau's surveying work was renowned for its accuracy. He used a Gunter's chain (66 feet long, divided into 100 links), a circumferentor (surveyor's compass), and a transit for measuring angles. His surveys were accepted as legal documents and remained in use for property delineation well into the 20th century.</p>
+
+            <blockquote>
+                "The surveyor must be a man of integrity, for his measurements may settle disputes that have festered for generations. Every stake he drives, every line he runs, must be true."
+                <cite>— Henry David Thoreau, Journal (1851)</cite>
+            </blockquote>
+
+            <p>What set Thoreau apart from other surveyors was his insistence on primary observation. He did not rely on previous surveys or local lore about property boundaries. He walked the land himself, taking fresh measurements even when earlier surveys existed. This practice directly informs the <code>thoreau</code> module's approach to data acquisition.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Key Locations</h2>
+
+            <table>
+                <thead>
+                    <tr><th>Location</th><th>Latitude</th><th>Longitude</th><th>Significance</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Concord, Massachusetts</td><td>42.4604</td><td>-71.3489</td><td>Birth, life, death, and surveying career</td></tr>
+                    <tr><td>Walden Pond</td><td>42.4389</td><td>-71.3342</td><td>Site of cabin experiment (1845-47)</td></tr>
+                    <tr><td>Cambridge (Harvard)</td><td>42.3736</td><td>-71.1097</td><td>College education (1833-37)</td></tr>
+                    <tr><td>Mount Katahdin, Maine</td><td>45.9044</td><td>-68.9213</td><td>Wilderness experience (1846)</td></tr>
+                    <tr><td>Cape Cod, Massachusetts</td><td>41.6688</td><td>-70.2962</td><td>Four visits documented in <em>Cape Cod</em></td></tr>
+                    <tr><td>Montreal, Quebec</td><td>45.5017</td><td>-73.5673</td><td>Canadian journey (1850)</td></tr>
+                    <tr><td>Quebec City, Quebec</td><td>46.8139</td><td>-71.2080</td><td>Documented in <em>A Yankee in Canada</em></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Connection to Strata</h2>
+
+            <p>The <code>strata.thoreau</code> module embodies Thoreau's surveying philosophy: <strong>"Go to the source."</strong> Just as Thoreau would not accept secondhand reports about the depth of Walden Pond but went out with his sounding line to measure it himself, the Thoreau module fetches geographic data directly from authoritative sources.</p>
+
+            <h3>Data Sources Managed by Thoreau</h3>
+
+            <div class="source-card">
+                <h4>US Census TIGER/Line</h4>
+                <p>County subdivisions, water bodies, roads, and boundaries for all 50 states.</p>
+                <code>census:tiger/2023/vt/cousub</code>
+            </div>
+
+            <div class="source-card">
+                <h4>Quebec Open Data</h4>
+                <p>Municipal boundaries, MRCs, and administrative regions—Thoreau himself traveled to Quebec in 1850.</p>
+                <code>quebec:municipalities</code>
+            </div>
+
+            <div class="source-card">
+                <h4>Canada National Data</h4>
+                <p>CanVec hydrology, National Road Network, and National Hydro Network by watershed.</p>
+                <code>canada:nhn/02OJ000/rivers</code>
+            </div>
+
+            <div class="source-card">
+                <h4>Natural Earth</h4>
+                <p>Global vector data at multiple scales—the surveyor's view of the whole world.</p>
+                <code>naturalearth:50m/cultural/admin_0_countries</code>
+            </div>
+
+            <div class="source-card">
+                <h4>Mexico (geoBoundaries)</h4>
+                <p>Administrative boundaries from INEGI data.</p>
+                <code>mexico:hdx/admin1</code>
+            </div>
+
+            <div class="source-card">
+                <h4>OpenSkiMap</h4>
+                <p>Worldwide ski resort data—for maps of mountain wilderness.</p>
+                <code>openskimap:runs</code>
+            </div>
+
+            <h3>The Surveyor's Cache</h3>
+            <p>Like Thoreau's careful notebooks preserving his observations, the module maintains a local cache of downloaded data:</p>
+            <pre><code>~/Library/Caches/strata/
+├── census/          # US Census TIGER data
+├── quebec/          # Quebec administrative data
+├── canada/          # CanVec, NRN, NHN data
+├── naturalearth/    # Global vector data
+├── mexico/          # geoBoundaries data
+└── openskimap/      # Ski resort data</code></pre>
+
+            <div class="ornament">▤ ▥ ▦ ▧ ▨</div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Notable Quotations</h2>
+
+            <blockquote>
+                "I went to the woods because I wished to live deliberately, to front only the essential facts of life, and see if I could not learn what it had to teach, and not, when I came to die, discover that I had not lived."
+                <cite>— Walden (1854)</cite>
+            </blockquote>
+
+            <blockquote>
+                "In wildness is the preservation of the world."
+                <cite>— "Walking" (1862)</cite>
+            </blockquote>
+
+            <blockquote>
+                "If a man does not keep pace with his companions, perhaps it is because he hears a different drummer. Let him step to the music which he hears, however measured or far away."
+                <cite>— Walden (1854)</cite>
+            </blockquote>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p><em>"I went to the woods because I wished to live deliberately, to front only the essential facts of life."</em></p>
+            <p style="margin-top: 1rem;"><a href="historical-docs.html" style="color: var(--gold);">Return to Main Documentation</a> · <a href="index.html" style="color: var(--gold);">Strata Documentation</a></p>
+        </div>
+    </footer>
+</body>
+</html>

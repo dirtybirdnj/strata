@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Florence Kelley - Strata Historical Figure</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&display=swap');
+
+        :root {
+            --parchment: #f4e4bc;
+            --parchment-dark: #e8d4a8;
+            --ink: #2c1810;
+            --ink-light: #4a3728;
+            --gold: #8b7355;
+            --red: #8b2500;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Crimson Text', Georgia, serif;
+            background: var(--parchment);
+            color: var(--ink);
+            line-height: 1.7;
+            font-size: 18px;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
+
+        header {
+            background: linear-gradient(180deg, var(--parchment-dark) 0%, var(--parchment) 100%);
+            padding: 3rem 0;
+            text-align: center;
+            border-bottom: 3px double var(--gold);
+        }
+
+        .back-link {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            color: var(--gold);
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .back-link:hover { color: var(--red); }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: var(--ink);
+            margin-bottom: 0.5rem;
+        }
+
+        .dates {
+            font-family: 'IM Fell English', serif;
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--ink-light);
+        }
+
+        .module-badge {
+            display: inline-block;
+            background: var(--red);
+            color: var(--parchment);
+            padding: 0.3rem 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        section { padding: 3rem 0; border-bottom: 1px solid var(--gold); }
+
+        h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: var(--ink);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            letter-spacing: 0.1em;
+        }
+
+        h2::before, h2::after { content: '—'; margin: 0 0.5rem; color: var(--gold); }
+
+        h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: var(--red);
+            margin: 1.5rem 0 1rem;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 0.5rem;
+        }
+
+        p { margin-bottom: 1rem; text-align: justify; }
+
+        blockquote {
+            background: linear-gradient(90deg, var(--parchment-dark), transparent);
+            border-left: 3px solid var(--gold);
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            color: var(--ink-light);
+        }
+
+        blockquote cite {
+            display: block;
+            text-align: right;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            color: var(--gold);
+        }
+
+        table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td { padding: 0.75rem 1rem; text-align: left; border: 1px solid var(--gold); }
+        th { background: var(--parchment-dark); font-family: 'Cinzel', serif; font-size: 0.9rem; }
+
+        pre {
+            background: #fffef8;
+            border: 1px solid var(--gold);
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            background: var(--parchment-dark);
+            padding: 0.1rem 0.3rem;
+            font-size: 0.9em;
+        }
+
+        pre code { background: none; padding: 0; }
+
+        .ornament { text-align: center; font-size: 1.5rem; color: var(--gold); margin: 2rem 0; }
+
+        .timeline-item {
+            margin: 1.5rem 0;
+            padding-left: 1.5rem;
+            border-left: 2px solid var(--gold);
+        }
+
+        .timeline-year {
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            color: var(--red);
+        }
+
+        .source-card {
+            background: var(--parchment-dark);
+            border: 1px solid var(--gold);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .source-card h4 {
+            font-family: 'Cinzel', serif;
+            color: var(--red);
+            margin-bottom: 0.5rem;
+        }
+
+        .source-card code {
+            display: block;
+            margin: 0.5rem 0;
+        }
+
+        footer {
+            background: var(--parchment-dark);
+            padding: 2rem 0;
+            text-align: center;
+            border-top: 3px double var(--gold);
+        }
+
+        footer p {
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            color: var(--ink-light);
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; }
+            .container { padding: 0 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="historical-docs.html" class="back-link">&larr; Return to Main Documentation</a>
+            <h1>Florence Kelley</h1>
+            <p class="dates">12 September 1859 — 17 February 1932</p>
+            <p style="font-family: 'IM Fell English', serif; font-style: italic; margin-top: 0.5rem;">
+                Social Reformer • Pioneer of Social Mapping
+            </p>
+            <span class="module-badge">strata.kelley</span>
+        </div>
+    </header>
+
+    <section>
+        <div class="container">
+            <h2>The Reformer's Principle</h2>
+
+            <blockquote>
+                "So that the plain man who pays for the census gets what he pays for, statistical data in a form in which they are ready for him to understand."
+                <cite>— Florence Kelley</cite>
+            </blockquote>
+
+            <p>Florence Kelley was a revolutionary force in American social reform—a woman who translated Friedrich Engels, served as Illinois's first female factory inspector, and pioneered the use of maps as instruments of social change. Her work at Hull House in Chicago's Nineteenth Ward demonstrated that <strong>visualization is not decoration but evidence</strong>.</p>
+
+            <p>When Kelley directed the creation of the <em>Hull House Maps and Papers</em> in 1895, she and her colleagues did something unprecedented: they surveyed every building in a square mile of Chicago, recording wages, nationalities, employment conditions, and living situations. Then they transformed this raw data into color-coded maps where anyone—legislator, journalist, or "plain man"—could immediately see the patterns: the clustering of nationalities, the geography of poverty, the relationship between wages and living conditions.</p>
+
+            <p>These maps were not aesthetic exercises. They were weapons of reform, designed to make the invisible visible and the abstract concrete. The <code>kelley</code> module embodies this principle: <strong>every cartographic choice serves the goal of comprehension</strong>.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Biographical Timeline</h2>
+
+            <div class="timeline-item">
+                <span class="timeline-year">1859</span> — Born in Philadelphia; father was Congressman William "Pig Iron" Kelley, a founder of the Republican Party
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1876</span> — Accompanied father to Philadelphia Centennial Exhibition; exposure to industrial society shaped worldview
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1882</span> — Graduated from Cornell University; denied admission to University of Pennsylvania law school because of her sex
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1883-1886</span> — University of Zurich; first institution to accept women for graduate study; translated Engels' <em>Condition of the Working Class in England</em>; corresponded with Engels; married Polish-Russian physician Lazare Wischnewetzky
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1891</span> — Fled abusive marriage; arrived at Hull House, Chicago, with three children; joined Jane Addams's settlement house
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1892</span> — Conducted investigation of Chicago sweatshops for Illinois Bureau of Labor Statistics
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1893</span> — Appointed first female Chief Factory Inspector of Illinois; led team of 12 inspectors
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1894</span> — Northwestern University law degree; admitted to Illinois bar
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1895</span> — Published <em>Hull House Maps and Papers</em>—first systematic social mapping in America
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1899</span> — Moved to Henry Street Settlement, New York; became General Secretary of National Consumers' League
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1908</span> — Collaborated on Brandeis Brief in <em>Muller v. Oregon</em>—revolutionary use of social science in legal argument
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1912</span> — Founding member of NAACP; helped establish U.S. Children's Bureau
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1932</span> — Died in Germantown, Philadelphia; buried at Laurel Hill Cemetery
+            </div>
+
+            <div class="ornament">⚘ ✤ ⚘</div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Key Locations</h2>
+
+            <table>
+                <thead>
+                    <tr><th>Location</th><th>Latitude</th><th>Longitude</th><th>Significance</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Philadelphia, Pennsylvania</td><td>39.9526</td><td>-75.1652</td><td>Birth and death</td></tr>
+                    <tr><td>Ithaca, New York (Cornell)</td><td>42.4440</td><td>-76.5019</td><td>University education</td></tr>
+                    <tr><td>Zurich, Switzerland</td><td>47.3769</td><td>8.5417</td><td>Graduate study</td></tr>
+                    <tr><td>Chicago, Hull House</td><td>41.8719</td><td>-87.6518</td><td>Settlement house, maps and papers</td></tr>
+                    <tr><td>New York City (Henry Street)</td><td>40.7159</td><td>-73.9858</td><td>National Consumers' League HQ</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Test Bounds for Strata</h3>
+            <pre><code># Philadelphia Region (Birth, Death)
+bounds: [-75.30, 39.85, -75.00, 40.10]
+
+# Chicago Hull House Area (Maps and Papers)
+bounds: [-87.75, 41.80, -87.55, 41.95]
+
+# Cornell/Ithaca Region
+bounds: [-76.60, 42.35, -76.40, 42.50]
+
+# Lower Manhattan (Henry Street)
+bounds: [-74.02, 40.70, -73.95, 40.75]</code></pre>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>The Hull House Maps</h2>
+
+            <p>The <em>Hull House Maps and Papers</em> (1895) was a landmark in social cartography. Kelley and her colleagues—including Jane Addams, Julia Lathrop, and Agnes Holbrook—conducted a comprehensive survey of Chicago's Nineteenth Ward, then one of the most densely populated neighborhoods in the world.</p>
+
+            <blockquote>
+                "The systematic visitation of every house in a ward at short intervals enables the residents to become acquainted with a great deal that goes on not only in their own ward but in the whole district."
+                <cite>— Florence Kelley, Hull House Maps and Papers (1895)</cite>
+            </blockquote>
+
+            <p>The resulting maps used color coding to show nationalities (18 different colors for 18 nationalities) and income levels (from gold for the highest wages to black for the lowest). For the first time, readers could see at a glance what no statistical table could convey: that the poorest residents lived in the most crowded conditions, that certain nationalities clustered in specific blocks, that the geography of poverty had a spatial logic.</p>
+
+            <p>These maps influenced Charles Booth's famous poverty maps of London and established the template for social cartography that persists today.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Connection to Strata</h2>
+
+            <p>The <code>strata.kelley</code> module embodies Kelley's philosophy: <strong>visualization serves comprehension, not decoration</strong>. Just as Kelley transformed raw survey data into maps that made social patterns visible, the Kelley module transforms processed geographic data into clear, purposeful visualizations.</p>
+
+            <h3>Visualization Principles</h3>
+
+            <div class="source-card">
+                <h4>Color with Purpose</h4>
+                <p>Every color choice serves comprehension. Fill colors distinguish features; stroke colors define boundaries; background colors establish context.</p>
+                <code>fill: "#66bb6a"  # Land areas in green</code>
+            </div>
+
+            <div class="source-card">
+                <h4>Layer Ordering</h4>
+                <p>Features are ordered so that important information remains visible—backgrounds beneath, boundaries above, labels on top.</p>
+                <code>layers:  # Bottom to top ordering</code>
+            </div>
+
+            <div class="source-card">
+                <h4>Line Weight</h4>
+                <p>Stroke widths convey importance and hierarchy—heavier lines for major boundaries, lighter for minor features.</p>
+                <code>stroke_width: 0.5</code>
+            </div>
+
+            <div class="source-card">
+                <h4>Accessible Output</h4>
+                <p>Output formats that "the plain man" can understand—SVG for web, PNG for documents, PDF for print.</p>
+                <code>output: "map.svg"</code>
+            </div>
+
+            <p>Kelley's insight was that properly visualized data reveals patterns invisible in raw numbers. A map of Lake Champlain's watershed tells a story that coordinate pairs cannot.</p>
+
+            <div class="ornament">▤ ▥ ▦ ▧ ▨</div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Notable Quotations</h2>
+
+            <blockquote>
+                "Investigate, educate, legislate, enforce."
+                <cite>— Florence Kelley (motto of the National Consumers' League)</cite>
+            </blockquote>
+
+            <blockquote>
+                "We have to walk through all the dark alleys, in the basement and in the attic."
+                <cite>— Florence Kelley, on factory inspection</cite>
+            </blockquote>
+
+            <blockquote>
+                "The best-enforced eight-hour law will not give time to a working mother to study the Latin grammar. What she needs is not some different treatment of her children because they are workingmen's children, but leisure in which to love them."
+                <cite>— Florence Kelley</cite>
+            </blockquote>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p><em>"Investigate, educate, legislate, enforce."</em></p>
+            <p style="margin-top: 1rem;"><a href="historical-docs.html" style="color: var(--gold);">Return to Main Documentation</a></p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>William Smith - Strata Historical Figure</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&display=swap');
+
+        :root {
+            --parchment: #f4e4bc;
+            --parchment-dark: #e8d4a8;
+            --ink: #2c1810;
+            --ink-light: #4a3728;
+            --gold: #8b7355;
+            --gold-bright: #c9a959;
+            --red: #8b2500;
+            --blue: #1e3a5f;
+            --green: #2d4a3e;
+            --stone-grey: #6b6b6b;
+            --limestone: #d4c5a9;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Crimson Text', Georgia, serif;
+            background: var(--parchment);
+            color: var(--ink);
+            line-height: 1.7;
+            font-size: 18px;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
+
+        header {
+            background: linear-gradient(180deg, var(--parchment-dark) 0%, var(--parchment) 100%);
+            padding: 3rem 0;
+            text-align: center;
+            border-bottom: 3px double var(--gold);
+        }
+
+        .back-link {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            color: var(--gold);
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .back-link:hover { color: var(--red); }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: var(--ink);
+            margin-bottom: 0.5rem;
+        }
+
+        .dates {
+            font-family: 'IM Fell English', serif;
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--ink-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .module-badge {
+            display: inline-block;
+            background: var(--red);
+            color: var(--parchment);
+            padding: 0.3rem 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        section { padding: 3rem 0; border-bottom: 1px solid var(--gold); }
+
+        h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: var(--ink);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            letter-spacing: 0.1em;
+        }
+
+        h2::before, h2::after { content: '—'; margin: 0 0.5rem; color: var(--gold); }
+
+        h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: var(--red);
+            margin: 1.5rem 0 1rem;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 0.5rem;
+        }
+
+        p { margin-bottom: 1rem; text-align: justify; }
+
+        blockquote {
+            background: linear-gradient(90deg, var(--parchment-dark), transparent);
+            border-left: 3px solid var(--gold);
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            color: var(--ink-light);
+        }
+
+        blockquote cite {
+            display: block;
+            text-align: right;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            color: var(--gold);
+        }
+
+        table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td { padding: 0.75rem 1rem; text-align: left; border: 1px solid var(--gold); }
+        th { background: var(--parchment-dark); font-family: 'Cinzel', serif; font-size: 0.9rem; }
+
+        pre {
+            background: #fffef8;
+            border: 1px solid var(--gold);
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            background: var(--parchment-dark);
+            padding: 0.1rem 0.3rem;
+            font-size: 0.9em;
+        }
+
+        pre code { background: none; padding: 0; }
+
+        .ornament { text-align: center; font-size: 1.5rem; color: var(--gold); margin: 2rem 0; }
+
+        .timeline-item {
+            margin: 1.5rem 0;
+            padding-left: 1.5rem;
+            border-left: 2px solid var(--gold);
+        }
+
+        .timeline-year {
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            color: var(--red);
+        }
+
+        .source-card {
+            background: var(--parchment-dark);
+            border: 1px solid var(--gold);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .source-card h4 {
+            font-family: 'Cinzel', serif;
+            color: var(--red);
+            margin-bottom: 0.5rem;
+        }
+
+        .source-card code {
+            display: block;
+            margin: 0.5rem 0;
+        }
+
+        footer {
+            background: var(--parchment-dark);
+            padding: 2rem 0;
+            text-align: center;
+            border-top: 3px double var(--gold);
+        }
+
+        footer p {
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            color: var(--ink-light);
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; }
+            .container { padding: 0 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="historical-docs.html" class="back-link">&larr; Return to Main Documentation</a>
+            <h1>William Smith</h1>
+            <p class="dates">23 March 1769 — 28 August 1839</p>
+            <p style="font-family: 'IM Fell English', serif; font-style: italic; margin-top: 0.5rem;">
+                Father of English Geology • Creator of the First Geological Map of a Nation
+            </p>
+            <span class="module-badge">strata (core package)</span>
+        </div>
+    </header>
+
+    <section>
+        <div class="container">
+            <h2>The Founding Principle</h2>
+
+            <blockquote>
+                "The same strata were found always in the same order of superposition and contained the same peculiar fossils. Organized fossils are to the naturalist as coins to the antiquary; they are the antiquities of the earth."
+                <cite>— William Smith, 1816</cite>
+            </blockquote>
+
+            <p>William Smith was a self-taught surveyor who revolutionized our understanding of the Earth. Working on the Somerset Coal Canal in the 1790s, he observed something no geologist had noticed before: rock layers (strata) always appeared in the same order, and each layer contained distinctive fossils. This insight—the <strong>principle of faunal succession</strong>—became the foundation of modern geology and stratigraphy.</p>
+
+            <p>Smith was not a gentleman scientist. He was a working man who spent his life in coal mines, canal cuttings, and quarries. While academics debated theories in comfortable studies, Smith walked the land, chipped at rock faces with his hammer, and recorded what he saw. Over twenty years, he traveled over 10,000 miles on foot and horseback, mapping the geology of England and Wales.</p>
+
+            <p>In 1815, he published his masterwork: "A Delineation of the Strata of England and Wales"—the first geological map of an entire nation. Each stratum was shown in a different color, arranged in proper superposition. The map was over eight feet tall and five feet wide, hand-colored, sold by subscription. It was a triumph of observation over theory, of patient fieldwork over armchair speculation.</p>
+
+            <p>This principle—that <strong>order matters</strong>, that layers must be properly superposed—applies with equal force to the construction of maps. The Strata package bears his name because it embodies his philosophy: <strong>layer order is everything</strong>.</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Biographical Timeline</h2>
+
+            <div class="timeline-item">
+                <span class="timeline-year">1769</span> — Born in Churchill, Oxfordshire; father was the village blacksmith; orphaned at age eight
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1787</span> — Apprenticed to Edward Webb, land surveyor, in Stow-on-the-Wold; learned surveying, measurement, and observation
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1791</span> — First professional survey in Oxfordshire; began noticing patterns in rock formations
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1793-1794</span> — Employed to survey Somerset Coal Canal; in the canal cuttings discovered principle of faunal succession—rocks always appeared in same order with same fossils
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1795</span> — Purchased estate at Tucking Mill near Bath; began systematic collection of fossils and rocks
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1799</span> — June 11: Dictates first "Order of the Strata" at the Swan Inn, Dunkerton—23 named strata in proper sequence, witnessed and dated
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1801</span> — Prepared first geological map of area around Bath; hand-colored manuscript
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1804</span> — Prepared prospectus for national geological map; began collecting subscriptions
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1815</span> — August: Published "A Delineation of the Strata of England and Wales with part of Scotland"—first geological map of a nation; 8'6" × 5'1", hand-colored, sold for five guineas
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1816-1819</span> — Published "Strata Identified by Organized Fossils" with hand-colored plates of characteristic fossils
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1819</span> — Financial ruin; imprisoned for debt in King's Bench Prison for ten weeks; forced to sell Tucking Mill and his fossil collection (bought by British Museum for £700)
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1820-1824</span> — Wandered England as itinerant surveyor; produced county maps of Yorkshire
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1828</span> — Settled in Scarborough; designed the Rotunda Museum—circular building displaying geology in stratigraphic order
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1831</span> — Received first Wollaston Medal from Geological Society of London; Society president Adam Sedgwick named him "the Father of English Geology"
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1832</span> — Granted government pension of £100/year in recognition of his contributions
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-year">1839</span> — Died in Northampton on way to Birmingham meeting; buried at St Peter's Church, Northampton
+            </div>
+
+            <div class="ornament">⚘ ✤ ⚘</div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Key Locations</h2>
+
+            <table>
+                <thead>
+                    <tr><th>Location</th><th>Latitude</th><th>Longitude</th><th>Significance</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Churchill, Oxfordshire</td><td>51.9392</td><td>-1.3843</td><td>Birthplace</td></tr>
+                    <tr><td>Stow-on-the-Wold</td><td>51.9296</td><td>-1.7231</td><td>Surveyor apprenticeship</td></tr>
+                    <tr><td>Bath, Somerset</td><td>51.3811</td><td>-2.3590</td><td>Canal work, major discoveries</td></tr>
+                    <tr><td>Combe Hay, Somerset</td><td>51.3289</td><td>-2.4183</td><td>Canal excavation site</td></tr>
+                    <tr><td>Scarborough, Yorkshire</td><td>54.2795</td><td>-0.4051</td><td>Rotunda Museum</td></tr>
+                    <tr><td>Northampton</td><td>52.2405</td><td>-0.9027</td><td>Death and burial</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Test Bounds for Strata</h3>
+            <pre><code># Somerset Canal Region (Smith's Discovery)
+bounds: [-2.50, 51.25, -2.25, 51.45]
+
+# Bath and Surrounding Area
+bounds: [-2.50, 51.30, -2.20, 51.50]
+
+# Yorkshire Coast (Later Years)
+bounds: [-0.60, 54.15, -0.25, 54.40]</code></pre>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>The Great Map</h2>
+
+            <p>Smith's 1815 map—formally titled "A Delineation of the Strata of England and Wales with part of Scotland"—was revolutionary in its conception and execution. At over eight feet tall, it showed the entire nation with each geological stratum painted in a distinctive color, graduated to show the direction of dip (darker at the base, lighter toward the top).</p>
+
+            <blockquote>
+                "I determined to construct a map of this kind myself, and have been twenty years employed in so doing."
+                <cite>— William Smith, 1815</cite>
+            </blockquote>
+
+            <p>The map was not merely beautiful—it was predictive. Using the principle of superposition, Smith could tell miners where to dig for coal, engineers where to find building stone, and farmers what kind of soil to expect. The theoretical elegance of his discovery had immediate practical application.</p>
+
+            <p>But success brought competition. The Geological Society of London—a gentleman's club that had denied Smith membership—published a competing map in 1820, borrowing heavily from Smith's work without credit. Unable to compete with their resources, Smith's business failed, and he was imprisoned for debt. Only in 1831 did the Society acknowledge his priority, awarding him the first Wollaston Medal and naming him "the Father of English Geology."</p>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Connection to Strata</h2>
+
+            <p>William Smith embodies the <strong>core principle</strong> of the Strata package: <strong>layer order matters</strong>. Just as Smith discovered that rock layers appear in a consistent order determined by geological processes, our cartographic layers must be ordered correctly.</p>
+
+            <h3>Layer Ordering in Strata</h3>
+
+            <div class="source-card">
+                <h4>Background Layer (Bottom)</h4>
+                <p>The lowest stratum—like bedrock, it provides the foundation. Typically a solid color or paper texture.</p>
+                <code>- name: background  # First in list = bottom layer</code>
+            </div>
+
+            <div class="source-card">
+                <h4>Water Bodies</h4>
+                <p>Above the background, water features—lakes, rivers, oceans—define the liquid landscape.</p>
+                <code>- name: lake_champlain  # Water cuts through land</code>
+            </div>
+
+            <div class="source-card">
+                <h4>Land Areas</h4>
+                <p>Municipalities, counties, states—with water subtracted to show only the land portion.</p>
+                <code>- name: towns<br/>  subtract: lake_champlain</code>
+            </div>
+
+            <div class="source-card">
+                <h4>Linear Features (Top)</h4>
+                <p>Roads, borders, rivers—line features that must remain visible above filled areas.</p>
+                <code>- name: roads  # Last in list = top layer</code>
+            </div>
+
+            <p>The package name "Strata" directly honors Smith's fundamental insight: <strong>understanding comes from recognizing and respecting the natural ordering of layers</strong>. Put water below land and it disappears. Put roads below polygons and they're hidden. The order is not arbitrary—it is determined by the nature of the data, just as the order of rock strata is determined by the processes that formed them.</p>
+
+            <div class="ornament">▤ ▥ ▦ ▧ ▨</div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2>Notable Quotations</h2>
+
+            <blockquote>
+                "The earth itself is the great original."
+                <cite>— William Smith</cite>
+            </blockquote>
+
+            <blockquote>
+                "Each stratum contained organized fossils peculiar to itself, and might, in cases otherwise doubtful, be recognized and discriminated from others like it, but in a different part of the series, by examination of them."
+                <cite>— William Smith, on the principle of faunal succession</cite>
+            </blockquote>
+
+            <blockquote>
+                "The theory of geology is in the hands of those who have neither had the experience nor made the observations."
+                <cite>— William Smith, on the Geological Society of London</cite>
+            </blockquote>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p><em>"Each stratum serves its purpose; none can be omitted without loss."</em></p>
+            <p style="margin-top: 1rem;"><a href="historical-docs.html" style="color: var(--gold);">Return to Main Documentation</a></p>
+        </div>
+    </footer>
+</body>
+</html>
