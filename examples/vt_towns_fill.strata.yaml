@@ -1,0 +1,58 @@
+# Vermont Towns Fill Map
+# Simple map of all Vermont towns for plotter pattern fills
+# Each town will be a separate polygon for rat-king to fill
+
+name: vt_towns_fill
+description: Vermont towns ready for randomized plotter fills
+version: 1
+
+sources:
+  vt_towns:
+    uri: census:tiger/2023/vt/cousub
+  vt_state:
+    uri: census:tiger/2023/vt/state
+
+layers:
+  # Vermont towns - each as a separate polygon
+  - name: vt_towns
+    source: vt_towns
+    operations:
+      - type: simplify
+        tolerance: 0.0005
+    style:
+      stroke: "#333333"
+      stroke_width: 0.5
+      fill: none
+    order: 1
+
+  # Vermont state boundary (topmost)
+  - name: vt_boundary
+    source: vt_state
+    operations:
+      - type: simplify
+        tolerance: 0.0003
+    style:
+      stroke: "#000000"
+      stroke_width: 1.5
+      fill: none
+    order: 100
+
+output:
+  # Vermont bounds only
+  bounds: [-73.4428, 42.7269, -71.4650, 45.0166]
+  projection: epsg:4326
+
+  formats:
+    - type: svg
+      quality:
+        - name: high_detail
+          simplify: 0.0003
+        - name: medium_detail
+          simplify: 0.0008
+        - name: low_detail
+          simplify: 0.002
+      options:
+        per_layer: true
+        combined: true
+        page_size: [11, 17]
+        margin: 0.5
