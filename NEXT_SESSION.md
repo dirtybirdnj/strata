@@ -3,7 +3,7 @@
 ## Ready for Testing
 
 ### rat-king CLI
-Built and ready at `/Users/mgilbert/Code/rat-king/crates/target/release/rat-king` with 30 patterns:
+Pre-built binary at `bin/rat-king` (auto-detected by strata) with 30 patterns:
 - lines, crosshatch, zigzag, wiggle, spiral, fermat, concentric, radial
 - honeycomb, crossspiral, hilbert, guilloche, lissajous, rose, phyllotaxis
 - scribble, gyroid, pentagon15, pentagon14, grid, brick, truchet, stipple
@@ -26,13 +26,13 @@ Built and ready at `/Users/mgilbert/Code/rat-king/crates/target/release/rat-king
 
 3. **Test Different rat-king Patterns Directly**
    ```bash
-   /Users/mgilbert/Code/rat-king/crates/target/release/rat-king fill some.svg -p crosshatch -f json --grouped
-   /Users/mgilbert/Code/rat-king/crates/target/release/rat-king patterns   # List all 30
+   bin/rat-king fill some.svg -p crosshatch -f json --grouped
+   bin/rat-king patterns   # List all 30
    ```
 
 4. **TUI Interactive Testing**
    ```bash
-   /Users/mgilbert/Code/rat-king/crates/target/release/rat-king some.svg   # Launch TUI
+   bin/rat-king some.svg   # Launch TUI
    ```
 
 ---
@@ -81,7 +81,7 @@ strata plotter-fill-all output/
 ```
 
 **Requirements:**
-- rat-king CLI built from ~/Code/rat-king/crates
+- rat-king binary (bundled at `bin/rat-king`, auto-detected)
 
 ### 3. Richelieu Corridor Rivers
 Added Richelieu River system to example recipes. The Richelieu connects Lake Champlain to the St. Lawrence River.
@@ -145,8 +145,8 @@ Added water cutouts to Quebec municipalities in all example recipes.
 8. **Progress Bars** - Better download progress indication for large files
 9. **Geofabrik/OSM Integration** - OpenStreetMap extracts for detailed roads/POIs
 
-### Future (Post-Rust Conversion)
-10. **Rust Implementation** - See RUST_PROPOSAL.md
+### Future
+10. **Additional Pattern Fills** - Explore more rat-king patterns for variety
 
 ---
 
@@ -221,12 +221,11 @@ Created comprehensive `DATA_SOURCES.md` with:
 - Fallback data strategy
 - Topographic/bathymetric data sources (SRTM, GEBCO, ETOPO)
 
-### 8. Rust Conversion Proposal
-Created `RUST_PROPOSAL.md` with detailed plan for converting Strata to Rust:
-- Dependency mapping (Python to Rust equivalents)
-- Architecture proposal (workspace structure)
-- Module-by-module conversion plan
-- Rat-king linefill integration design
+### 8. rat-king Binary Integration
+Integrated rat-king as a pre-built static binary:
+- Binary bundled at `bin/rat-king` (auto-detected)
+- No Rust/Cargo build required
+- 30 fill patterns available
 
 ---
 

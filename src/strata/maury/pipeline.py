@@ -426,15 +426,12 @@ class Pipeline:
         Returns:
             List of created plotter fill SVG paths
         """
-        from strata.kelley import generate_plotter_fill, check_rat_king_available
+        from strata.kelley import generate_plotter_fill, check_rat_king_available, RAT_KING_BIN
 
         created = []
 
-        # Determine rat-king binary path
-        bin_path = config.rat_king_bin
-        if bin_path is None:
-            # Default location
-            bin_path = "/Users/mgilbert/Code/rat-king/crates/target/release/rat-king"
+        # Determine rat-king binary path (use auto-detected if not specified)
+        bin_path = config.rat_king_bin if config.rat_king_bin else RAT_KING_BIN
 
         # Check availability
         if not check_rat_king_available(bin_path):

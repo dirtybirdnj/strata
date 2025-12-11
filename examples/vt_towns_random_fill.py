@@ -134,7 +134,7 @@ def main():
     input_svg = strata_root / "output/vt_towns_fill/svg/medium_detail/01_vt_towns.svg"
     boundary_svg = strata_root / "output/vt_towns_fill/svg/medium_detail/02_vt_boundary.svg"
     output_svg = strata_root / "output/vt_towns_fill/vt_towns_random_filled.svg"
-    rat_king_path = strata_root / "crates/target/release/rat-king"
+    rat_king_path = strata_root / "bin" / "rat-king"
 
     if not input_svg.exists():
         print(f"Error: Input SVG not found: {input_svg}")
@@ -143,7 +143,7 @@ def main():
 
     if not rat_king_path.exists():
         print(f"Error: rat-king not found: {rat_king_path}")
-        print("Run: cd crates/rat-king-cli && cargo build --release")
+        print("Install: cargo install rat-king-cli")
         sys.exit(1)
 
     # Parse input SVG for viewBox and dimensions

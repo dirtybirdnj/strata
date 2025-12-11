@@ -525,16 +525,15 @@ def config_path():
 @click.option("--spacing", "-s", type=float, default=3.0, help="Base line spacing (default: 3.0)")
 @click.option("--stroke-width", "-w", type=float, default=0.5, help="Output stroke width (default: 0.5)")
 @click.option("--no-outlines", is_flag=True, help="Don't include polygon outlines")
-@click.option("--rat-king", "rat_king_bin", type=click.Path(),
-              default="/Users/mgilbert/Code/rat-king/crates/target/release/rat-king",
-              help="Path to rat-king binary")
+@click.option("--rat-king", "rat_king_bin", type=click.Path(), default=None,
+              help="Path to rat-king binary (auto-detected)")
 def plotter_fill(
     input_svg: str,
     output: str | None,
     spacing: float,
     stroke_width: float,
     no_outlines: bool,
-    rat_king_bin: str,
+    rat_king_bin: str | None,
 ):
     """Convert colored SVG to plotter-ready hatch patterns.
 
@@ -553,7 +552,7 @@ def plotter_fill(
         strata plotter-fill combined.svg --spacing 4.0 --stroke-width 0.3
     """
     from pathlib import Path
-    from strata.kelley import generate_plotter_fill, check_rat_king_available
+    from strata.kelley import generate_plotter_fill, check_rat_king_available, RAT_KING_BIN
 
     input_path = Path(input_svg)
 
@@ -562,13 +561,16 @@ def plotter_fill(
     else:
         output_path = input_path.parent / f"{input_path.stem}_plotter.svg"
 
+    # Use auto-detected binary if not specified
+    if rat_king_bin is None:
+        rat_king_bin = RAT_KING_BIN
+
     console.print(f"\n[bold]Plotter Fill:[/] {input_svg}\n")
 
     # Check rat-king availability
     if not check_rat_king_available(rat_king_bin):
         console.print(f"[red]Error:[/] rat-king not found at {rat_king_bin}")
-        console.print("\nTo build rat-king:")
-        console.print("  cd ~/Code/rat-king/crates && cargo build --release")
+        console.print("\nInstall rat-king: cargo install rat-king-cli")
         raise SystemExit(1)
 
     # Generate plotter fill
@@ -592,14 +594,13 @@ def plotter_fill(
 @click.argument("output_dir", type=click.Path(exists=True))
 @click.option("--spacing", "-s", type=float, default=3.0, help="Base line spacing (default: 3.0)")
 @click.option("--stroke-width", "-w", type=float, default=0.5, help="Output stroke width (default: 0.5)")
-@click.option("--rat-king", "rat_king_bin", type=click.Path(),
-              default="/Users/mgilbert/Code/rat-king/crates/target/release/rat-king",
-              help="Path to rat-king binary")
+@click.option("--rat-king", "rat_king_bin", type=click.Path(), default=None,
+              help="Path to rat-king binary (auto-detected)")
 def plotter_fill_all(
     output_dir: str,
     spacing: float,
     stroke_width: float,
-    rat_king_bin: str,
+    rat_king_bin: str | None,
 ):
     """Convert all combined.svg files in output directory to plotter fills.
 
@@ -611,15 +612,18 @@ def plotter_fill_all(
         strata plotter-fill-all output/
     """
     from pathlib import Path
-    from strata.kelley import process_plotter_output, check_rat_king_available
+    from strata.kelley import process_plotter_output, check_rat_king_available, RAT_KING_BIN
 
     console.print(f"\n[bold]Plotter Fill All:[/] {output_dir}\n")
+
+    # Use auto-detected binary if not specified
+    if rat_king_bin is None:
+        rat_king_bin = RAT_KING_BIN
 
     # Check rat-king availability
     if not check_rat_king_available(rat_king_bin):
         console.print(f"[red]Error:[/] rat-king not found at {rat_king_bin}")
-        console.print("\nTo build rat-king:")
-        console.print("  cd ~/Code/rat-king/crates && cargo build --release")
+        console.print("\nInstall rat-king: cargo install rat-king-cli")
         raise SystemExit(1)
 
     # Process all combined SVGs

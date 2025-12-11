@@ -11,6 +11,7 @@ from .plotter_fill import (
     generate_plotter_fill,
     process_plotter_output,
     check_rat_king_available,
+    RAT_KING_BIN,
 )
 
 __all__ = [
@@ -19,4 +20,5 @@ __all__ = [
     "generate_plotter_fill",
     "process_plotter_output",
     "check_rat_king_available",
+    "RAT_KING_BIN",
 ]

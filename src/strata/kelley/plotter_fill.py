@@ -8,13 +8,14 @@ Each unique fill color in the input SVG is mapped to a different
 pattern/angle combination, creating visual distinction without relying on
 color - perfect for single-pen plotter output.
 
-Requires: rat-king CLI (https://github.com/mgilbert/rat-king)
+Requires: rat-king CLI (https://github.com/dirtybirdnj/rat-king)
 """
 
 import colorsys
 import hashlib
 import json
 import re
+import shutil
 import subprocess
 import tempfile
 from pathlib import Path
@@ -24,8 +25,30 @@ from rich.console import Console
 
 console = Console()
 
-# Default rat-king binary path - can be overridden
-RAT_KING_BIN = "/Users/mgilbert/Code/rat-king/crates/target/release/rat-king"
+
+def _find_rat_king_binary() -> str:
+    """
+    Find the rat-king binary in order of preference:
+    1. Bundled binary in strata's bin/ directory
+    2. System PATH (from cargo install or manual installation)
+    """
+    # Check bundled binary (relative to this file's package)
+    package_dir = Path(__file__).parent.parent.parent.parent  # strata repo root
+    bundled = package_dir / "bin" / "rat-king"
+    if bundled.exists() and bundled.is_file():
+        return str(bundled)
+
+    # Check system PATH
+    system_bin = shutil.which("rat-king")
+    if system_bin:
+        return system_bin
+
+    # Fallback to bundled path (will fail with helpful error if missing)
+    return str(bundled)
+
+
+# Default rat-king binary path - auto-detected
+RAT_KING_BIN = _find_rat_king_binary()
 
 # Available patterns from rat-king, ordered by visual density/complexity
 # We'll cycle through these for different colors
