@@ -14,6 +14,7 @@ from .openskimap import fetch_openskimap, parse_openskimap_uri, estimate_openski
 from .mexico import fetch_mexico, parse_mexico_uri, estimate_mexico_size
 from .naturalearth import fetch_naturalearth, parse_naturalearth_uri, estimate_naturalearth_size
 from .usgs import fetch_usgs, parse_usgs_uri, estimate_usgs_size, list_services as list_usgs_services
+from .woodland import fetch_woodland, parse_woodland_uri, estimate_woodland_size
 from .cache import get_cache_dir, is_cached, get_cached_path, clear_cache
 
 __all__ = [
@@ -41,6 +42,9 @@ __all__ = [
     "parse_usgs_uri",
     "estimate_usgs_size",
     "list_usgs_services",
+    "fetch_woodland",
+    "parse_woodland_uri",
+    "estimate_woodland_size",
     "get_cache_dir",
     "is_cached",
     "get_cached_path",
@@ -83,6 +87,8 @@ def fetch(uri: str, force: bool = False, bbox: tuple | None = None) -> str:
         return fetch_naturalearth(uri, force=force)
     elif uri.startswith("usgs:"):
         return fetch_usgs(uri, bbox=bbox, force=force)
+    elif uri.startswith("woodland:"):
+        return fetch_woodland(uri, force=force)
     elif uri.startswith("file:"):
         # Local file - validate and return the path
         local_path = uri[5:]  # Strip "file:" prefix
@@ -126,6 +132,8 @@ def estimate_size(uri: str) -> dict:
         return estimate_naturalearth_size(uri)
     elif uri.startswith("usgs:"):
         return estimate_usgs_size(uri)
+    elif uri.startswith("woodland:"):
+        return estimate_woodland_size(uri)
     elif uri.startswith("file:"):
         from pathlib import Path
         path = Path(uri[5:])

@@ -290,3 +290,13 @@ strata cache --clear
 - Quebec: `~/Library/Caches/strata/quebec/`
 - Canada (CanVec/NRN): `~/Library/Caches/strata/canada/`
 - OpenSkiMap: `{repo}/data/openskidata.gpkg` (local, not in cache!)
+
+## OpenStreetMap Integration
+
+Add support for OSM data as a source, particularly:
+- `landuse=forest` and `natural=wood` polygons for woodland areas
+- `highway=path/track` for trails
+- `building=*` for structures
+- General OSM vector tile or Overpass API integration
+
+This would provide comprehensive land cover and feature data that complements USGS sources.

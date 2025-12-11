@@ -27,10 +27,14 @@ console = Console()
 OPENSKIMAP_URL = "https://tiles.openskimap.org/openskidata.gpkg"
 
 # Layers available in the GeoPackage
+# Actual layer names discovered from the GeoPackage:
+# - ski_areas_point, ski_areas_multipolygon
+# - lifts_linestring
+# - runs_multipolygon, runs_linestring
 LAYERS = {
-    "runs": "ski_runs",       # Ski runs/trails (LineString)
-    "lifts": "ski_lifts",     # Ski lifts (LineString)
-    "areas": "ski_areas",     # Ski area boundaries (Polygon)
+    "runs": "runs_linestring",           # Ski runs/trails (LineString)
+    "lifts": "lifts_linestring",         # Ski lifts (LineString)
+    "areas": "ski_areas_multipolygon",   # Ski area boundaries (Polygon)
 }
 
 # Estimated size (the GeoPackage is ~200MB)

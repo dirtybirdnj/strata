@@ -191,7 +191,10 @@ class Pipeline:
 
             elif key in result.columns:
                 # Direct column filter (exact match or list)
-                if isinstance(value, list):
+                if value is None:
+                    # Filter for null/None values
+                    result = result[result[key].isna()]
+                elif isinstance(value, list):
                     result = result[result[key].isin(value)]
                 else:
                     result = result[result[key] == value]
