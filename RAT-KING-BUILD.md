@@ -1,95 +1,169 @@
-# Rat-King Build & Packaging
+# Rat-King Build & Distribution
+
+## Goal
+
+Build rat-king as a **standalone static binary** that can be distributed with strata. The binary should have zero runtime dependencies and work on any modern system without requiring users to install Rust or compile anything.
 
 ## Current State
 
-The rat-king Rust code lives inside strata at `crates/`, but the Python integration still references an **external binary path**:
+- Rat-king source lives in `crates/` but is a separate project
+- Python code references an external binary path (needs fixing)
+- Binary is dynamically linked (has glibc dependencies)
 
-```python
-RAT_KING_DEFAULT = "/Users/mgilbert/Code/rat-king/crates/target/release/rat-king"
-```
+## Solution: Static Binary Distribution
 
-This is hardcoded in `src/strata/kelley/plotter_fill.py:28`.
+Rat-king should be built as a fully static binary in the **rat-king repo**, then distributed to strata users via:
+1. GitHub releases (downloadable binaries)
+2. Vendored in strata's `bin/` directory
+3. Or installed via package manager (future)
 
-## Problem
+### Why Static Linking?
 
-When strata is cloned to a new machine or by a different user, the rat-king binary path doesn't exist, breaking the `plotter-fill` functionality.
+- **Zero dependencies**: No glibc, no shared libraries needed
+- **Portable**: Same binary works on any Linux distro
+- **Simple distribution**: Single file to download/include
+- **No Rust required**: Users don't need rustc/cargo installed
 
-## Required Changes
+## Implementation in Rat-King Repo
 
-### 1. Fix the default binary path (HIGH PRIORITY)
-
-In `src/strata/kelley/plotter_fill.py:28`, change the hardcoded path to a relative path within the strata project:
-
-```python
-RAT_KING_DEFAULT = Path(__file__).parent.parent.parent.parent / "crates" / "target" / "release" / "rat-king"
-```
-
-### 2. Add rat-king build to the strata build/install process
-
-Options (pick one):
-
-a) **Add a build script** - Add `scripts/build_rat_king.sh` that runs `cargo build --release` in `crates/`
-
-b) **Add pyproject.toml build hook** - Use `hatch` or `maturin` build hooks to compile Rust during `pip install`
-
-c) **Include pre-built binary** - Ship the compiled binary in a `bin/` directory (not recommended for cross-platform)
-
-### 3. Add strata CLI command to build rat-king
-
-Add a `strata build-tools` or `strata setup` command that:
-
-- Checks if Rust/Cargo is installed
-- Runs `cargo build --release` in `crates/`
-- Verifies the binary is working
-
-### 4. Improve binary discovery logic
-
-In `plotter_fill.py`, implement a search order:
-
-1. User-specified path (via `--rat-king` flag or YAML config)
-2. `RAT_KING_BIN` environment variable
-3. Built binary in strata's `crates/target/release/`
-4. System PATH (`which rat-king`)
-5. Fail with helpful error message
-
-### 5. Documentation updates needed
-
-- `docs/` should explain that rat-king needs to be built
-- Add to README or installation docs: `cd crates && cargo build --release`
-
-### 6. Consider PyPI packaging (long-term)
-
-Use `maturin` to publish rat-king as a Python package with embedded Rust binary, so `pip install strata` would also install rat-king automatically.
-
-## Files to Modify
-
-| File | Change |
-|------|--------|
-| `src/strata/kelley/plotter_fill.py` | Fix default path, improve discovery |
-| `src/strata/cli.py` | Add build command |
-| `pyproject.toml` | Add build hooks or scripts |
-| `README.md` or `docs/` | Document build requirements |
-
-## Current Architecture
-
-```
-strata/
-├── src/strata/           # Python package
-│   └── kelley/
-│       └── plotter_fill.py  # Calls rat-king binary via subprocess
-├── crates/               # Rust workspace (rat-king source)
-│   ├── rat-king/         # Core library
-│   └── rat-king-cli/     # CLI binary
-└── RAT-KING-BUILD.md     # This file
-```
-
-## Quick Fix (Manual)
-
-Until the above changes are implemented, build rat-king manually:
+### For Linux (using musl)
 
 ```bash
-cd crates
-cargo build --release
+# Add the musl target
+rustup target add x86_64-unknown-linux-musl
+
+# Build static binary
+cargo build --target x86_64-unknown-linux-musl --release
+
+# Binary at: target/x86_64-unknown-linux-musl/release/rat-king
 ```
 
-The binary will be at `crates/target/release/rat-king`.
+For ARM Linux:
+```bash
+rustup target add aarch64-unknown-linux-musl
+cargo build --target aarch64-unknown-linux-musl --release
+```
+
+### For macOS
+
+macOS binaries are already mostly static. Build with:
+```bash
+# Intel
+cargo build --target x86_64-apple-darwin --release
+
+# Apple Silicon
+cargo build --target aarch64-apple-darwin --release
+```
+
+### For Windows
+
+```bash
+# Static link the C runtime
+RUSTFLAGS='-C target-feature=+crt-static' cargo build --target x86_64-pc-windows-msvc --release
+```
+
+### Cargo Configuration
+
+Add to `crates/.cargo/config.toml`:
+```toml
+[target.x86_64-unknown-linux-musl]
+rustflags = ["-C", "target-feature=+crt-static", "-C", "link-self-contained=yes"]
+
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]
+```
+
+## Strata Integration Changes
+
+Once rat-king publishes static binaries:
+
+1. **Update default path** in `src/strata/kelley/plotter_fill.py`:
+   - Look for binary in strata's `bin/` directory first
+   - Fall back to system PATH
+   - Fall back to `RAT_KING_BIN` env var
+
+2. **Add binary discovery**:
+   ```python
+   def find_rat_king_binary():
+       # 1. User override
+       if user_specified:
+           return user_specified
+       # 2. Bundled with strata
+       bundled = Path(__file__).parent.parent.parent.parent / "bin" / "rat-king"
+       if bundled.exists():
+           return bundled
+       # 3. System PATH
+       if shutil.which("rat-king"):
+           return "rat-king"
+       # 4. Environment variable
+       if os.environ.get("RAT_KING_BIN"):
+           return os.environ["RAT_KING_BIN"]
+       raise RuntimeError("rat-king binary not found")
+   ```
+
+3. **Add download script** or document installation
+
+---
+
+## Prompt for Rat-King Agent
+
+```
+# Add Static Binary Build Support to Rat-King
+
+## Goal
+Enable building rat-king as a fully static, distributable binary with zero runtime dependencies.
+
+## Tasks
+
+### 1. Add Cargo configuration for static builds
+Create `.cargo/config.toml` with targets:
+- x86_64-unknown-linux-musl (Linux static)
+- aarch64-unknown-linux-musl (Linux ARM static)
+- x86_64-apple-darwin (macOS Intel)
+- aarch64-apple-darwin (macOS Apple Silicon)
+- x86_64-pc-windows-msvc (Windows static CRT)
+
+### 2. Add build script
+Create `scripts/build-release.sh` that:
+- Builds for all available targets
+- Strips binaries for smaller size
+- Outputs to `dist/` directory with platform-specific names:
+  - rat-king-linux-x86_64
+  - rat-king-linux-aarch64
+  - rat-king-macos-x86_64
+  - rat-king-macos-aarch64
+  - rat-king-windows-x86_64.exe
+
+### 3. Add GitHub Actions workflow
+Create `.github/workflows/release.yml` that:
+- Triggers on version tags (v*)
+- Builds static binaries for all platforms
+- Creates GitHub release with binaries attached
+- Uses cross-compilation where needed (cross-rs or native runners)
+
+### 4. Verify no C dependencies
+Check that all dependencies (usvg, svgtypes, lyon_geom, ratatui, crossterm, image, resvg, tiny-skia) support static linking without external C libraries.
+
+### 5. Test static binaries
+- Verify binary runs on fresh system (no Rust installed)
+- Check with `ldd` that binary has no dynamic dependencies (Linux)
+- Test on different distros (Ubuntu, Alpine, etc.)
+
+## Reference
+- musl target: https://doc.rust-lang.org/edition-guide/rust-2018/platform-and-target-support/musl-support-for-fully-static-binaries.html
+- cross-rs for cross-compilation: https://github.com/cross-rs/cross
+- Static CRT on Windows: RUSTFLAGS='-C target-feature=+crt-static'
+
+## Expected Output
+Static binaries that can be downloaded and run immediately without any dependencies.
+```
+
+---
+
+## Sources
+
+- [Rust Linkage Reference](https://doc.rust-lang.org/reference/linkage.html)
+- [MUSL Support for Static Binaries](https://doc.rust-lang.org/edition-guide/rust-2018/platform-and-target-support/musl-support-for-fully-static-binaries.html)
+- [rust-musl-builder](https://github.com/emk/rust-musl-builder) - Docker images for static builds
+- [rust-musl-cross](https://github.com/rust-cross/rust-musl-cross) - Cross-compilation support
+- [Building Statically Linked Rust Binaries](https://shivjm.blog/statically-linked-rust-binaries/)
