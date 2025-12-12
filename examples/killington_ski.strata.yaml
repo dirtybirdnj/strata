@@ -1,0 +1,254 @@
+# Killington Ski Resort Map - Plotter Ready
+# Uses OpenSkiMap data for ski runs, lifts, and area boundaries
+# USGS contours for topography, NHD for streams
+#
+# Ski run colors follow NSAA standard:
+#   - Green: Easiest
+#   - Blue: Intermediate
+#   - Black: Advanced/Expert
+#   - Orange: Freeride/Backcountry
+name: killington_ski
+description: Killington Resort ski map with topography - plotter ready
+version: 1
+
+sources:
+  # OpenSkiMap data
+  ski_runs:
+    uri: openskimap:runs
+    description: Ski runs/trails from OpenSkiMap
+
+  ski_lifts:
+    uri: openskimap:lifts
+    description: Ski lifts from OpenSkiMap
+
+  ski_areas:
+    uri: openskimap:areas
+    description: Ski area boundaries from OpenSkiMap
+
+  # USGS Topography - detailed contours (20ft intervals)
+  # Contains both regular contours (fcode=10101) and index contours (fcode=10102)
+  contours:
+    uri: usgs:contours/large_scale
+    description: Detailed 20ft contour lines with 100ft index contours
+
+  # USGS Woodland polygons (from topographic maps)
+  woodland:
+    uri: woodland:vt
+    description: Vermont woodland areas from USGS Land Cover
+
+  # USGS Hydrography - streams
+  streams:
+    uri: usgs:nhd/flowline
+    description: Streams and rivers from NHD
+
+  # USGS Transportation - local roads (more complete than Census)
+  local_roads:
+    uri: usgs:transportation/local_road
+    description: Local roads from USGS National Map
+
+  # USGS Trails - hiking, walking, recreation (includes Long Trail, Catamount Trail)
+  trails:
+    uri: usgs:transportation/trail
+    description: Hiking and recreation trails from USGS National Map
+
+  # Background context from Census
+  vt_towns:
+    uri: census:tiger/2023/vt/cousub
+    description: Vermont towns for context
+
+  vt_highways:
+    uri: census:tiger/2023/vt/prisecroads
+    description: Vermont primary and secondary roads (highways)
+
+  # Linear water from Census (streams/rivers)
+  vt_streams:
+    uri: census:tiger/2023/vt/linearwater
+    description: Vermont streams and rivers
+
+layers:
+  # Background - town boundaries for context (very light)
+  - name: town_background
+    source: vt_towns
+    operations:
+      - type: simplify
+        tolerance: 0.0003
+    style:
+      stroke: "#e0e0e0"
+      stroke_width: 0.2
+      fill: none
+    order: 1
+
+  # Woodland areas (outline only for plotter)
+  - name: woodland
+    source: woodland
+    style:
+      stroke: "#2e7d32"  # Forest green
+      stroke_width: 0.2
+      fill: none
+    order: 2
+
+  # Regular contour lines - 20ft intervals (fcode=10101)
+  - name: contours_regular
+    source: contours
+    filter:
+      fcode: 10101
+    style:
+      stroke: "#a1887f"  # Light brown
+      stroke_width: 0.1
+      fill: none
+    order: 3
+
+  # Index contour lines - 100ft intervals (fcode=10102) - darker/thicker
+  - name: contours_index
+    source: contours
+    filter:
+      fcode: 10102
+    style:
+      stroke: "#5d4037"  # Dark brown
+      stroke_width: 0.3
+      fill: none
+    order: 4
+
+  # Streams from USGS NHD
+  - name: streams_nhd
+    source: streams
+    style:
+      stroke: "#1976d2"  # Blue
+      stroke_width: 0.4
+      fill: none
+    order: 5
+
+  # Streams from Census TIGER (backup/supplement)
+  - name: streams_tiger
+    source: vt_streams
+    style:
+      stroke: "#1976d2"  # Blue
+      stroke_width: 0.3
+      fill: none
+    order: 6
+
+  # Ski area boundary (polygon) - just outline, no fill for plotter
+  - name: ski_area
+    source: ski_areas
+    style:
+      stroke: "#388e3c"  # Green
+      stroke_width: 0.8
+      fill: none
+    order: 7
+
+  # Local roads (USGS) - thinner, lighter
+  - name: local_roads
+    source: local_roads
+    style:
+      stroke: "#9e9e9e"  # Light gray
+      stroke_width: 0.3
+      fill: none
+    order: 8
+
+  # Highways (Census primary/secondary roads) - darker, thicker
+  - name: highways
+    source: vt_highways
+    operations:
+      - type: simplify
+        tolerance: 0.0002
+    style:
+      stroke: "#424242"  # Dark gray
+      stroke_width: 0.6
+      fill: none
+    order: 9
+
+  # Hiking trails (USGS) - dashed magenta for visibility
+  # Includes Long Trail, Catamount Trail, and local hiking trails
+  - name: hiking_trails
+    source: trails
+    style:
+      stroke: "#9c27b0"  # Purple/magenta - distinct from ski runs
+      stroke_width: 0.6
+      fill: none
+      dash_array: [3, 2]
+    order: 10
+
+  # Ski runs by difficulty - easiest (green) first
+  - name: runs_easy
+    source: ski_runs
+    filter:
+      difficulty: ["easy", "novice"]
+    style:
+      stroke: "#4caf50"  # Green - easiest
+      stroke_width: 1.2
+      fill: none
+    order: 11
+
+  # Intermediate runs (blue)
+  - name: runs_intermediate
+    source: ski_runs
+    filter:
+      difficulty: "intermediate"
+    style:
+      stroke: "#2196f3"  # Blue - intermediate
+      stroke_width: 1.2
+      fill: none
+    order: 12
+
+  # Advanced/Expert runs (black)
+  - name: runs_advanced
+    source: ski_runs
+    filter:
+      difficulty: "advanced"
+    style:
+      stroke: "#212121"  # Black - advanced/expert
+      stroke_width: 1.2
+      fill: none
+    order: 13
+
+  # Freeride/backcountry (orange, dashed)
+  - name: runs_freeride
+    source: ski_runs
+    filter:
+      difficulty: "freeride"
+    style:
+      stroke: "#ff9800"  # Orange - freeride
+      stroke_width: 1.0
+      fill: none
+      dash_array: [4, 2]
+    order: 14
+
+  # Unmarked/unknown difficulty runs (gray, dashed)
+  - name: runs_unmarked
+    source: ski_runs
+    filter:
+      difficulty: null
+    style:
+      stroke: "#757575"  # Gray - unmarked
+      stroke_width: 0.8
+      fill: none
+      dash_array: [2, 2]
+    order: 15
+
+  # Ski lifts (lines) - on top, distinctive
+  - name: ski_lifts
+    source: ski_lifts
+    style:
+      stroke: "#c62828"  # Red for visibility
+      stroke_width: 1.5
+      fill: none
+    order: 16
+
+output:
+  # Killington area bounds - sized for 12x18 portrait, centered on resort
+  # Killington spans multiple peaks in central VT at approximately 43.62N, 72.82W
+  # Slightly larger bounds to capture the full resort complex
+  # Width: 13km, Height: 19.5km
+  bounds: [-72.90, 43.5300, -72.74, 43.7050]
+  projection: epsg:4326
+
+  formats:
+    - type: svg
+      quality:
+        - name: fine
+          simplify: 0.00002
+      options:
+        per_layer: true
+        combined: true
+        page_size: [12, 18]
+        margin: 0.5

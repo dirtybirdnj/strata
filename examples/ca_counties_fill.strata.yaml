@@ -1,0 +1,58 @@
+# California Counties Fill Map
+# Simple map of all California counties for plotter pattern fills
+# Each county will be a separate polygon for rat-king to fill
+
+name: ca_counties_fill
+description: California counties ready for randomized plotter fills
+version: 1
+
+sources:
+  ca_counties:
+    uri: census:tiger/2023/ca/county
+  ca_state:
+    uri: census:tiger/2023/ca/state
+
+layers:
+  # California counties - each as a separate polygon
+  - name: ca_counties
+    source: ca_counties
+    operations:
+      - type: simplify
+        tolerance: 0.001
+    style:
+      stroke: "#333333"
+      stroke_width: 0.5
+      fill: none
+    order: 1
+
+  # California state boundary (topmost)
+  - name: ca_boundary
+    source: ca_state
+    operations:
+      - type: simplify
+        tolerance: 0.0005
+    style:
+      stroke: "#000000"
+      stroke_width: 1.5
+      fill: none
+    order: 100
+
+output:
+  # California bounds
+  bounds: [-124.48, 32.53, -114.13, 42.01]
+  projection: epsg:4326
+
+  formats:
+    - type: svg
+      quality:
+        - name: high_detail
+          simplify: 0.0005
+        - name: medium_detail
+          simplify: 0.001
+        - name: low_detail
+          simplify: 0.003
+      options:
+        per_layer: true
+        combined: true
+        page_size: [11, 17]
+        margin: 0.5
